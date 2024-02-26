@@ -1,0 +1,25 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '@layouts/Layout.astro';
+import imgLogo from '@img/ersn-logo.png';
+
+const frontmatter = {
+  title: '',
+  description: 'A community of GMRS users in the Ebbetts Pass region of Calaveras.',
+};
+---
+
+<Layout frontmatter={frontmatter}>
+  <div class="h-screen flex flex-col items-center justify-center">
+    <Image
+      src={imgLogo}
+      alt="ERSN Logo"
+      class="mx-auto not-prose mb-6 w-[200px] sm:mb-12 sm:w-[300px]"
+    />
+    <h1 class="text-center">Ebbetts Radio Safety Net</h1>
+    <p>
+      ERSN was founded in 2023 by a group of residents in Arnold, California. Things are just
+      getting started, but check back soon for more information on how you can get involved.
+    </p>
+  </div>
+</Layout>
