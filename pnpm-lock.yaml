@@ -35,6 +35,9 @@ dependencies:
   astro-icon:
     specifier: ^1.0.2
     version: 1.0.2
+  lucide:
+    specifier: ^0.453.0
+    version: 0.453.0
   react:
     specifier: ^18.2.0
     version: 18.2.0
@@ -2747,6 +2750,10 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       yallist: 4.0.0
+    dev: false
+
+  /lucide@0.453.0:
+    resolution: {integrity: sha512-kg6+hH1NxkSUqmjIOs8cAAIlHWh35VGERx9ZbzoTKqjdp/ydw/QZCf4yL2N/t9ejPsVNW7Sn2NzSO4acmcaJBw==}
     dev: false
 
   /magic-string@0.30.5:
