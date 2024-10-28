@@ -1,0 +1,106 @@
+---
+import Layout from '@layouts/Layout.astro';
+import LucideIcon from '@components/LucideIcon.astro';
+import { TriangleAlert } from 'lucide';
+
+const frontmatter = {
+  title: 'Non-Emergency Contacts for Arnold & Murphys, CA',
+  description:
+    'A guide to essential non-emergency contact numbers for services in Arnold and Murphys, California.',
+};
+---
+
+<Layout frontmatter={frontmatter}>
+  <h1>Important Contacts</h1>
+
+  <div class="not-prose">
+    <div class="rounded-md bg-yellow-100 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <LucideIcon icon={TriangleAlert} class="h-5 w-5 text-yellow-800" />
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-yellow-800">Having an emergency?</h3>
+          <div class="mt-2 text-sm text-yellow-700">
+            <p>
+              <b>First, call 911!</b> If phone/cell service is unavailable, ... [TK: emergency instructions]
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Police and Sheriff's Department</h2>
+  <p>
+    For non-emergencies or assistance in Arnold and Murphys, residents can reach out to the
+    Calaveras County Sheriff’s Office.
+  </p>
+  <ul>
+    <li>
+      <strong>Calaveras County Sheriff's Office (San Andreas)</strong><br />
+      Non-Emergency: <a href="tel:+12097546500">(209) 754-6500</a>
+    </li>
+    <li>
+      <strong>Arnold Substation</strong><br />
+      Local Contact: <a href="tel:+12097950473">(209) 795-0473</a>
+    </li>
+    <li>
+      For crimes in progress, use <a href="tel:+12097546753">(209) 754-6753</a> if 911 is unavailable.
+    </li>
+  </ul>
+
+  <h2>Fire Departments</h2>
+  <p>
+    Arnold and Murphys are served by dedicated fire protection districts that also provide emergency
+    medical and wildfire preparedness support.
+  </p>
+  <ul>
+    <li>
+      <strong>Ebbetts Pass Fire District (Arnold)</strong><br />
+      General Inquiries: <a href="tel:+12097951646">(209) 795-1646</a><br />
+      Address: 1028 Manuel Road, Arnold, CA
+    </li>
+    <li>
+      <strong>Murphys Fire Protection District</strong><br />
+      General Inquiries: <a href="tel:+12097283864">(209) 728-3864</a><br />
+      Address: 37 Jones Street, Murphys, CA
+    </li>
+  </ul>
+
+  <h2>Animal Control</h2>
+  <p>
+    Calaveras County Animal Services handles stray animals, wildlife, and other animal-related
+    concerns for the Arnold and Murphys areas.
+  </p>
+  <ul>
+    <li>
+      <strong>Calaveras County Animal Services</strong><br />
+      General Assistance: <a href="tel:+12097546509">(209) 754-6509</a>
+    </li>
+  </ul>
+
+  <h2>U.S. Forest Service and Fire Prevention</h2>
+  <ul>
+    <li>
+      <strong>California Department of Forestry and Fire Protection (CAL FIRE)</strong><br />
+      For forestry and fire-related concerns, contact through the local fire districts.
+    </li>
+    <li>
+      <strong>Calaveras Ranger District</strong><br />
+      General Inquiries: <a href="tel:+12097951381">(209) 795-1381</a>
+    </li>
+  </ul>
+
+  <h2>Poison Control</h2>
+  <p>
+    The Poison Control Hotline is available nationwide for poison-related emergencies and general
+    information.
+  </p>
+  <ul>
+    <li>
+      <strong>Poison Control Hotline</strong><br />
+      Immediate Assistance: <a href="tel:+18002221222">1-800-222-1222</a>
+    </li>
+  </ul>
+</Layout>

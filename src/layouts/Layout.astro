@@ -7,11 +7,12 @@ const { frontmatter } = Astro.props;
 
 const sections = [
   { title: 'Welcome', href: '/', selected: false },
-  { title: 'Members', href: '/members', selected: false },
+  //{ title: 'Members', href: '/members', selected: false },
   { title: 'Nets', href: '/nets', selected: false },
-  { title: 'Repeaters', href: '/repeaters', selected: false },
-  { title: 'GMRS Guide', href: '/grms', selected: false },
-  { title: 'Emergency Contacts', href: '/emergency', selected: false },
+  //{ title: 'Repeaters', href: '/repeaters', selected: false },
+  { title: 'GMRS Guide', href: '/gmrs', selected: false },
+  { title: 'Important Contacts', href: '/emergency', selected: false },
+  //{ title: 'ERSN Contacts', href: '/contact', selected: false },
 ];
 
 sections.forEach(
@@ -28,7 +29,7 @@ sections.forEach(
     <title>
       {
         frontmatter.title
-          ? frontmatter.title + ' :: Ebbetts Radio Safety Net'
+          ? frontmatter.title + ' | Ebbetts Radio Safety Net'
           : 'Ebbetts Radio Safety Net | Calaveras, California'
       }
     </title>
@@ -44,7 +45,10 @@ sections.forEach(
   </head>
   <body class="bg-white text-slate-950">
     <div class="flex flex-row w-full">
-      <div id="nav" class="max-w-[250px] min-h-screen p-4 items-stretch bg-grey-lighter border">
+      <div
+        id="nav"
+        class="sticky top-0 max-w-[250px] h-screen p-4 items-stretch bg-grey-lighter border"
+      >
         <Image
           src={imgLogo}
           alt="ERSN Logo"
@@ -77,8 +81,8 @@ sections.forEach(
           class="mx-auto pt-24 pb-6 prose prose-xs hover:prose-a:text-red-700 text-xs prose-p:text-slate-600"
         >
           <p>
-            Copyright ©{new Date().getFullYear()} ERSN. Site sponsor <a href="https://reflexive.sh"
-              >Reflexive Labs</a
+            Copyright ©{new Date().getFullYear()} ERSN. Site provided by <a
+              href="https://reflexive.sh">Reflexive Labs</a
             >.
           </p>
         </div>

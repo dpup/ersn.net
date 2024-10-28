@@ -1,0 +1,102 @@
+---
+import Layout from '@layouts/Layout.astro';
+
+const frontmatter = {
+  title: 'GMRS Radio Guide',
+  description:
+    'Learn about GMRS radios, licensing, and setting up for net access on channel 20/repeater 6.',
+};
+---
+
+<Layout frontmatter={frontmatter}>
+  <h1>GMRS Radio Guide</h1>
+
+  <h2>Introduction to Radios</h2>
+  <p>
+    General Mobile Radio Service (GMRS) radios are a popular choice for personal and family
+    communication. They’re particularly suited for outdoor activities, community events, and
+    emergency preparedness due to their balance of power, range, and simplicity. GMRS radios
+    typically operate in the UHF (Ultra High Frequency) band around 462-467 MHz, which provides a
+    good combination of range and signal clarity in environments where obstacles like buildings or
+    dense foliage are present.
+  </p>
+
+  <p><strong>Comparing GMRS to Other Communication Options:</strong></p>
+  <ul>
+    <li>
+      <strong>GMRS vs. Family Radio Service (FRS):</strong> FRS radios are similar to GMRS but operate
+      at much lower power (up to 2 watts) and are limited to shorter ranges, typically up to 1-2 miles
+      depending on terrain. GMRS, by contrast, allows up to 50 watts of power on certain channels and
+      can reach distances of 5 to 25 miles under optimal conditions.
+    </li>
+    <li>
+      <strong>GMRS vs. Ham Radio:</strong> Ham (or Amateur) radios are more versatile and operate across
+      a wider range of frequencies, including HF, VHF, and UHF bands. Ham radios can reach significantly
+      greater distances, even globally, when atmospheric conditions allow. However, they require a more
+      advanced license with an exam. GMRS is simpler to use, with fewer licensing requirements, making
+      it more accessible for family and personal use over regional distances.
+    </li>
+    <li>
+      <strong>GMRS vs. CB Radio:</strong> Citizens Band (CB) radio operates in the 27 MHz range with
+      limited power, resulting in shorter range and susceptibility to interference. CB radios are often
+      used in vehicles for communication among drivers but lack the range and clarity of GMRS, particularly
+      in urban or wooded areas.
+    </li>
+  </ul>
+
+  <p>
+    With GMRS, users can access specific repeater channels to extend their communication range. In
+    areas with available repeaters, like channel 20/repeater 6 for the ERSN net, GMRS can reliably
+    cover distances of 20 miles or more, depending on terrain and repeater availability. For
+    straightforward, mid-range communication, GMRS strikes a good balance between ease of use and
+    range, making it a preferred choice for many community-based networks.
+  </p>
+
+  <h2>How to Get a License</h2>
+  <p>
+    To legally operate a GMRS radio, the FCC requires a license, which is valid for 10 years and
+    covers your immediate family. The application process is straightforward and can be completed
+    online. Follow these steps:
+  </p>
+  <ul>
+    <li>
+      Visit the <a href="https://www.fcc.gov/wireless/universal-licensing-system" target="_blank"
+        >FCC’s Universal Licensing System (ULS)</a
+      >.
+    </li>
+    <li>
+      Register for an FCC Registration Number (FRN) if you don’t have one. You can do this by
+      selecting “Register” on the ULS page and following the prompts.
+    </li>
+    <li>Once registered, log in to the ULS system using your FRN and password.</li>
+    <li>
+      Select “Apply for a New License” and choose “ZA - General Mobile Radio (GMRS)” from the list
+      of license types.
+    </li>
+    <li>
+      Complete the application form, ensuring all personal information and payment details are
+      accurate.
+    </li>
+    <li>
+      Submit the application and pay the $35 fee, which is required for a 10-year GMRS license.
+    </li>
+    <li>
+      After submission, you’ll receive a confirmation email from the FCC. Once processed, your
+      license will be available in your ULS account, and you can start legally operating your GMRS
+      radio.
+    </li>
+  </ul>
+
+  <h2>Setting Up for Net Access</h2>
+  <p>To join the local GMRS network, follow these steps:</p>
+  <ul>
+    <li>Tune your radio to <strong>channel 20 / repeater 6</strong>.</li>
+    <li>
+      Contact <a href="mailto:ersnnets@gmail.com">ersnnets@gmail.com</a> to request the PL (CTCSS) codes
+      necessary for network access.
+    </li>
+    <li>
+      Once configured, join the weekly net or try performing a radio check by saying your callsign.
+    </li>
+  </ul>
+</Layout>
