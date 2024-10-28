@@ -44,15 +44,15 @@ sections.forEach(
     <link rel="sitemap" href="/sitemap-index.xml" />
   </head>
   <body class="bg-white text-slate-950">
-    <div class="flex flex-row w-full">
+    <div class="md:flex md:flex-row max-w-5xl mx-auto">
       <div
         id="nav"
-        class="sticky top-0 max-w-[250px] h-screen p-4 items-stretch bg-grey-lighter border"
+        class="md:sticky md:top-0 md:max-w-[250px] md:h-screen p-4 items-stretch bg-grey-lighter border"
       >
         <Image
           src={imgLogo}
           alt="ERSN Logo"
-          class="mx-auto not-prose mb-6 w-full sm:mb-12 drop-shadow-md w-[150px]"
+          class="mx-auto not-prose mb-6 w-full sm:mb-12 drop-shadow-md w-[100px] md:w-[150px]"
         />
         <div class="flex flex-col space-y-2">
           {
@@ -72,7 +72,7 @@ sections.forEach(
       </div>
       <div id="content" class="flex flex-col flex-grow border">
         <div
-          class="mx-auto pt-12 prose prose-slate hover:prose-a:text-red-700 prose-img:rounded-xl prose-img:border-4 prose-img:border-slate-300 prose-code:font-normal"
+          class="mx-auto pt-12 p-6 prose prose-slate hover:prose-a:text-red-700 prose-img:rounded-xl prose-img:border-4 prose-img:border-slate-300 prose-code:font-normal"
         >
           <slot />
         </div>
@@ -80,10 +80,9 @@ sections.forEach(
           id="footer"
           class="mx-auto pt-24 pb-6 prose prose-xs hover:prose-a:text-red-700 text-xs prose-p:text-slate-600"
         >
-          <p>
-            Copyright ©{new Date().getFullYear()} ERSN. Site provided by <a
-              href="https://reflexive.sh">Reflexive Labs</a
-            >.
+          <p class="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-2">
+            <span>Copyright ©{new Date().getFullYear()} ERSN.</span>
+            <span>Hosted by <a href="https://reflexive.sh">Reflexive Labs</a>.</span>
           </p>
         </div>
       </div>
