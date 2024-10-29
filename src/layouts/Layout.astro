@@ -43,17 +43,19 @@ sections.forEach(
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="sitemap" href="/sitemap-index.xml" />
   </head>
-  <body class="bg-white text-slate-950">
-    <div class="md:flex md:flex-row max-w-5xl mx-auto">
+  <body class="bg-slate-200 text-slate-950">
+    <div class="md:flex md:flex-row max-w-5xl mx-auto bg-slate-50 drop-shadow-lg">
       <div
         id="nav"
-        class="md:sticky md:top-0 md:max-w-[250px] md:h-screen p-4 items-stretch bg-grey-lighter border"
+        class="flex flex-row flex-col sm:flex-row md:flex-col md:sticky md:top-0 md:max-w-[250px] md:h-screen p-4 items-stretch border"
       >
-        <Image
-          src={imgLogo}
-          alt="ERSN Logo"
-          class="mx-auto not-prose mb-6 w-full sm:mb-12 drop-shadow-md w-[100px] md:w-[150px]"
-        />
+        <div class="max-w-[150px] sm:mr-12 md:mr-0 sm:mx-0 sm:mb-6">
+          <Image
+            src={imgLogo}
+            alt="ERSN Logo"
+            class="not-prose w-full drop-shadow-md w-[100px] md:w-[150px] mb-6 sm:mb-0"
+          />
+        </div>
         <div class="flex flex-col space-y-2">
           {
             sections.map((section) => (

@@ -5,6 +5,7 @@ import imgTrees from '@img/trees.jpg';
 import imgEmergency from '@img/emergency.jpg';
 import imgNetwork from '@img/network.jpg';
 import imgGetStarted from '@img/get-started.jpg';
+import Card from '@components/Card.astro';
 
 const frontmatter = {
   title: '',
@@ -21,72 +22,47 @@ const frontmatter = {
     />
     <div class="py-6">
       <h1 class="text-center drop-shadow-md">Ebbetts' Radio Safety Net</h1>
-      <p class="drop-shadow-sm text-lg rounded-lg p-6 bg-slate-100">
+      <p class="shadow-md text-lg p-6 bg-slate-200 rounded-lg shadow-md">
         When storms isolate our mountain communities and wildfires threaten our homes, staying
         connected can save lives. Ebbetts' Radio Safety Net (ERSN) is Highway-4's volunteer-powered
         emergency communications network, using GMRS radios to keep our community linked when
         traditional systems fail.
       </p>
     </div>
-    <div class="relative md:grid md:grid-cols-3 border-t py-12 items-start w-full">
-      <div class="not-prose">
-        <div class="bg-slate-100 rounded-xl">
-          <Image
-            src={imgEmergency}
-            class="object-cover rounded-xl"
-            alt="Photo by camilo jimenez on Unsplash"
-          />
-        </div>
-      </div>
-      <div class="mt-6 md:mt-0 md:col-span-2 md:pl-6">
-        <h2 class="mt-0 mb-2">In an emergency?</h2>
-        <p>
-          Call 911 for all urgent concerns. If phone networks are down, or for non-life threatening
-          issues, <a href="/emergency">
-            <span class="absolute inset-x-0 -top-px bottom-0"></span>learn how to get help
-          </a>.
-        </p>
-      </div>
-    </div>
-    <div class="relative md:grid md:grid-cols-3 border-t py-12 items-start w-full">
-      <div class="md:col-span-2 md:pr-6 md:mb-0 mb-6">
-        <h2 class="mt-0 mb-2">Join the net</h2>
-        <p>
-          The net meets weekly at 7pm on Wednesdays.<br />
-          <a href="/nets">
-            <span class="absolute inset-x-0 -top-px bottom-0"></span>Learn more
-          </a>
-        </p>
-      </div>
-      <div class="flex justify-end not-prose">
-        <div class="bg-slate-100 rounded-xl">
-          <Image
-            src={imgNetwork}
-            class="object-cover rounded-xl"
-            alt="Photo by Alina Grubnyak on Unsplash"
-          />
-        </div>
-      </div>
-    </div>
-    <div class="relative md:grid md:grid-cols-3 border-t py-12 items-start w-full">
-      <div class="not-prose">
-        <div class="bg-slate-100 rounded-xl">
-          <Image
-            src={imgGetStarted}
-            class="object-cover rounded-xl"
-            alt="Photo by David Iskander on Unsplash"
-          />
-        </div>
-      </div>
-      <div class="md:col-span-2 md:pl-6 md:md-0 mt-6">
-        <h2 class="mt-0 mb-2">Get started with GMRS</h2>
-        <p>
-          Just hearing about GMRS? <a href="/gmrs">
-            <span class="absolute inset-x-0 -top-px bottom-0"></span>
-            Learn how to get a license and what gear to buy here
-          </a>.
-        </p>
-      </div>
-    </div>
+
+    <Card
+      title="In an emergency?"
+      image={imgEmergency}
+      imageAlt="Photo by camilo jimenez on Unsplash"
+    >
+      Call 911 for all urgent concerns. If phone networks are down, or for non-life threatening
+      issues, <a href="/emergency">
+        <span class="absolute inset-x-0 -top-px bottom-0"></span>learn how to get help
+      </a>.
+    </Card>
+
+    <Card
+      reverse
+      title="Join the net"
+      image={imgNetwork}
+      imageAlt="Photo by Alina Grubnyak on Unsplash"
+    >
+      The net meets weekly at 7pm on Wednesdays. Test your equipment and connect with other members.<br
+      />
+      <a href="/nets">
+        <span class="absolute inset-x-0 -top-px bottom-0"></span>Learn more
+      </a>
+    </Card>
+
+    <Card
+      title="Get started with GMRS"
+      image={imgGetStarted}
+      imageAlt="Photo by David Iskander on Unsplash"
+    >
+      Just hearing about GMRS? <a href="/gmrs">
+        <span class="absolute inset-x-0 -top-px bottom-0"></span>
+        Learn how to get a license and what gear to buy here
+      </a>.
+    </Card>
   </div>
 </Layout>
