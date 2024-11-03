@@ -14,6 +14,9 @@ jobs:
   deploy_website:
     runs-on: ubuntu-latest
     steps:
+      - name: Verify environment
+        run: |
+          echo "Environment variable GOOGLE_API_KEY: $GOOGLE_API_KEY"
       - name: Setup AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
