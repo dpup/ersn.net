@@ -1,0 +1,364 @@
+{
+  "channels": [
+    {
+      "channel": "032",
+      "name": "15GROVE",
+      "frequency": "462.5500",
+      "duplex": "+",
+      "offset": 5.0,
+      "tone": "Tone",
+      "community": "Groveland"
+    },
+    {
+      "channel": "033",
+      "name": "16CEDAR",
+      "frequency": "462.5750",
+      "duplex": "+",
+      "offset": 5.0,
+      "tone": "Tone",
+      "community": "Cedar Ridge"
+    },
+    {
+      "channel": "034",
+      "name": "REPTR3",
+      "frequency": "462.6000",
+      "duplex": "+",
+      "offset": 5.0,
+      "tone": "",
+      "community": ""
+    },
+    {
+      "channel": "035",
+      "name": "REPTR4",
+      "frequency": "462.6250",
+      "duplex": "+",
+      "offset": 5.0,
+      "tone": "",
+      "community": ""
+    },
+    {
+      "channel": "036",
+      "name": "REPTR5",
+      "frequency": "462.6500",
+      "duplex": "+",
+      "offset": 5.0,
+      "tone": "",
+      "community": ""
+    },
+    {
+      "channel": "037",
+      "name": "20-13",
+      "frequency": "462.6750",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "Tone",
+      "community": "ERSN Simplex"
+    },
+    {
+      "channel": "038",
+      "name": "20-13R",
+      "frequency": "462.6750",
+      "duplex": "+",
+      "offset": 5.0,
+      "tone": "Tone",
+      "community": "ERSN Summit Repeater"
+    },
+    {
+      "channel": "039",
+      "name": "20-13RD",
+      "frequency": "462.6750",
+      "duplex": "+",
+      "offset": 5.0,
+      "tone": "TSQL",
+      "community": "ERSN Summit w/tone decode"
+    },
+    {
+      "channel": "040",
+      "name": "20-22R",
+      "frequency": "462.6750",
+      "duplex": "+",
+      "offset": 5.0,
+      "tone": "Tone",
+      "community": "(Future)"
+    },
+    {
+      "channel": "041",
+      "name": "20-27R",
+      "frequency": "462.6750",
+      "duplex": "+",
+      "offset": 5.0,
+      "tone": "Tone",
+      "community": "ERSN Murphys"
+    },
+    {
+      "channel": "042",
+      "name": "20-REV",
+      "frequency": "467.6750",
+      "duplex": "-",
+      "offset": 5.0,
+      "tone": "",
+      "community": "Reverse 20R"
+    },
+    {
+      "channel": "043",
+      "name": "21COLUM",
+      "frequency": "462.7000",
+      "duplex": "+",
+      "offset": 5.0,
+      "tone": "Tone",
+      "community": "Columbia"
+    },
+    {
+      "channel": "044",
+      "name": "22DUCKW",
+      "frequency": "462.7250",
+      "duplex": "+",
+      "offset": 5.0,
+      "tone": "Tone",
+      "community": "Tuolumne Duckwall Peak"
+    },
+    {
+      "channel": "046",
+      "name": "CARS",
+      "frequency": "145.1700",
+      "duplex": "-",
+      "offset": 0.6,
+      "tone": "Tone",
+      "community": "Calaveras Amateur Fowler Peak"
+    },
+    {
+      "channel": "047",
+      "name": "SUMMIT",
+      "frequency": "441.8750",
+      "duplex": "+",
+      "offset": 5.0,
+      "tone": "Tone",
+      "community": "Calaveras Amateur Summit"
+    },
+    {
+      "channel": "048",
+      "name": "CALFIR",
+      "frequency": "151.1750",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "TCU Fire Dispatch"
+    },
+    {
+      "channel": "049",
+      "name": "CALCMD",
+      "frequency": "151.6625",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "Calaveras Fire Command"
+    },
+    {
+      "channel": "050",
+      "name": "CALTAC",
+      "frequency": "153.8150",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "Fire Tactical"
+    },
+    {
+      "channel": "051",
+      "name": "CCSAR-D",
+      "frequency": "155.5200",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "Claveras SAR"
+    },
+    {
+      "channel": "052",
+      "name": "SO BLUE",
+      "frequency": "151.0100",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "Cal Sheriff Dispatch"
+    },
+    {
+      "channel": "053",
+      "name": "SO FOWL",
+      "frequency": "151.0400",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "Cal Sheriff Dispatch"
+    },
+    {
+      "channel": "054",
+      "name": "CC ROAD",
+      "frequency": "151.0250",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "Calaveras Roads"
+    },
+    {
+      "channel": "055",
+      "name": "CALCM5",
+      "frequency": "151.6625",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "Cal Fire Command Tone 5"
+    },
+    {
+      "channel": "056",
+      "name": "CDF AG1",
+      "frequency": "151.2200",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "CDF Air/Ground"
+    },
+    {
+      "channel": "057",
+      "name": "CAL TAC",
+      "frequency": "153.8150",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "Fire Tactical"
+    },
+    {
+      "channel": "058",
+      "name": "TAC 2",
+      "frequency": "151.1600",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "Fire Tactical"
+    },
+    {
+      "channel": "059",
+      "name": "TAC 5",
+      "frequency": "151.2500",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "Fire Tactical"
+    },
+    {
+      "channel": "060",
+      "name": "TAC 8",
+      "frequency": "151.3700",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "Fire Tactical"
+    },
+    {
+      "channel": "061",
+      "name": "NIFC T2",
+      "frequency": "168.2000",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "Fire Tactical"
+    },
+    {
+      "channel": "062",
+      "name": "R5A/G41",
+      "frequency": "167.4750",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "Fire Tactical"
+    },
+    {
+      "channel": "063",
+      "name": "VFIRE22",
+      "frequency": "154.2650",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "Fire Tactical"
+    },
+    {
+      "channel": "064",
+      "name": "VFIRE23",
+      "frequency": "154.2950",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "Fire Tactical"
+    },
+    {
+      "channel": "065",
+      "name": "VFIRE26",
+      "frequency": "154.3025",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "Fire Tactical"
+    },
+    {
+      "channel": "066",
+      "name": "TLUCM3",
+      "frequency": "151.1300",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "Tuolumne Fire Command"
+    },
+    {
+      "channel": "067",
+      "name": "CM2T8",
+      "frequency": "151.2650",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "Fire Command 2"
+    },
+    {
+      "channel": "068",
+      "name": "AMB T1",
+      "frequency": "462.9500",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "Ambulance"
+    },
+    {
+      "channel": "069",
+      "name": "AMB T7",
+      "frequency": "462.9500",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "Ambulance"
+    },
+    {
+      "channel": "070",
+      "name": "AMB T8",
+      "frequency": "462.9500",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "Ambulance"
+    },
+    {
+      "channel": "071",
+      "name": "STFT8",
+      "frequency": "170.5000",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "STF"
+    },
+    {
+      "channel": "072",
+      "name": "YNP FIR",
+      "frequency": "172.7750",
+      "duplex": "off",
+      "offset": 0.0,
+      "tone": "",
+      "community": "Yosemite"
+    }
+  ]
+}

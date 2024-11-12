@@ -1,0 +1,174 @@
+---
+import Layout from '@layouts/Layout.astro';
+import { channels } from './channels.json';
+const frontmatter = {
+  title: 'ERSN Channel List',
+  description: 'A complete list of ERSN channels as well as for other local agencies and groups.',
+};
+---
+
+<Layout frontmatter={frontmatter}>
+  <h1>Radio Channels</h1>
+
+  <div class="mt-8 p-4 bg-blue-50 rounded-lg">
+    <p class="text-sm text-blue-700">
+      These channels are based on Ken's programing of a UV-5G radio. For example, a keypad entry of
+      "038" will tune the radio to our Summit Repeater Channel. "041" for the Murphys Repeater.
+    </p>
+  </div>
+
+  <div class="shadow-md rounded-lg hidden lg:block">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Channel</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Community</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Frequency</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Duplex</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Offset</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mode</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        {
+          channels.map((channel) => (
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-xs font-medium text-gray-900">
+                {channel.channel}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">{channel.name}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">{channel.community}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">{channel.frequency}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">{channel.duplex}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">
+                {channel.offset || ''}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">{channel.tone}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="lg:hidden">
+    {
+      channels.map((channel) => (
+        <div class="p-4 border border-gray-200 rounded-lg mb-4">
+          <h2 class="text-lg font-medium text-gray-900 m-0 mb-3">
+            {channel.channel} - {channel.name}
+          </h2>
+          <div class="grid grid-cols-[150px_auto] text-sm [&_div]:pb-2">
+            <div class="text-gray-500">Community:</div>
+            <div>{channel.community || <>&nbsp;</>}</div>
+            <div class="text-gray-500">Frequency:</div>
+            <div>{channel.frequency || <>&nbsp;</>}</div>
+            <div class="text-gray-500">Duplex:</div>
+            <div>{channel.duplex || <>&nbsp;</>}</div>
+            <div class="text-gray-500">Offset:</div>
+            <div>{channel.offset || <>&nbsp;</>}</div>
+            <div class="text-gray-500">Mode:</div>
+            <div>{(channel.tone && `Request ${channel.tone}`) || <>&nbsp;</>}</div>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <div>
+    <h2>Understanding the Frequencies</h2>
+
+    <p>
+      The channels in this list operate across several different radio frequency bands, each serving
+      specific purposes:
+    </p>
+
+    <ul>
+      <li>
+        <strong>GMRS (462-467 MHz)</strong>: General Mobile Radio Service channels. These require an
+        FCC license and are how ERSN communicates. For channels with a mode of Tone or TSQL listed,
+        you will need to request access to the tone from the repeater owner. Please email <a
+          href="mailto:ersnnets@gmail.com">ersnnets@gmail.com</a
+        > for access to the ERSN repeaters.
+      </li>
+
+      <li>
+        <strong>Amateur Radio (144-148 MHz and 420-450 MHz)</strong>: Also known as "ham radio"
+        bands. Channels CARS (145.170) and SUMMIT (441.875) fall in these ranges and require an
+        amateur radio license to transmit.
+      </li>
+
+      <li>
+        <strong>Public Safety (151-155 MHz)</strong>: Used by fire, police, and emergency services.
+        These frequencies are for monitoring only - transmitting on these frequencies is restricted
+        to authorized agencies. Note that the VHF band they operate in is shared with other services
+        like MURS and Business Band frequencies, which operate on different specific frequencies
+        within this range.
+      </li>
+
+      <li>
+        <strong>Federal (167-172 MHz)</strong>: Used by federal agencies including forest service
+        and park service. These frequencies are also for monitoring only.
+      </li>
+    </ul>
+
+    <h2>About Offsets and Tones:</h2>
+    <ul>
+      <li>
+        <strong>Duplex Offset</strong>: When you see "+ 5.0" or similar, this means the radio
+        transmits 5 MHz higher than the receive frequency. This is common for repeater systems.
+      </li>
+
+      <li>
+        <strong>Tone</strong>: When "Tone" is listed, it means the channel requires a specific tone
+        to access a repeater. Think of it like a password that helps prevent interference between
+        different groups using the same frequency.
+      </li>
+    </ul>
+
+    <p class="mt-4 text-sm text-red-600">
+      Remember: While anyone can listen to these frequencies, transmitting requires appropriate
+      licensing and authorization depending on the service. Always ensure you have proper licensing
+      before transmitting.
+    </p>
+
+    <h2>Understanding Tone vs TSQL</h2>
+
+    <h3>Tone Mode (CTCSS Encode)</h3>
+    <ul>
+      <li>
+        When a channel is set to "Tone", your radio only adds a tone when <strong
+          >transmitting</strong
+        >
+      </li>
+      <li>
+        Your radio will receive all transmissions on that frequency, whether they have a tone or not
+      </li>
+      <li>
+        This is most commonly used for accessing repeaters, which require a specific tone to
+        activate
+      </li>
+      <li>
+        Think of it like adding a "key" when you transmit, but leaving your "door" open to all
+        incoming signals
+      </li>
+    </ul>
+
+    <h3>TSQL Mode (CTCSS Encode/Decode)</h3>
+    <ul>
+      <li>TSQL stands for "Tone Squelch" and works in both directions</li>
+      <li>Your radio adds the tone when <strong>transmitting</strong> (like regular Tone mode)</li>
+      <li>
+        Your radio only lets you <strong>hear</strong> transmissions that include the matching tone
+      </li>
+      <li>
+        This filters out other users who might be using the same frequency with different tones
+      </li>
+      <li>
+        Think of it like having a matching key and lock - you need the right tone to both transmit
+        and receive
+      </li>
+    </ul>
+  </div>
+</Layout>
