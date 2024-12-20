@@ -1,7 +1,7 @@
 ---
 import '@styles/base.css';
 import { Image } from 'astro:assets';
-import imgLogo from '@img/ersn-logo.png';
+import imgLogo from '@img/ersn-logo2.png';
 
 const { frontmatter } = Astro.props;
 
@@ -65,8 +65,9 @@ headerLinks.forEach(
                 <a
                   href={link.href}
                   class:list={[
-                    'text-stone-700 hover:text-stone-900 font-medium px-2 py-1 capitalize transition-colors text-sm md:text-base',
-                    { 'text-red-800': link.selected },
+                    ' hover:text-stone-900 px-2 py-1 capitalize transition-colors text-sm md:text-base',
+                    { 'text-stone-700 font-normal ': !link.selected },
+                    { 'text-red-800 font-medium': link.selected },
                   ]}
                 >
                   {link.title}
@@ -102,7 +103,7 @@ headerLinks.forEach(
             <h4 class="font-serif text-lg text-stone-800 mb-4">Contact Information</h4>
             <address class="text-stone-600 not-italic">
               <p>Emergency: 911</p>
-              <p>Net Control: 20RP / 462.6750 MHz</p>
+              <p>Net Control: 20RP / 462.675 MHz</p>
               <p>
                 Email: <a href="mailto:ersnnets@gmail.com" class="hover:text-stone-800"
                   >ersnnets@gmail.com</a
