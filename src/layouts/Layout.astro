@@ -2,6 +2,7 @@
 import '@styles/base.css';
 import { Image } from 'astro:assets';
 import imgLogo from '@img/ersn-logo2.png';
+import PostHog from '@components/PostHog.astro';
 
 const { frontmatter } = Astro.props;
 
@@ -47,6 +48,7 @@ headerLinks.forEach(
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <PostHog />
   </head>
   <body class="bg-stone-100 text-stone-600">
     <nav class="bg-stone-50 border-b border-stone-300 mb-4 md:mb-0">
