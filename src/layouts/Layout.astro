@@ -5,19 +5,22 @@ import imgLogo from '@img/ersn-logo.png';
 
 const { frontmatter } = Astro.props;
 
-const sections = [
-  { title: 'Welcome', href: '/', selected: false },
-  //{ title: 'Members', href: '/members', selected: false },
-  { title: 'Nets', href: '/nets', selected: false },
-  { title: 'Channels', href: '/channels', selected: false },
-  { title: 'Repeaters', href: '/repeaters', selected: false },
-  { title: 'GMRS Guide', href: '/gmrs', selected: false },
-  { title: 'Important Contacts', href: '/emergency', selected: false },
-  { title: 'About ERSN', href: '/about', selected: false },
-  { title: 'Contact ERSN', href: 'mailto:ersnnets@gmail.com', selected: false },
+const headerLinks = [
+  { title: 'Home', href: '/', selected: false },
+  { title: 'Net Info', href: '/nets', selected: false },
+  { title: 'About', href: '/about', selected: false },
+  { title: 'Contact', href: 'mailto:ersnnets@gmail.com', selected: false },
 ];
 
-sections.forEach(
+const footerLinks = [
+  { title: 'Channels', href: '/channels' },
+  { title: 'Net Info', href: '/nets', selected: false },
+  { title: 'GMRS Guide', href: '/gmrs' },
+  { title: 'Important Contacts', href: '/emergency' },
+  { title: 'About ERSN', href: '/about', selected: false },
+];
+
+headerLinks.forEach(
   (section) => (section.selected = section.href.substring(1) === Astro.url.pathname.split('/')[1]),
 );
 ---
@@ -45,51 +48,84 @@ sections.forEach(
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="sitemap" href="/sitemap-index.xml" />
   </head>
-  <body class="bg-slate-200 text-slate-950">
-    <div class="md:grid md:grid-cols-[250px_auto] max-w-7xl mx-auto bg-slate-50 drop-shadow-lg">
-      <div
-        id="nav"
-        class="flex flex-col sm:flex-row md:flex-col md:sticky md:top-0 md:max-w-[250px] md:h-screen p-4 items-stretch border"
-      >
-        <div class="max-w-[150px] sm:mr-12 md:mr-0 sm:mx-0 sm:mb-6">
-          <Image
-            src={imgLogo}
-            alt="ERSN Logo"
-            class="not-prose drop-shadow-md w-[100px] md:w-[150px] mb-6 sm:mb-0"
-          />
-        </div>
-        <div class="flex flex-col space-y-2">
-          {
-            sections.map((section) => (
-              <a
-                href={section.href}
-                class:list={[
-                  'antialiased font-sans text-sm leading-normal relative w-full py-1 capitalize transition-colors hover:text-slate-950 text-slate-600',
-                  { 'text-slate-950 font-medium': section.selected },
-                ]}
-              >
-                {section.title}
-              </a>
-            ))
-          }
-        </div>
-      </div>
-      <div id="content" class="border">
-        <div
-          class="mx-auto pt-12 p-6 prose prose-slate hover:prose-a:text-red-700 prose-img:rounded-xl prose-img:border-4 prose-img:border-slate-300 prose-code:font-normal !max-w-none"
-        >
-          <slot />
-        </div>
-        <div
-          id="footer"
-          class="mx-auto pt-24 pb-6 prose prose-xs hover:prose-a:text-red-700 text-xs prose-p:text-slate-600"
-        >
-          <p class="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-2">
-            <span>Copyright ©{new Date().getFullYear()} ERSN.</span>
-            <span>Hosted by <a href="https://reflexive.sh">Reflexive Labs</a>.</span>
-          </p>
+  <body class="bg-stone-100 text-stone-600">
+    <nav class="bg-stone-50 border-b border-stone-300">
+      <div class="w-[1024px] mx-auto px-8 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <Image src={imgLogo} alt="ERSN Logo" class="not-prose w-[64px] mr-6" />
+            <div>
+              <h1 class="text-2xl font-serif text-stone-800">Ebbetts' Radio Safety Net</h1>
+              <p class="text-sm text-stone-600">Volunteer Emergency Communications Network</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-8">
+            {
+              headerLinks.map((link) => (
+                <a
+                  href={link.href}
+                  class:list={[
+                    'text-stone-700 hover:text-stone-900 font-medium px-2 py-1 capitalize transition-colors ',
+                    { 'text-red-800': link.selected },
+                  ]}
+                >
+                  {link.title}
+                </a>
+              ))
+            }
+          </div>
         </div>
       </div>
+    </nav>
+    <div class="max-w-5xl mx-auto px-4">
+      <slot />
     </div>
+
+    <footer class="bg-stone-200 border-t border-stone-300">
+      <div class="max-w-5xl mx-auto px-4 py-8">
+        <div class="grid md:grid-cols-3 gap-8">
+          <div>
+            <h4 class="font-serif text-lg text-stone-800 mb-4">Resources</h4>
+            <ul class="text-stone-600">
+              {
+                footerLinks.map((link) => (
+                  <li>
+                    <a href={link.href} class="hover:text-stone-800">
+                      {link.title}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-serif text-lg text-stone-800 mb-4">Contact Information</h4>
+            <address class="text-stone-600 not-italic">
+              <p>Emergency: 911</p>
+              <p>Net Control: 20RP / 462.6750 MHz</p>
+              <p>
+                Email: <a href="mailto:ersnnets@gmail.com" class="hover:text-stone-800"
+                  >ersnnets@gmail.com</a
+                >
+              </p>
+            </address>
+          </div>
+
+          <div>
+            <h4 class="font-serif text-lg text-stone-800 mb-4">About ERSN</h4>
+            <p class="text-stone-600">
+              A volunteer organization dedicated to providing emergency communications since 2024.
+            </p>
+          </div>
+        </div>
+        <div class="mt-8 pt-8 border-t border-stone-300 text-center text-stone-600 text-sm">
+          <span>Copyright ©{new Date().getFullYear()} ERSN.</span>
+          <span
+            >Hosted by <a href="https://reflexive.sh" class="hover:text-stone-800">Reflexive Labs</a
+            >.</span
+          >
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

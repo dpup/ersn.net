@@ -1,4 +1,5 @@
 ---
+import Content from '@components/Content.astro';
 import Layout from '@layouts/Layout.astro';
 
 const frontmatter = {
@@ -9,162 +10,165 @@ const frontmatter = {
 ---
 
 <Layout frontmatter={frontmatter}>
-  <h1>GMRS Radio Guide</h1>
+  <Content>
+    <h1>GMRS Radio Guide</h1>
 
-  <h2>Introduction to Radios</h2>
-  <p>
-    General Mobile Radio Service (GMRS) radios are a popular choice for personal and family
-    communication. They’re particularly suited for outdoor activities, community events, and
-    emergency preparedness due to their balance of power, range, and simplicity. GMRS radios
-    typically operate in the UHF (Ultra High Frequency) band around 462-467 MHz, which provides a
-    good combination of range and signal clarity in environments where obstacles like buildings or
-    dense foliage are present.
-  </p>
+    <h2>Introduction to Radios</h2>
+    <p>
+      General Mobile Radio Service (GMRS) radios are a popular choice for personal and family
+      communication. They’re particularly suited for outdoor activities, community events, and
+      emergency preparedness due to their balance of power, range, and simplicity. GMRS radios
+      typically operate in the UHF (Ultra High Frequency) band around 462-467 MHz, which provides a
+      good combination of range and signal clarity in environments where obstacles like buildings or
+      dense foliage are present.
+    </p>
 
-  <p><strong>Comparing GMRS to Other Communication Options:</strong></p>
-  <ul>
-    <li>
-      <strong>GMRS vs. Family Radio Service (FRS):</strong> FRS radios are similar to GMRS but operate
-      at much lower power (up to 2 watts) and are limited to shorter ranges, typically up to 1-2 miles
-      depending on terrain. GMRS, by contrast, allows up to 50 watts of power on certain channels and
-      can reach distances of 5 to 25 miles under optimal conditions.
-    </li>
-    <li>
-      <strong>GMRS vs. Ham Radio:</strong> Ham (or Amateur) radios are more versatile and operate across
-      a wider range of frequencies, including HF, VHF, and UHF bands. Ham radios can reach significantly
-      greater distances, even globally, when atmospheric conditions allow. However, they require a more
-      advanced license with an exam. GMRS is simpler to use, with fewer licensing requirements, making
-      it more accessible for family and personal use over regional distances.
-    </li>
-    <li>
-      <strong>GMRS vs. CB Radio:</strong> Citizens Band (CB) radio operates in the 27 MHz range with
-      limited power, resulting in shorter range and susceptibility to interference. CB radios are often
-      used in vehicles for communication among drivers but lack the range and clarity of GMRS, particularly
-      in urban or wooded areas.
-    </li>
-  </ul>
+    <p><strong>Comparing GMRS to Other Communication Options:</strong></p>
+    <ul>
+      <li>
+        <strong>GMRS vs. Family Radio Service (FRS):</strong> FRS radios are similar to GMRS but operate
+        at much lower power (up to 2 watts) and are limited to shorter ranges, typically up to 1-2 miles
+        depending on terrain. GMRS, by contrast, allows up to 50 watts of power on certain channels and
+        can reach distances of 5 to 25 miles under optimal conditions.
+      </li>
+      <li>
+        <strong>GMRS vs. Ham Radio:</strong> Ham (or Amateur) radios are more versatile and operate across
+        a wider range of frequencies, including HF, VHF, and UHF bands. Ham radios can reach significantly
+        greater distances, even globally, when atmospheric conditions allow. However, they require a
+        more advanced license with an exam. GMRS is simpler to use, with fewer licensing requirements,
+        making it more accessible for family and personal use over regional distances.
+      </li>
+      <li>
+        <strong>GMRS vs. CB Radio:</strong> Citizens Band (CB) radio operates in the 27 MHz range with
+        limited power, resulting in shorter range and susceptibility to interference. CB radios are often
+        used in vehicles for communication among drivers but lack the range and clarity of GMRS, particularly
+        in urban or wooded areas.
+      </li>
+    </ul>
 
-  <p>
-    With GMRS, users can access specific repeater channels to extend their communication range. In
-    areas with available repeaters, like channel 20/repeater 6 for the ERSN net, GMRS can reliably
-    cover distances of 20 miles or more, depending on terrain and repeater availability. For
-    straightforward, mid-range communication, GMRS strikes a good balance between ease of use and
-    range, making it a preferred choice for many community-based networks.
-  </p>
+    <p>
+      With GMRS, users can access specific repeater channels to extend their communication range. In
+      areas with available repeaters, like channel 20/repeater 6 for the ERSN net, GMRS can reliably
+      cover distances of 20 miles or more, depending on terrain and repeater availability. For
+      straightforward, mid-range communication, GMRS strikes a good balance between ease of use and
+      range, making it a preferred choice for many community-based networks.
+    </p>
 
-  <h2>How to Get a License</h2>
-  <p>
-    To legally operate a GMRS radio, the FCC requires a license, which is valid for 10 years and
-    covers your immediate family. The application process is straightforward and can be completed
-    online. Follow these steps:
-  </p>
-  <ul>
-    <li>
-      Visit the <a href="https://www.fcc.gov/wireless/universal-licensing-system" target="_blank"
-        >FCC’s Universal Licensing System (ULS)</a
-      >.
-    </li>
-    <li>
-      Register for an FCC Registration Number (FRN) if you don’t have one. You can do this by
-      selecting “Register” on the ULS page and following the prompts.
-    </li>
-    <li>Once registered, log in to the ULS system using your FRN and password.</li>
-    <li>
-      Select “Apply for a New License” and choose “ZA - General Mobile Radio (GMRS)” from the list
-      of license types.
-    </li>
-    <li>
-      Complete the application form, ensuring all personal information and payment details are
-      accurate.
-    </li>
-    <li>
-      Submit the application and pay the $35 fee, which is required for a 10-year GMRS license.
-    </li>
-    <li>
-      After submission, you’ll receive a confirmation email from the FCC. Once processed, your
-      license will be available in your ULS account, and you can start legally operating your GMRS
-      radio.
-    </li>
-  </ul>
+    <h2>How to Get a License</h2>
+    <p>
+      To legally operate a GMRS radio, the FCC requires a license, which is valid for 10 years and
+      covers your immediate family. The application process is straightforward and can be completed
+      online. Follow these steps:
+    </p>
+    <ul>
+      <li>
+        Visit the <a href="https://www.fcc.gov/wireless/universal-licensing-system" target="_blank"
+          >FCC’s Universal Licensing System (ULS)</a
+        >.
+      </li>
+      <li>
+        Register for an FCC Registration Number (FRN) if you don’t have one. You can do this by
+        selecting “Register” on the ULS page and following the prompts.
+      </li>
+      <li>Once registered, log in to the ULS system using your FRN and password.</li>
+      <li>
+        Select “Apply for a New License” and choose “ZA - General Mobile Radio (GMRS)” from the list
+        of license types.
+      </li>
+      <li>
+        Complete the application form, ensuring all personal information and payment details are
+        accurate.
+      </li>
+      <li>
+        Submit the application and pay the $35 fee, which is required for a 10-year GMRS license.
+      </li>
+      <li>
+        After submission, you’ll receive a confirmation email from the FCC. Once processed, your
+        license will be available in your ULS account, and you can start legally operating your GMRS
+        radio.
+      </li>
+    </ul>
 
-  <h2>Setting Up for Net Access</h2>
-  <p>To join the local GMRS network, follow these steps:</p>
-  <ul>
-    <li>Tune your radio to <strong>channel 20 / repeater 6</strong>.</li>
-    <li>
-      Contact <a href="mailto:ersnnets@gmail.com">ersnnets@gmail.com</a> to request the PL (CTCSS) codes
-      necessary for network access.
-    </li>
-    <li>
-      Once configured, join the weekly net or try performing a radio check by saying your callsign.
-    </li>
-  </ul>
+    <h2>Setting Up for Net Access</h2>
+    <p>To join the local GMRS network, follow these steps:</p>
+    <ul>
+      <li>Tune your radio to <strong>channel 20 / repeater 6</strong>.</li>
+      <li>
+        Contact <a href="mailto:ersnnets@gmail.com">ersnnets@gmail.com</a> to request the PL (CTCSS)
+        codes necessary for network access.
+      </li>
+      <li>
+        Once configured, join the weekly net or try performing a radio check by saying your
+        callsign.
+      </li>
+    </ul>
 
-  <h2>Buying Guide</h2>
+    <h2>Buying Guide</h2>
 
-  <p>
-    Choosing the right GMRS radio depends on your intended use, environment, and budget. Here are
-    key factors to consider when purchasing a GMRS radio:
-  </p>
+    <p>
+      Choosing the right GMRS radio depends on your intended use, environment, and budget. Here are
+      key factors to consider when purchasing a GMRS radio:
+    </p>
 
-  <ul>
-    <li>
-      <strong>Range and Power:</strong> Look for radios with higher wattage if you need extended range,
-      especially in open or mountainous areas. GMRS radios can legally go up to 50 watts, but most handheld
-      units are in the 1-5 watt range, which typically covers a few miles under normal conditions. Look
-      for radios with repeater capability if you plan to join the ERSN net.
-    </li>
+    <ul>
+      <li>
+        <strong>Range and Power:</strong> Look for radios with higher wattage if you need extended range,
+        especially in open or mountainous areas. GMRS radios can legally go up to 50 watts, but most
+        handheld units are in the 1-5 watt range, which typically covers a few miles under normal conditions.
+        Look for radios with repeater capability if you plan to join the ERSN net.
+      </li>
 
-    <li>
-      <strong>Durability and Weather Resistance:</strong> For outdoor or rugged use, prioritize radios
-      with waterproof or dustproof ratings (IPX5 or higher) to ensure longevity in harsh conditions.
-      Models designed for outdoor enthusiasts often come with durable casings to withstand impacts and
-      rough handling.
-    </li>
+      <li>
+        <strong>Durability and Weather Resistance:</strong> For outdoor or rugged use, prioritize radios
+        with waterproof or dustproof ratings (IPX5 or higher) to ensure longevity in harsh conditions.
+        Models designed for outdoor enthusiasts often come with durable casings to withstand impacts
+        and rough handling.
+      </li>
 
-    <li>
-      <strong>Battery Life:</strong> Check for long-lasting battery life or dual-power options that allow
-      both rechargeable and disposable batteries. Radios with USB charging ports can add convenience
-      for recharging on the go.
-    </li>
+      <li>
+        <strong>Battery Life:</strong> Check for long-lasting battery life or dual-power options that
+        allow both rechargeable and disposable batteries. Radios with USB charging ports can add convenience
+        for recharging on the go.
+      </li>
 
-    <li>
-      <strong>Ease of Use and Display:</strong> Radios with clear displays and intuitive controls make
-      it easier to tune channels and adjust settings.
-    </li>
+      <li>
+        <strong>Ease of Use and Display:</strong> Radios with clear displays and intuitive controls make
+        it easier to tune channels and adjust settings.
+      </li>
 
-    <li>
-      <strong>Additional Features:</strong> Some radios include NOAA weather alerts and SOS functionality.
-    </li>
+      <li>
+        <strong>Additional Features:</strong> Some radios include NOAA weather alerts and SOS functionality.
+      </li>
 
-    <li>
-      <strong>Cost:</strong> GMRS radios vary widely in price. Entry-level handheld models start around
-      $30, while high-powered mobile units or models with extensive features can exceed $200. Choose
-      a model that balances your needs and budget.
-    </li>
-  </ul>
+      <li>
+        <strong>Cost:</strong> GMRS radios vary widely in price. Entry-level handheld models start around
+        $30, while high-powered mobile units or models with extensive features can exceed $200. Choose
+        a model that balances your needs and budget.
+      </li>
+    </ul>
 
-  <p>
-    Popular brands include Motorola, Midland, and BTech, each offering models that cater to
-    different needs from casual family use to advanced outdoor applications. Be sure to research
-    specific models and read reviews to find a radio that fits your requirements.
-  </p>
+    <p>
+      Popular brands include Motorola, Midland, and BTech, each offering models that cater to
+      different needs from casual family use to advanced outdoor applications. Be sure to research
+      specific models and read reviews to find a radio that fits your requirements.
+    </p>
 
-  <h3>ERSN Recommendations</h3>
-  <p>
-    Many ERSN members have the <a
-      href="https://www.amazon.com/dp/B08T9BCXVB?th=1&linkCode=ll1&tag=review064a-20&linkId=00bfade1fe21b6a30f4d4661ae864b27&language=en_US&ref_=as_li_ss_tl"
-      target="_blank">Baofeng UV-5G</a
-    >. It is cheap, programmable via CHIRP, and can scan VHF public frequencies.
-  </p>
-  <p>
-    An alternative is the <a
-      href="https://www.amazon.com/BAOFENG-Weather-Receiver-Rechargeable-Headsets/dp/B0B3DRG9GC/ref=pd_ci_mcx_di_int_pref_dp_d_d_sccl_3_2/139-2254684-2452150?content-id=amzn1.sym.9c9ed4e5-2a18-4e6a-abb7-6146d9caf259"
-      target="_blank"
-    >
-      Baofeng GM-15 Pro</a
-    >. It is a mid-range GMRS radio that offers a good balance of features and affordability. It’s a
-    popular choice for emergency preparedness due to its rugged design, long battery life, and
-    repeater compatibility.
-  </p>
+    <h3>ERSN Recommendations</h3>
+    <p>
+      Many ERSN members have the <a
+        href="https://www.amazon.com/dp/B08T9BCXVB?th=1&linkCode=ll1&tag=review064a-20&linkId=00bfade1fe21b6a30f4d4661ae864b27&language=en_US&ref_=as_li_ss_tl"
+        target="_blank">Baofeng UV-5G</a
+      >. It is cheap, programmable via CHIRP, and can scan VHF public frequencies.
+    </p>
+    <p>
+      An alternative is the <a
+        href="https://www.amazon.com/BAOFENG-Weather-Receiver-Rechargeable-Headsets/dp/B0B3DRG9GC/ref=pd_ci_mcx_di_int_pref_dp_d_d_sccl_3_2/139-2254684-2452150?content-id=amzn1.sym.9c9ed4e5-2a18-4e6a-abb7-6146d9caf259"
+        target="_blank"
+      >
+        Baofeng GM-15 Pro</a
+      >. It is a mid-range GMRS radio that offers a good balance of features and affordability. It’s
+      a popular choice for emergency preparedness due to its rugged design, long battery life, and
+      repeater compatibility.
+    </p>
+  </Content>
 </Layout>
