@@ -1,6 +1,6 @@
 # Ebbetts' Radio Safety Net
 
-ERSN provides emergency communications coverage for the Arnold and Murphy's region in California. This repository contains our community website, hosted at ersn.net.
+ERSN provides emergency communications coverage for the Arnold and Murphy's region in California. This repository contains our community website, hosted at [ersn.net](https://ersn.net).
 
 ## 🚀 Quick Start
 
