@@ -39,8 +39,8 @@ importers:
         specifier: ^1.1.5
         version: 1.1.5
       lucide:
-        specifier: ^0.473.0
-        version: 0.473.0
+        specifier: ^0.474.0
+        version: 0.474.0
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -1651,8 +1651,8 @@ packages:
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
-  lucide@0.473.0:
-    resolution: {integrity: sha512-UIUNzfoXpYQQKiQO1M0bOOwv1BJt8EYSSFJt2HsVv39nd97lvA5H80Z+pmmeiW0cheUmWNpvh5w4JI0eZypd4Q==}
+  lucide@0.474.0:
+    resolution: {integrity: sha512-2rfORNh9fzhCUKu0ciE48ogR1Zg7hleABLO5MBF06vOb4esTtE8FbfQJiC+wveiNFoeojWKz6zXheUToRR5uIg==}
 
   magic-string@0.30.17:
     resolution: {integrity: sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA==}
@@ -4607,7 +4607,7 @@ snapshots:
     dependencies:
       yallist: 3.1.1
 
-  lucide@0.473.0: {}
+  lucide@0.474.0: {}
 
   magic-string@0.30.17:
     dependencies:
