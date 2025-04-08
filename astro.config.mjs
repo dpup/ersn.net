@@ -1,15 +1,19 @@
 import { defineConfig } from 'astro/config';
-import tailwind from '@astrojs/tailwind';
 import icon from 'astro-icon';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
+
+import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://ersn.net',
   trailingSlash: 'never',
-  integrations: [tailwind({ config: { applyBaseStyles: false } }), icon(), mdx(), sitemap()],
+  integrations: [icon(), mdx(), sitemap()],
   vite: {
+    plugins: [
+      tailwindcss(),
+    ],
     optimizeDeps: {
       exclude: ['sharp'],
     },
