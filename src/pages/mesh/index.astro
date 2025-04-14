@@ -89,7 +89,7 @@ const frontmatter = {
             <strong>Private key</strong>:
             <code
               id="privateKeyPlaceholder"
-              class="cursor-pointer text-blue-600 hover:underline"
+              class="cursor-pointer text-blue-600 hover:underline inline-block max-w-full break-all"
               title="Click to reveal">[Click to reveal]</code
             >
             <script>
@@ -97,7 +97,7 @@ const frontmatter = {
                 // Obfuscated key - simple encoding to minimize scraper pickup, not secure encryption.
                 // btoa('actual-key'.split('').reverse().join(''))
                 const obfuscatedKey =
-                  'PTBUUXFsalZwWlZlMXNrWWt4RU5ZNVdZSWxFUnJ4RVMwRXpNMGdrYXY5eVFuU0VSRVIxVnpRMFZUemxrVg==';
+                  'PUFqOVZpVnk1S2JkTDRYbmFISURrTEg0MTNIZGpvL0N0SkREdTVDdE11SVY=';
 
                 const placeholder = document.getElementById('privateKeyPlaceholder');
                 let keyVisible = false;
@@ -219,7 +219,7 @@ const frontmatter = {
         <strong>MQTT username</strong>:
         <code
           id="mqttUserPlaceholder"
-          class="cursor-pointer text-blue-600 hover:underline"
+          class="cursor-pointer text-blue-600 hover:underline inline-block max-w-full break-all"
           title="Click to reveal">[Click to reveal]</code
         >
       </li>
@@ -227,7 +227,7 @@ const frontmatter = {
         <strong>MQTT password</strong>:
         <code
           id="mqttPassPlaceholder"
-          class="cursor-pointer text-blue-600 hover:underline"
+          class="cursor-pointer text-blue-600 hover:underline inline-block max-w-full break-all"
           title="Click to reveal">[Click to reveal]</code
         >
       </li>
