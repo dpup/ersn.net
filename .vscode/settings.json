@@ -7,5 +7,6 @@
   "editor.formatOnSaveMode": "file",
   "javascript.preferences.quoteStyle": "single",
   "typescript.preferences.quoteStyle": "single",
-  "css.customData": [".vscode/css_custom_data.json"]
+  "css.customData": [".vscode/css_custom_data.json"],
+  "cSpell.words": ["Meshtastic"]
 }

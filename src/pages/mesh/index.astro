@@ -1,0 +1,350 @@
+---
+import Layout from '@layouts/Layout.astro';
+import Content from '@components/Content.astro';
+const frontmatter = {
+  title: 'Meshtastic Working Group',
+  description: 'Information about the subgroup exploring the use of meshtastic within ERSN.',
+};
+---
+
+<Layout frontmatter={frontmatter}>
+  <Content>
+    <h1>Meshtastic Working Group</h1>
+
+    <h2>What is Meshtastic?</h2>
+    <p>
+      <a href="https://meshtastic.org/">Meshtastic</a> is an open-source project that turns inexpensive
+      LoRa radios into a powerful, off-grid mesh communication system. With a Meshtastic device, you
+      can send short text messages and GPS locations to others without the need for cellular or internet
+      access—perfect for emergencies, hiking trips, or rural communities.
+    </p>
+    <p>
+      Meshtastic devices form a mesh network, meaning your messages can hop between radios to reach
+      their destination, even if you're not directly within range. This makes it ideal for
+      decentralized communication in areas with limited infrastructure.
+    </p>
+
+    <hr />
+
+    <h2>Goals of the Working Group</h2>
+
+    <p>The ERSN Meshtastic Working Group exists to:</p>
+
+    <ul>
+      <li><strong>Evaluate Meshtastic as a supplement to our GMRS radio net</strong></li>
+      <li><strong>Explore deployment of a regional mesh network</strong></li>
+      <li><strong>Coordinate channel use and best practices</strong></li>
+      <li><strong>Test bridging strategies for linking isolated clusters</strong></li>
+      <li><strong>Promote community adoption and device onboarding</strong></li>
+    </ul>
+
+    <p>
+      Our long-term vision is a robust, semi-persistent mesh that can serve as a backup
+      communications method that supplements our GMRS net.
+    </p>
+
+    <div class="toc">
+      <h3>Contents</h3>
+      <ul>
+        <li><a href="#getting-started">Getting Started with Meshtastic</a></li>
+        <li><a href="#range">Range and Coverage</a></li>
+        <li><a href="#mqtt">MQTT Bridging</a></li>
+        <li><a href="#get-involved">Get Involved</a></li>
+      </ul>
+    </div>
+
+    <hr />
+
+    <h2 id="getting-started">Getting Started with Meshtastic</h2>
+
+    <p>New to Meshtastic? Here's how to begin:</p>
+
+    <ol>
+      <li>
+        <strong>Buy a device</strong><br />
+        We recommend starting with the <a href="https://shop.lilygo.cc/products/t-echo">
+          LilyGO T-Echo
+        </a> or <a href="https://shop.lilygo.cc/products/lilygo-t-beam">T-Beam</a> boards.
+      </li>
+      <li>
+        <strong>Install the firmware</strong><br />
+        Use the <a href="https://flasher.meshtastic.org/">Meshtastic Flasher</a> to install the latest
+        firmware onto your device.
+      </li>
+      <li>
+        <strong>Download the app</strong><br />
+        Get the <a href="https://meshtastic.org/docs/software/android">Meshtastic app</a> for Android
+        or desktop to configure your device, view messages, and monitor network status.
+      </li>
+      <li>
+        <strong>Configure your device</strong><br />
+        Use the app to set up your device. Make sure to select the correct region (US), most other settings
+        can stay as default at first.
+      </li>
+      <li>
+        <strong>Join the ERSN Channel</strong><br />
+        <ul>
+          <li><strong>Channel name</strong>: <code>ERSN</code></li>
+          <li>
+            <strong>Private key</strong>:
+            <code
+              id="privateKeyPlaceholder"
+              class="cursor-pointer text-blue-600 hover:underline"
+              title="Click to reveal">[Click to reveal]</code
+            >
+            <script>
+              document.addEventListener('DOMContentLoaded', () => {
+                // Obfuscated key - simple encoding to minimize scraper pickup, not secure encryption.
+                // btoa('actual-key'.split('').reverse().join(''))
+                const obfuscatedKey =
+                  'PTBUUXFsalZwWlZlMXNrWWt4RU5ZNVdZSWxFUnJ4RVMwRXpNMGdrYXY5eVFuU0VSRVIxVnpRMFZUemxrVg==';
+
+                const placeholder = document.getElementById('privateKeyPlaceholder');
+                let keyVisible = false;
+
+                const decodeKey = (encoded) => {
+                  try {
+                    return atob(encoded).split('').reverse().join('');
+                  } catch (e) {
+                    console.error('Error decoding key');
+                    return '[Error decoding key]';
+                  }
+                };
+
+                placeholder.addEventListener('click', () => {
+                  if (!keyVisible) {
+                    // Decode and show the key
+                    const decodedKey = decodeKey(obfuscatedKey);
+                    placeholder.textContent = decodedKey;
+                    placeholder.title = 'Click to copy to clipboard';
+                    keyVisible = true;
+                  } else {
+                    // Copy to clipboard when already visible
+                    const textToCopy = placeholder.textContent;
+                    navigator.clipboard
+                      .writeText(textToCopy)
+                      .then(() => {
+                        // Visual feedback for copy success
+                        const originalText = placeholder.textContent;
+                        placeholder.textContent = 'Copied!';
+
+                        // Reset back to the key after a short delay
+                        setTimeout(() => {
+                          placeholder.textContent = originalText;
+                        }, 1000);
+                      })
+                      .catch((err) => {
+                        console.error('Failed to copy: ', err);
+                        // Provide fallback visual feedback
+                        placeholder.textContent += ' (Copy failed)';
+                      });
+                  }
+                });
+
+                // Add a second click handler for hiding the key
+                // Using right-click (contextmenu) to hide
+                placeholder.addEventListener('contextmenu', (e) => {
+                  if (keyVisible) {
+                    e.preventDefault(); // Prevent the context menu
+                    // Hide the key
+                    placeholder.textContent = '[Click to reveal]';
+                    placeholder.title = 'Click to reveal';
+                    keyVisible = false;
+                  }
+                });
+              });
+            </script>
+          </li>
+          <li>
+            <strong>Anyone may join</strong>, but we reserve the right to make the channel key
+            private in the future to protect network integrity.
+          </li>
+        </ul>
+      </li>
+    </ol>
+    <p>
+      Check out Meshtastic's detailed
+      <a href="https://meshtastic.org/docs/getting-started/">Getting Started Guide</a>
+      for more detailed instructions.
+    </p>
+
+    <hr />
+
+    <h2 id="range">Range and Coverage</h2>
+
+    <p>
+      Meshtastic devices leverage LoRa (Long Range) radio technology, which offers impressive
+      coverage compared to other license-free options:
+    </p>
+
+    <ul>
+      <li><strong>Urban areas</strong>: 0.5-1 mile between nodes</li>
+      <li><strong>Suburban areas</strong>: 1-3 miles between nodes</li>
+      <li><strong>Rural/line of sight</strong>: 3-10+ miles between nodes</li>
+      <li><strong>Elevated positions</strong>: 10-20+ miles with good elevation and antennas</li>
+    </ul>
+
+    <p>Factors affecting range include:</p>
+
+    <ul>
+      <li>Terrain and obstacles (hills, buildings, dense trees)</li>
+      <li>Antenna quality and placement (higher is almost always better)</li>
+      <li>Device power settings (can be adjusted in the app)</li>
+      <li>Environmental conditions (rain, humidity, etc.)</li>
+    </ul>
+
+    <p>
+      The mesh architecture means that even with limited individual node range, a network of devices
+      can cover larger areas as messages hop from node to node.
+    </p>
+
+    <hr />
+
+    <h2 id="mqtt">MQTT Bridging</h2>
+
+    <p>
+      MQTT (Message Queuing Telemetry Transport) is a lightweight messaging protocol designed for
+      constrained devices and low-bandwidth, high-latency networks—perfect for IoT applications.
+    </p>
+
+    <p>
+      <strong>MQTT bridging</strong> allows separated Meshtastic mesh networks to connect over the internet.
+      For example, two mesh networks in different valleys that can't directly communicate via radio can
+      still exchange messages when at least one node from each network has internet access.
+    </p>
+
+    <ul>
+      <li><strong>MQTT host</strong>: <code>mqtt.baybme.sh</code></li>
+      <li>
+        <strong>MQTT username</strong>:
+        <code
+          id="mqttUserPlaceholder"
+          class="cursor-pointer text-blue-600 hover:underline"
+          title="Click to reveal">[Click to reveal]</code
+        >
+      </li>
+      <li>
+        <strong>MQTT password</strong>:
+        <code
+          id="mqttPassPlaceholder"
+          class="cursor-pointer text-blue-600 hover:underline"
+          title="Click to reveal">[Click to reveal]</code
+        >
+      </li>
+      <li><strong>Topic prefix</strong>: <code>msh/US/CA/Motherlode</code></li>
+      <li><strong>Map reporting</strong>: <code>on</code></li>
+    </ul>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        // Obfuscated MQTT credentials
+        const obfuscatedUsername = 'dmVkaHNlbQ=='; // "meshdev" reversed and base64 encoded
+        const obfuscatedPassword = 'c3RhYzRlZ3JhbA=='; // "large4cats" reversed and base64 encoded
+
+        const userPlaceholder = document.getElementById('mqttUserPlaceholder');
+        const passPlaceholder = document.getElementById('mqttPassPlaceholder');
+
+        let userVisible = false;
+        let passVisible = false;
+
+        // Function to decode the obfuscated values
+        const decodeValue = (encoded) => {
+          try {
+            return atob(encoded).split('').reverse().join('');
+          } catch (e) {
+            console.error('Error decoding value');
+            return '[Error decoding]';
+          }
+        };
+
+        userPlaceholder.addEventListener('click', () => {
+          if (!userVisible) {
+            userPlaceholder.textContent = decodeValue(obfuscatedUsername);
+            userPlaceholder.title = 'Click to hide';
+            userVisible = true;
+          } else {
+            userPlaceholder.textContent = '[Click to reveal]';
+            userPlaceholder.title = 'Click to reveal';
+            userVisible = false;
+          }
+        });
+
+        passPlaceholder.addEventListener('click', () => {
+          if (!passVisible) {
+            passPlaceholder.textContent = decodeValue(obfuscatedPassword);
+            passPlaceholder.title = 'Click to hide';
+            passVisible = true;
+          } else {
+            passPlaceholder.textContent = '[Click to reveal]';
+            passPlaceholder.title = 'Click to reveal';
+            passVisible = false;
+          }
+        });
+      });
+    </script>
+
+    <p>
+      You should also update the ERSN channel configuration to have all options enabled (uplink,
+      downlink, position).
+    </p>
+    <p>
+      WiFi-enabled Meshtastic nodes (like the T-Beam) can act as internet gateways, connecting your
+      local mesh to the wider network. These gateways are typically stationary devices set up at
+      home with permanent power and WiFi, but can also be mobile when connected to hotspots or
+      Starlink in the field.
+    </p>
+    <div
+      class="diagram-container"
+      style="display: flex; justify-content: center; margin: 1.5rem 0;"
+    >
+      <pre
+        style="margin: 0;">
+                       MQTT Broker (Cloud)
+                          ┌─────────┐
+                ┌─────────│  MQTT   │─────────┐
+                │         │ Broker  │         │
+                │         └─────────┘         │
+                │                             │
+           MQTT Bridge via Internet/Grid      │
+                │                             │
+      ┌─────────┴──────────┐        ┌─────────┴──────────┐
+      │ Stationary Gateway │        │ Stationary Gateway │
+      │    (Pinebrook)     │        │     (Murphy's)     │
+      └─────────┬──────────┘        └─────────┬──────────┘
+                │                             │
+                │ (wireless mesh)             │ (wireless mesh)
+      ┌─────────┼─────────┐         ┌─────────┼─────────┐
+      │         │         │         │         │         │
+  ┌───┴───┐ ┌───┴───┐ ┌───┴───┐ ┌───┴───┐ ┌───┴───┐ ┌───┴───┐
+  │ Mobile│ │ Mobile│ │ Mobile│ │Mobile │ │Mobile │ │Mobile │
+  │ Node  │ │ Node  │ │ Node  │ │Node   │ │Node   │ │Node   │
+  │  A1   │ │  A2   │ │  A3   │ │ B1    │ │ B2    │ │ B3    │
+  └───────┘ └───────┘ └───────┘ └───────┘ └───────┘ └───────┘
+      </pre>
+    </div>
+    <p>
+      <strong>Note:</strong> Bridging requires <strong>grid or internet access</strong>, so it's not
+      a replacement for true off-grid use. It's best thought of as a way to “stitch” together
+      multiple local meshes when internet is available.
+    </p>
+
+    <hr />
+
+    <h2 id="get-involved">Get Involved</h2>
+
+    <p>If you're interested in joining the ERSN Meshtastic Working Group:</p>
+
+    <ul>
+      <li>
+        Ask to join our email list by dropping a note to <a href="mailto:ersnnets@gmail.com"
+          >ersnnets@gmail.com</a
+        >
+      </li>
+      <li>Share your location and device info to help us build a map of active nodes</li>
+      <li>Help test and document signal ranges, bridging behavior, and power setups</li>
+      <li>Stay tuned for events and updates</li>
+    </ul>
+
+    <p>Together, we'll build a resilient, decentralized communication fabric for the mountains.</p>
+  </Content>
+</Layout>
