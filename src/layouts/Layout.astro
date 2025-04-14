@@ -10,15 +10,23 @@ const headerLinks = [
   { title: 'Home', href: '/', selected: false },
   { title: 'Practice Net', href: '/nets', selected: false },
   { title: 'About', href: '/about', selected: false },
-  { title: 'Contact', href: 'mailto:ersnnets@gmail.com', selected: false },
+];
+
+const resourceLinks = [
+  { title: 'GMRS Guide', href: '/gmrs' },
+  { title: 'Channels', href: '/channels' },
+  { title: 'Meshtastic', href: '/mesh' },
+  { title: 'Emergency Info', href: '/emergency' },
+  { title: 'Contact', href: 'mailto:ersnnets@gmail.com' },
 ];
 
 const footerLinks = [
-  { title: 'Channels', href: '/channels' },
-  { title: 'Net Info', href: '/nets', selected: false },
   { title: 'GMRS Guide', href: '/gmrs' },
-  { title: 'Important Contacts', href: '/emergency' },
-  { title: 'About ERSN', href: '/about', selected: false },
+  { title: 'Practice Net', href: '/nets' },
+  { title: 'Channels', href: '/channels' },
+  { title: 'Meshtastic', href: '/mesh' },
+  { title: 'Emergency Info', href: '/emergency' },
+  { title: 'About ERSN', href: '/about' },
 ];
 
 headerLinks.forEach(
@@ -48,29 +56,95 @@ headerLinks.forEach(
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <style>
+      /* Dropdown hover functionality with transition delay */
+      .dropdown-menu {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-5px);
+        transition:
+          opacity 0.15s ease,
+          transform 0.15s ease,
+          visibility 0s linear 0.15s;
+      }
+
+      .dropdown-container:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        transition:
+          opacity 0.2s ease,
+          transform 0.2s ease,
+          visibility 0s;
+      }
+      
+      /* Mobile menu animation */
+      #mobileMenu {
+        transition: opacity 0.3s ease, backdrop-filter 0.3s ease;
+      }
+      
+      #mobileMenu.hidden {
+        opacity: 0;
+        pointer-events: none;
+        backdrop-filter: blur(0px);
+        visibility: hidden;
+      }
+      
+      #mobileMenu:not(.hidden) {
+        opacity: 1;
+        backdrop-filter: blur(2px);
+        visibility: visible;
+      }
+      
+      #mobileMenuPanel {
+        transition: transform 0.3s ease-out;
+        will-change: transform;
+      }
+    </style>
     <PostHog />
   </head>
   <body class="bg-stone-100 text-stone-600">
     <nav class="bg-stone-50 border-b border-stone-300 mb-4 md:mb-0">
       <div class="max-w-5xl mx-auto px-4 py-4">
-        <div class="flex flex-col md:flex-row md:items-center justify-between">
-          <div class="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0">
+        <div class="flex flex-row justify-between items-center">
+          <div class="flex items-center space-x-4">
             <a href="/"
-              ><Image src={imgLogo} alt="ERSN Logo" class="not-prose w-[64px] mr-6 opacity-80" /></a
+              ><Image src={imgLogo} alt="ERSN Logo" class="not-prose w-[64px] opacity-80" /></a
             >
             <div>
-              <h1 class="text-2xl font-serif text-stone-800">Ebbetts' Radio Safety Net</h1>
-              <p class="text-sm text-stone-600">Volunteer Emergency Communications Network</p>
+              <h1 class="text-2xl font-serif text-stone-800 md:block hidden">Ebbetts' Radio Safety Net</h1>
+              <h1 class="text-2xl font-serif text-stone-800 md:hidden block">ERSN</h1>
+              <p class="text-sm text-stone-600 md:block hidden">Volunteer Emergency Communications Network</p>
+              <p class="text-sm text-stone-600 md:hidden block">Ebbetts' Radio Safety Net</p>
             </div>
           </div>
-          <div class="flex flex-row items-center space-x-8 mt-2 mb:mt-0">
+
+          <!-- Mobile hamburger menu icon -->
+          <button id="mobileMenuButton" class="md:hidden text-stone-700 focus:outline-none">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-7 w-7"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+
+          <!-- Desktop Navigation -->
+          <div class="hidden md:flex md:items-center md:space-x-8">
             {
               headerLinks.map((link) => (
                 <a
                   href={link.href}
                   class:list={[
-                    ' hover:text-stone-900 px-2 py-1 capitalize transition-colors text-sm md:text-base',
-                    { 'text-stone-700 font-normal ': !link.selected },
+                    'hover:text-stone-900 px-2 py-1 capitalize transition-colors',
+                    { 'text-stone-700 font-normal': !link.selected },
                     { 'text-red-800 font-medium': link.selected },
                   ]}
                 >
@@ -78,10 +152,157 @@ headerLinks.forEach(
                 </a>
               ))
             }
+
+            <!-- Resources Dropdown -->
+            <div class="relative dropdown-container">
+              <button
+                class="flex items-center space-x-1 hover:text-stone-900 px-2 py-1 capitalize transition-colors focus:outline-none"
+              >
+                <span>Resources</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+              <!-- Invisible hover bridge to prevent accidental dismissal -->
+              <div class="absolute right-0 h-2 w-48 top-full"></div>
+              <div
+                class="absolute dropdown-menu right-0 mt-0 py-2 w-48 bg-white rounded-md shadow-lg z-10 border border-stone-200"
+              >
+                {
+                  resourceLinks.map((link) => (
+                    <a
+                      href={link.href}
+                      class="block px-4 py-2 text-sm text-stone-700 hover:bg-stone-100 hover:text-stone-900"
+                    >
+                      {link.title}
+                    </a>
+                  ))
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Menu (Hidden by default) - Overlay style -->
+      <div id="mobileMenu" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden md:hidden">
+        <div class="absolute left-0 top-0 bg-white h-full w-4/5 max-w-xs shadow-lg overflow-y-auto transition-all duration-300 ease-in-out" id="mobileMenuPanel" style="transform: translateX(-100%);">
+          <!-- ERSN Logo and Title -->
+          <div class="flex items-center space-x-2 p-4 border-b border-stone-200">
+            <div class="w-12 h-12">
+              <Image src={imgLogo} alt="ERSN Logo" class="w-full not-prose opacity-80" />
+            </div>
+            <div>
+              <h3 class="text-lg font-serif text-stone-800">ERSN</h3>
+              <p class="text-xs text-stone-600">Ebbetts Radio Safety Net</p>
+            </div>
+            <button id="mobileMenuCloseBtn" class="ml-auto text-stone-700 focus:outline-none p-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <div class="flex flex-col space-y-3 px-4 pb-8">
+            {
+              headerLinks.map((link) => (
+                <a
+                  href={link.href}
+                  class:list={[
+                    'hover:text-stone-900 px-2 py-2 capitalize transition-colors border-b border-stone-100',
+                    { 'text-stone-700 font-normal': !link.selected },
+                    { 'text-red-800 font-medium': link.selected },
+                  ]}
+                >
+                  {link.title}
+                </a>
+              ))
+            }
+            
+            <!-- Mobile Resources Section -->
+            <div class="mt-4">
+              <p class="px-2 py-2 font-medium text-stone-800 border-b border-stone-200">Resources</p>
+              <div class="flex flex-col space-y-1 mt-2">
+                {
+                  resourceLinks.map((link) => (
+                    <a
+                      href={link.href}
+                      class="text-stone-700 hover:text-stone-900 px-2 py-2 capitalize transition-colors border-b border-stone-100"
+                    >
+                      {link.title}
+                    </a>
+                  ))
+                }
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </nav>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const mobileMenuCloseBtn = document.getElementById('mobileMenuCloseBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileMenuPanel = document.getElementById('mobileMenuPanel');
+        
+        // Function to open the mobile menu
+        const openMobileMenu = () => {
+          // First display the overlay (immediately)
+          mobileMenu.classList.remove('hidden');
+          document.body.style.overflow = 'hidden';
+          
+          // Force a reflow to ensure the transition works
+          void mobileMenuPanel.offsetWidth;
+          
+          // Then slide in the panel (should happen after the browser has processed the display change)
+          requestAnimationFrame(() => {
+            mobileMenuPanel.style.transform = 'translateX(0)';
+          });
+        };
+        
+        // Function to close the mobile menu
+        const closeMobileMenu = () => {
+          // First slide out the panel
+          mobileMenuPanel.style.transform = 'translateX(-100%)';
+          
+          // Wait for animation to complete before hiding overlay
+          setTimeout(() => {
+            mobileMenu.classList.add('hidden');
+            // Restore scrolling
+            document.body.style.overflow = '';
+          }, 300); // Match the duration in the CSS
+        };
+        
+        // Event listeners
+        mobileMenuButton.addEventListener('click', openMobileMenu);
+        mobileMenuCloseBtn.addEventListener('click', closeMobileMenu);
+        
+        // Close menu when clicking on the overlay (outside the menu panel)
+        mobileMenu.addEventListener('click', (e) => {
+          if (e.target === mobileMenu) {
+            closeMobileMenu();
+          }
+        });
+        
+        // Close menu when a link is clicked
+        const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+        mobileMenuLinks.forEach(link => {
+          link.addEventListener('click', closeMobileMenu);
+        });
+      });
+    </script>
     <div class="max-w-5xl mx-auto px-4">
       <slot />
     </div>
