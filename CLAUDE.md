@@ -49,3 +49,113 @@ This is an Astro-based website for the Ebbetts Pass Radio Safety Net (ERSN). The
 - **Package Manager**: pnpm
 - **TypeScript**: Enabled for type safety
 - **Deployment**: Static hosting optimized
+
+## News & Bulletin Management
+
+### Adding News Posts
+You are authorized to autonomously add news, bulletins, and updates to the website using Astro's content collections.
+
+**Location**: Create new files in `src/content/bulletins/`
+
+**File Format**:
+```markdown
+---
+title: "Short descriptive title"
+date: 2025-06-07T00:00:00Z
+slug: "url-friendly-slug"
+summary: "One or two sentence plain text preview of the post content."
+---
+
+Content body with proper markdown formatting.
+
+Use double line breaks between paragraphs.
+
+## Use Headings for Structure
+
+**Bold text** for emphasis and field labels.
+
+- Use bullet lists when appropriate
+- Keep content organized and readable
+```
+
+**File Naming**: Use kebab-case names like `practice-net-update.md`
+
+**Summary Requirements**:
+- **Plain text only**: No markdown formatting in summaries
+- **1-2 sentences**: Concise preview of the main content
+- **Key details**: Include who, what, when for events
+- **SEO friendly**: Used as meta description for individual posts
+- **Homepage preview**: Displayed on homepage news section
+
+### Content Guidelines & Privacy Rules
+
+**REQUIRED Content Filtering**:
+- **Remove surnames**: Use first names only (e.g., "Jay" not "Jay Smith") unless explicitly told to keep them
+- **Remove GMRS codes**: Strip out PL tones, CTCSS codes, access codes, or frequency details
+- **Remove phone numbers**: Never include personal phone numbers unless explicitly instructed
+- **Emergency contacts**: Keep official emergency numbers (911, etc.)
+
+**Content Examples**:
+```markdown
+# ✅ GOOD - Event Formatting
+ERSN member Jay will be hosting a practice net on Wednesday.
+
+- **When:** 7:30 PM, Wednesdays
+- **Where:** Forest Meadows Repeater
+- **Contact:** ersnnets@gmail.com for more info
+
+# ❌ BAD  
+Jay Williams will be hosting...
+Use PL tone 156.7 to access...
+Call Jay at (555) 123-4567...
+Single line breaks that don't create paragraphs
+
+**When:** 7:30 PM (using headings instead of lists)
+**Where:** Location (using headings instead of lists)
+```
+
+**Markdown Formatting Rules**:
+- **Double line breaks** create paragraphs (required for proper rendering)
+- **Use headings** (## Heading) to structure content sections
+- **Event details as lists**: Use bulleted lists for event information, not headings
+- **Bold key information** like dates, locations, contact methods
+- **Single line breaks** are ignored in markdown - use double breaks
+- **Lists and formatting** help organize information clearly
+- **Hyperlink text properly** using `[link text](url)` format instead of bare URLs
+
+**Event Formatting Standard**:
+```markdown
+Event description goes here.
+
+- **When:** Date and time
+- **Where:** Location with optional [link](url)
+- **Contact:** How to get more info
+- **Other:** Any additional details
+```
+
+**Link Examples**:
+```markdown
+# ✅ GOOD
+Join us at [Pine Brook HOA](http://pinebrookhoa.com/) for the meeting.
+Learn more about [Meshtastic](https://ersn.net/mesh) technology.
+
+# ❌ BAD
+Join us at Pine Brook HOA: http://pinebrookhoa.com/
+Learn more: https://ersn.net/mesh
+```
+
+**Acceptable Content**:
+- Event announcements and updates
+- Practice net schedules and changes
+- Equipment testing notifications
+- General community information
+- Educational content about emergency preparedness
+
+**Process**:
+1. Create the markdown file with proper frontmatter
+2. Apply content filtering rules automatically
+3. Run `pnpm check` and `pnpm build` to verify
+4. News will automatically appear on homepage and /news page
+
+### Manual Override
+If explicitly instructed to "keep surnames" or "include contact numbers," you may override the default filtering rules for that specific post.

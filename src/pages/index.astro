@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
 import Layout from '@layouts/Layout.astro';
 import imgTrees from '@img/trees.jpg';
 import imgEmergency from '@img/emergency.jpg';
@@ -11,6 +12,12 @@ const frontmatter = {
   title: '',
   description: 'A community of GMRS users in the Ebbetts Pass region of Calaveras.',
 };
+
+// Get latest bulletins
+const bulletins = await getCollection('bulletins');
+const latestBulletins = bulletins
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
 ---
 
 <Layout frontmatter={frontmatter}>
@@ -58,7 +65,8 @@ const frontmatter = {
     </div>
   </div>
 
-  <div class="space-y-8 my-8">
+  {/* Welcome and Bulletins - Side by side on large screens */}
+  <div class="my-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
     {/* Manifesto */}
     <div class="bg-white border border-stone-300 p-6 rounded-sm">
       <div class="flex items-center space-x-3 mb-4">
@@ -85,6 +93,61 @@ const frontmatter = {
         linked when traditional systems fail.
       </p>
     </div>
+
+    {/* Latest Bulletins */}
+    {latestBulletins.length > 0 && (
+      <div class="bg-blue-50 border border-blue-200 rounded-sm p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-3">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="h-6 w-6 text-blue-700"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+              ></path>
+            </svg>
+            <h3 class="text-xl font-serif text-blue-900">Latest Updates</h3>
+          </div>
+          <a href="/news" class="text-blue-800 hover:text-blue-900 text-sm font-medium hover:underline">
+            View all
+          </a>
+        </div>
+        <div class="space-y-3">
+          {latestBulletins.map((bulletin) => (
+            <div class="bg-white border border-blue-100 p-4 rounded-sm">
+              <div class="flex items-start justify-between">
+                <div class="flex-1">
+                  <h4 class="font-medium text-blue-900 mb-2">
+                    <a href={`/news/${bulletin.data.slug || bulletin.slug}`} class="text-blue-800 font-medium hover:text-blue-900 hover:underline">
+                      {bulletin.data.title}
+                    </a>
+                  </h4>
+                  <p class="text-blue-800 text-sm line-clamp-2">
+                    {bulletin.data.summary}
+                  </p>
+                </div>
+                <time class="text-blue-600 text-xs ml-4 flex-shrink-0">
+                  {bulletin.data.date.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric' 
+                  })}
+                </time>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+
+  <div class="space-y-8 my-8">
 
     {/* Weekly Net */}
     <div class="bg-white border border-stone-300 p-6 rounded-sm">

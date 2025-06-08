@@ -1,0 +1,52 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '@layouts/Layout.astro';
+import ContentComponent from '@components/Content.astro';
+
+export async function getStaticPaths() {
+  const bulletins = await getCollection('bulletins');
+  return bulletins.map((bulletin) => ({
+    params: { slug: bulletin.data.slug || bulletin.slug },
+    props: { bulletin },
+  }));
+}
+
+const { bulletin } = Astro.props;
+const { Content } = await bulletin.render();
+
+const frontmatter = {
+  title: bulletin.data.title,
+  description: bulletin.data.summary,
+};
+---
+
+<Layout frontmatter={frontmatter}>
+  <ContentComponent>
+    <header class="mb-6 pb-6 border-b border-stone-200">
+      <h1 class="text-3xl font-serif text-stone-800 mb-3">
+        {bulletin.data.title}
+      </h1>
+      <time class="text-stone-500">
+        {
+          bulletin.data.date.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        }
+      </time>
+    </header>
+
+    <Content />
+  </ContentComponent>
+
+  <nav class="my-8 text-center">
+    <a
+      href="/news"
+      class="inline-block bg-stone-800 text-white px-6 py-2 rounded-sm font-medium hover:bg-stone-700 transition"
+    >
+      View all news
+    </a>
+  </nav>
+</Layout>
