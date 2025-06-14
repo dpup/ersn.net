@@ -7,7 +7,7 @@ summary: "Recap of the successful Meshtastic meetup at Pine Brook HOA with resou
 
 Great to see everyone who came to the Meshtastic meetup at [Pine Brook HOA](http://pinebrookhoa.com/). The presentation deck is [available online](https://gamma.app/docs/Meshtastic-for-ERSN-Supplementing-our-GMRS-Emergency-Communicatio-0uqhv9yfiisu3yp) for anyone who wants to review the material.
 
-It was especially exciting to connect ERSN with TCARES and explore the potential to establish a Motherlode Mesh network across our region.
+It was especially exciting to connect ERSN with [TCARES](http://tcares.net) and explore the potential to establish a Motherlode Mesh network across our region.
 
 ## Resources Shared
 
@@ -35,7 +35,7 @@ Building communication infrastructure to connect beyond our local community to e
 
 ## Future Considerations
 
-Looking ahead, we're planning several initiatives to strengthen our emergency preparedness:
+Looking ahead, we discussed several potential initiatives to strengthen our emergency preparedness:
 
 - **ICS Training:** Classes on Incident Command System and developing plans for how ERSN fits into the broader disaster response ecosystem
 - **Regular Training:** Establishing training days and drills to help with onboarding new technologies and building operational readiness
