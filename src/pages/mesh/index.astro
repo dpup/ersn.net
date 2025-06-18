@@ -328,6 +328,88 @@ const frontmatter = {
       multiple local meshes when internet is available.
     </p>
 
+    <h3>Understanding Node Roles and the "OK to MQTT" Setting</h3>
+
+    <p>
+      Not all nodes in your mesh need the same MQTT configuration. Understanding the different roles
+      and the critical "OK to MQTT" setting helps ensure proper message propagation between 
+      separated mesh networks.
+    </p>
+
+    <h4>Node Types and Configuration Requirements</h4>
+
+    <ul>
+      <li>
+        <strong>Gateway Nodes</strong>: Stationary nodes with WiFi/internet access that bridge 
+        your local mesh to MQTT. These nodes need full MQTT Module configuration (host, username, 
+        password, etc.) and must have uplink/downlink enabled.
+      </li>
+      <li>
+        <strong>Regular Mesh Nodes</strong>: Portable or solar nodes without internet access. 
+        These nodes don't need MQTT Module configuration, but they need the "OK to MQTT" 
+        setting enabled if you want their messages to propagate through gateway nodes to 
+        other meshes.
+      </li>
+    </ul>
+
+    <h4>The "OK to MQTT" Setting</h4>
+
+    <p>
+      This setting controls whether your node's messages can be uploaded to MQTT brokers by gateway 
+      nodes in your mesh:
+    </p>
+
+    <ul>
+      <li><strong>Default</strong>: <code>false</code></li>
+      <li><strong>When enabled</strong>: Gateway nodes will forward your messages to MQTT, allowing them to reach other meshes</li>
+      <li><strong>When disabled</strong>: Your messages stay within your local mesh only</li>
+    </ul>
+
+    <p>
+      <strong>Important:</strong> This is not a cryptographic security feature but a "polite request" 
+      enforced by official firmware. It only applies to channels using the default PSK keys—channels 
+      with custom encryption keys ignore this setting.
+    </p>
+
+    <h4>Example Scenario</h4>
+
+    <p>Consider this five-node setup across two separate mesh areas:</p>
+
+    <div class="diagram-container" style="display: flex; justify-content: center; margin: 1.5rem 0;">
+      <pre style="margin: 0;">
+    Area 1 (Pinebrook)        MQTT Cloud        Area 2 (Murphy's)
+                                  │
+    Alpha ────┐                   │                   ┌──── Echo
+    (Portable) │                  │                   │ (Portable)
+               │                  │                   │
+    Beta ──────┼─── Gamma ────────┼────────── Delta ──┤
+    (Solar)    │   (Gateway)      │         (Gateway) │
+               │   WiFi: Yes      │         WiFi: Yes │
+               │   MQTT: Config   │         MQTT: Config
+               │
+    Area 1 Local Mesh          Bridge          Area 2 Local Mesh
+      </pre>
+    </div>
+
+    <p><strong>Configuration breakdown:</strong></p>
+
+    <ul>
+      <li><strong>Gamma and Delta</strong>: Gateway nodes with full MQTT Module configuration and WiFi</li>
+      <li><strong>Alpha, Beta, Echo</strong>: Regular nodes without MQTT Module configuration</li>
+      <li>
+        <strong>Message propagation depends on "OK to MQTT" settings:</strong>
+        <ul>
+          <li>If Alpha has "OK to MQTT" = <code>true</code>: Alpha's messages reach Echo via Gamma → MQTT → Delta</li>
+          <li>If Alpha has "OK to MQTT" = <code>false</code>: Alpha's messages only reach Beta and Gamma locally</li>
+        </ul>
+      </li>
+    </ul>
+
+    <p>
+      <strong>Key insight:</strong> Only gateway nodes need MQTT Module configuration, but all nodes 
+      that want their messages to cross mesh boundaries need "OK to MQTT" enabled.
+    </p>
+
     <hr />
 
     <h2 id="get-involved">Get Involved</h2>
