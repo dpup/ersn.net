@@ -520,7 +520,6 @@ export default function RoadWeatherStatus() {
                               </span>
                               {segment.alertCount > 0 && (() => {
                                 const onRouteAlerts = segment.alerts.filter(alert => alert.classification === 'ON_ROUTE');
-                                const nearbyAlerts = segment.alerts.filter(alert => alert.classification === 'NEARBY');
                                 const hasOnRoute = onRouteAlerts.length > 0;
 
                                 return (
