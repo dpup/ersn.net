@@ -489,15 +489,15 @@ export default function RoadWeatherStatus() {
   return (
     <div className="my-8">
       <div className="bg-white border border-stone-300 rounded-sm overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-2">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
           {/* Road Conditions */}
-          <div className="p-6 border-b lg:border-b-0 lg:border-r border-stone-200">
+          <div className="p-4 sm:p-6 border-b lg:border-b-0 lg:border-r border-stone-200">
             <div className="flex items-center space-x-3 mb-4">
-              <MapPin className="h-6 w-6 text-stone-700" aria-hidden="true" />
-              <h3 className="text-xl font-serif text-stone-800">Road Conditions</h3>
+              <MapPin className="h-5 w-5 text-stone-700" aria-hidden="true" />
+              <h3 className="text-lg sm:text-xl font-serif text-stone-800">Road Conditions</h3>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-1">
               {data.roads.length === 0 ? (
                 <p className="text-stone-600 text-sm italic">No road data available</p>
               ) : (
@@ -509,28 +509,37 @@ export default function RoadWeatherStatus() {
                       <button
                         type="button"
                         onClick={() => setSelectedRoute(segment)}
-                        className="w-full flex items-center justify-between py-2 hover:bg-stone-50 transition-colors"
+                        className="w-full cursor-pointer flex items-center justify-between py-3 px-2 hover:bg-stone-50 transition-colors rounded-sm touch-manipulation"
                       >
-                        <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-3 flex-1 min-w-0">
                           {getRoadStatusIcon(segment.status)}
-                          <div className="text-left">
+                          <div className="text-left flex-1 min-w-0">
                             <div className="flex items-center space-x-2">
-                              <span className="font-medium text-stone-800">
+                              <span className="font-medium text-stone-800 truncate">
                                 {segment.from} → {segment.to}
                               </span>
-                              {segment.alertCount > 0 && (
-                                <div className="flex items-center space-x-1 text-red-600">
-                                  <AlertTriangle className="h-4 w-4" />
-                                  <span className="text-xs font-medium">
-                                    {segment.alertCount > 9 ? '9+' : segment.alertCount}
-                                  </span>
-                                </div>
-                              )}
-                            </div>
+                              {segment.alertCount > 0 && (() => {
+                                const onRouteAlerts = segment.alerts.filter(alert => alert.classification === 'ON_ROUTE');
+                                const nearbyAlerts = segment.alerts.filter(alert => alert.classification === 'NEARBY');
+                                const hasOnRoute = onRouteAlerts.length > 0;
 
+                                return (
+                                  <div className={`flex items-center space-x-1 flex-shrink-0 ${
+                                    hasOnRoute ? 'text-red-600' : 'text-yellow-600'
+                                  }`}>
+                                    <AlertTriangle className="h-4 w-4" />
+                                    {hasOnRoute && (
+                                      <span className="text-xs font-medium bg-red-100 px-1.5 py-0.5 rounded">
+                                        {onRouteAlerts.length > 9 ? '9+' : onRouteAlerts.length}
+                                      </span>
+                                    )}
+                                  </div>
+                                );
+                              })()}
+                            </div>
                           </div>
                         </div>
-                        <div className="text-sm font-medium text-stone-700">
+                        <div className="text-sm text-stone-600 flex-shrink-0 ml-2">
                           {getRoadStatusText(segment)}
                         </div>
                       </button>
@@ -541,9 +550,13 @@ export default function RoadWeatherStatus() {
               )}
             </div>
 
-            {/* Critical Alerts Only */}
+            {/* Critical Alerts Only - moved to top */}
             {data.alerts.filter(alert => alert.severity === 'CRITICAL').length > 0 && (
-              <div className="mt-6 pt-4 border-t border-stone-200">
+              <div className="mb-4 pb-4 border-b border-stone-200">
+                <div className="flex items-center space-x-2 mb-3">
+                  <OctagonX className="h-4 w-4 text-red-600" />
+                  <span className="text-sm font-medium text-red-800">Critical Alerts</span>
+                </div>
                 <div className="space-y-2">
                   {data.alerts
                     .filter(alert => alert.severity === 'CRITICAL')
@@ -556,16 +569,16 @@ export default function RoadWeatherStatus() {
                       return (
                         <div
                           key={alert.id || `critical-${index}`}
-                          className="p-2 rounded border bg-red-50 border-red-200 text-red-800 text-sm"
+                          className="p-3 rounded-md border bg-red-50 border-red-200 text-red-800 text-sm"
                         >
-                          <div className="font-medium">{String(summary)}</div>
+                          <div className="font-medium leading-tight">{String(summary)}</div>
                         </div>
                       );
                     })
                   }
                   {data.alerts.filter(alert => alert.severity === 'CRITICAL').length > 3 && (
-                    <div className="text-xs text-stone-500 pl-2">
-                      And {data.alerts.filter(alert => alert.severity === 'CRITICAL').length - 3} more critical alerts...
+                    <div className="text-xs text-red-600 pl-2 font-medium">
+                      +{data.alerts.filter(alert => alert.severity === 'CRITICAL').length - 3} more critical alerts
                     </div>
                   )}
                 </div>
@@ -574,13 +587,13 @@ export default function RoadWeatherStatus() {
           </div>
 
           {/* Weather Status */}
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             <div className="flex items-center space-x-3 mb-4">
-              <Cloud className="h-6 w-6 text-stone-700" aria-hidden="true" />
-              <h3 className="text-xl font-serif text-stone-800">Weather Status</h3>
+              <Cloud className="h-5 w-5 text-stone-700" aria-hidden="true" />
+              <h3 className="text-lg sm:text-xl font-serif text-stone-800">Weather Status</h3>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-1">
               {data.weather.length === 0 ? (
                 <p className="text-stone-600 text-sm italic">No weather data available</p>
               ) : (
@@ -589,16 +602,16 @@ export default function RoadWeatherStatus() {
                   <button
                     type="button"
                     onClick={() => setSelectedWeather(location)}
-                    className="w-full flex items-center justify-between py-2 hover:bg-stone-50 transition-colors"
+                    className="w-full cursor-pointer flex items-center justify-between py-3 px-2 hover:bg-stone-50 transition-colors rounded-sm touch-manipulation"
                   >
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-3 flex-1 min-w-0">
                       {getWeatherIcon(location.icon)}
-                      <div className="font-medium text-stone-800">
+                      <div className="font-medium text-stone-800 truncate">
                         {location.name}
                       </div>
                     </div>
-                    <div className="text-sm font-medium text-stone-700">
-                      {location.condition} • {location.temperature}°F
+                    <div className="text-sm flex-shrink-0 ml-2">
+                      <span className="text-stone-500 capitalize">{location.condition}</span> • <span className="font-medium text-stone-700">{location.temperature}°F</span>
                     </div>
                   </button>
                 </div>

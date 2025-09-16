@@ -187,45 +187,52 @@ export default function RouteDetailsDialog({ selectedRoute, onClose }: RouteDeta
 
   return (
     <div
-      className="fixed inset-0 bg-black/20 flex items-center justify-center p-2 sm:p-4 z-50 backdrop-blur-sm"
+      className="fixed inset-0 bg-black/20 flex items-end sm:items-center justify-center p-0 sm:p-4 z-50 backdrop-blur-sm"
       onClick={onClose}
       onKeyDown={(e) => e.key === 'Escape' && onClose()}
       role="dialog"
       aria-modal="true"
     >
       <div
-        className="bg-white rounded-lg w-full max-w-4xl max-h-[95vh] sm:max-h-[85vh] flex flex-col sm:min-w-[600px]"
+        className="bg-white rounded-t-xl sm:rounded-lg w-full max-w-4xl max-h-[95vh] sm:max-h-[85vh] flex flex-col sm:min-w-[600px] shadow-lg touch-pan-y"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => e.stopPropagation()}
         role="document"
       >
         {/* Header Section - Fixed */}
         <div className="p-4 sm:p-6 border-b border-stone-200 flex-shrink-0">
+          {/* Mobile drag indicator */}
+          <div className="w-12 h-1 bg-stone-300 rounded-full mx-auto mb-4 sm:hidden" />
+
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0">
               {/* Outcome-first header */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 text-base sm:text-lg font-medium text-stone-800">
-                <div className="font-semibold">{selectedRoute.from} → {selectedRoute.to}</div>
+                <div className="font-semibold truncate">{selectedRoute.from} → {selectedRoute.to}</div>
                 <div className="flex flex-wrap items-center text-sm sm:text-base mt-1 sm:mt-0">
-                  <span className="mx-2 text-stone-400">•</span>
+                  <span className="mx-2 text-stone-400 hidden sm:inline">•</span>
                   {typeof selectedRoute.delayMinutes === 'number' && selectedRoute.delayMinutes > 0 && (
                     <>
-                      <span className="text-orange-600">+{selectedRoute.delayMinutes} min delay</span>
-                      {(selectedRoute.congestionLevel || selectedRoute.rawStatus) && <span className="mx-2 text-stone-400">•</span>}
+                      <span className="text-orange-600 bg-orange-50 px-2 py-1 rounded text-xs sm:text-sm font-medium">+{selectedRoute.delayMinutes} min delay</span>
+                      {(selectedRoute.congestionLevel || selectedRoute.rawStatus) && <span className="mx-2 text-stone-400 hidden sm:inline">•</span>}
                     </>
                   )}
                   {selectedRoute.congestionLevel && (
                     <>
-                      <span className={`${selectedRoute.congestionLevel.toLowerCase() === 'clear' ? 'text-green-600' :
-                        selectedRoute.congestionLevel.toLowerCase() === 'moderate' ? 'text-yellow-600' : 'text-red-600'}`}>
+                      <span className={`px-2 py-1 rounded text-xs sm:text-sm font-medium ${
+                        selectedRoute.congestionLevel.toLowerCase() === 'clear' ? 'text-green-700 bg-green-50' :
+                        selectedRoute.congestionLevel.toLowerCase() === 'moderate' ? 'text-yellow-700 bg-yellow-50' : 'text-red-700 bg-red-50'
+                      }`}>
                         {formatEnumValue(selectedRoute.congestionLevel)} traffic
                       </span>
-                      {selectedRoute.rawStatus && <span className="mx-2 text-stone-400">•</span>}
+                      {selectedRoute.rawStatus && <span className="mx-2 text-stone-400 hidden sm:inline">•</span>}
                     </>
                   )}
                   {selectedRoute.rawStatus && (
-                    <span className={`${selectedRoute.rawStatus.toLowerCase() === 'closed' ? 'text-red-600' :
-                      selectedRoute.rawStatus.toLowerCase() === 'restricted' ? 'text-orange-600' : 'text-green-600'}`}>
+                    <span className={`px-2 py-1 rounded text-xs sm:text-sm font-medium ${
+                      selectedRoute.rawStatus.toLowerCase() === 'closed' ? 'text-red-700 bg-red-50' :
+                      selectedRoute.rawStatus.toLowerCase() === 'restricted' ? 'text-orange-700 bg-orange-50' : 'text-green-700 bg-green-50'
+                    }`}>
                       {formatEnumValue(selectedRoute.rawStatus)}
                     </span>
                   )}
@@ -236,7 +243,7 @@ export default function RouteDetailsDialog({ selectedRoute, onClose }: RouteDeta
             <button
               type="button"
               onClick={onClose}
-              className="text-stone-400 hover:text-stone-600 transition-colors ml-4"
+              className="text-stone-400 hover:text-stone-600 transition-colors p-2 -m-2 flex-shrink-0"
               aria-label="Close dialog"
             >
               <X className="h-5 w-5" />
@@ -334,13 +341,17 @@ export default function RouteDetailsDialog({ selectedRoute, onClose }: RouteDeta
 
                         {/* Action buttons */}
                         <div className="flex items-center space-x-4 text-sm ml-8">
-                          <button
-                            type="button"
-                            className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 transition-colors"
-                          >
-                            <ExternalLink className="h-3 w-3" />
-                            <span>Open on map</span>
-                          </button>
+                          {alert.location && (
+                            <a
+                              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(alert.location)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 transition-colors py-2 px-3 bg-blue-50 rounded-md text-sm font-medium touch-manipulation"
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                              <span>Open on map</span>
+                            </a>
+                          )}
                         </div>
 
                         {/* More details - only show non-N/A fields */}
@@ -390,7 +401,7 @@ export default function RouteDetailsDialog({ selectedRoute, onClose }: RouteDeta
                 <button
                   type="button"
                   onClick={() => setNearbyExpanded(!nearbyExpanded)}
-                  className="flex items-center space-x-2 w-full text-left font-medium text-stone-900 hover:text-stone-700 transition-colors"
+                  className="flex items-center space-x-2 w-full text-left font-medium text-stone-900 hover:text-stone-700 transition-colors p-2 -m-2 rounded touch-manipulation"
                 >
                   <span className="text-lg">Nearby ({nearbyAlerts.length})</span>
                   {nearbyExpanded ? (
