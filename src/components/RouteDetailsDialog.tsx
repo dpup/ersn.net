@@ -335,7 +335,7 @@ export default function RouteDetailsDialog({ selectedRoute, onClose }: RouteDeta
                               )}
                               {alert.startTime && (
                                 <span className="text-xs text-stone-500">
-                                  Started {formatHumanTime(alert.startTime)}
+                                  {formatHumanTime(alert.startTime)}
                                 </span>
                               )}
                               {alert.expectedEnd && (
