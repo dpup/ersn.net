@@ -4,7 +4,7 @@ import Layout from '@layouts/Layout.astro';
 
 const frontmatter = {
   title: 'Joining a Practice Net',
-  description: 'Learn how to participate in the weekly Wednesday night ERSN radio net.',
+  description: 'Learn how to participate in the weekly ERSN radio nets.',
 };
 ---
 
@@ -12,7 +12,8 @@ const frontmatter = {
   <Content>
     <h1>Joining a Practice Net</h1>
 
-    <div class="bg-stone-100 border border-stone-300 p-6 mt-12 rounded-sm not-prose">
+    <!-- 1. Quick Start Guide -->
+    <div class="bg-blue-50 border border-blue-200 p-6 mt-8 rounded-sm not-prose">
       <div class="flex items-center space-x-3 mb-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -20,116 +21,155 @@ const frontmatter = {
           viewBox="0 0 24 24"
           stroke-width="1.5"
           stroke="currentColor"
-          class="h-6 w-6 text-stone-700"
+          class="h-6 w-6 text-blue-700"
         >
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
-            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z"
-          ></path>
+            d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"></path>
         </svg>
-
-        <h3 class="text-xl font-serif text-stone-800">Schedule</h3>
+        <h2 class="text-xl font-serif text-blue-900 m-0">Quick Start Guide</h2>
       </div>
-      <p class="text-stone-600 mb-4">
-        The ERSN hosts three weekly practice nets: <b
-          ><a
-            href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Murphy%27s+Practice+Net&details=Weekly+practice+net+for+ERSN+participants.+All+are+welcome!+Frequency:+462.675+MHz+(Channel+20+/+Repeater+6)&location=Arnold+Summit+Repeater&dates=20250101T190000Z-800/20250101T200000Z-800&recur=RRULE:FREQ=WEEKLY;BYDAY=MO
-"
-            target="_blank"
-            title="Add to Google Calendar"
-            class="underline hover:text-red-700">Murphy's net on Monday at 7:00 PM</a
-          ></b
-        >, <b
-          ><a
-            href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Arnold+Practice+Net&details=Weekly+practice+net+for+ERSN+participants.+All+are+welcome!+Frequency:+462.675+MHz+(Channel+20+/+Repeater+6)&location=Arnold+Summit+Repeater&dates=20250101T190000Z-800/20250101T193000Z-800&recur=RRULE:FREQ=WEEKLY;BYDAY=WE
-"
-            target="_blank"
-            title="Add to Google Calendar"
-            class="underline hover:text-red-700">Arnold net on Wednesday at 7:00 PM</a
-          ></b
-        >, and <b
-          ><a
-            href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Saturday+Practice+Net&details=Weekly+practice+net+for+ERSN+participants.+All+are+welcome!+Frequency:+462.675+MHz+(Channel+20+/+Repeater+6)&location=Arnold+Summit+Repeater&dates=20250104T090000Z-800/20250104T100000Z-800&recur=RRULE:FREQ=WEEKLY;BYDAY=SA
-"
-            target="_blank"
-            title="Add to Google Calendar"
-            class="underline hover:text-red-700">Arnold net on Saturday at 9:00 AM</a
-          ></b
-        >. We look forward to hearing from all participating members and visitors. For additional
-        information, join us on our Facebook page or email us at <a
-          href="mailto:ersnnets@gmail.com"
-          class="underline hover:text-red-700">ersnnets@gmail.com</a
-        >.
-      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-3">
+          <h3 class="text-lg font-semibold text-blue-900 mb-2">Essential Details</h3>
+          <div class="space-y-2 text-sm">
+            <div><strong>Frequency:</strong> 462.725 MHz</div>
+            <div><strong>Channel:</strong> 20 / Repeater 6</div>
+            <div><strong>Repeater Call Sign:</strong> WRDC296 R1</div>
+            <div>
+              <strong>PL Codes:</strong> Email <a
+                href="mailto:ersnnets@gmail.com"
+                class="underline hover:text-blue-600">ersnnets@gmail.com</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <h3 class="text-lg font-semibold text-blue-900 mb-2">When & Where</h3>
+          <div class="space-y-2 text-sm">
+            <div><strong>Monday 7:00 PM</strong> - Murphy's Repeater</div>
+            <div><strong>Wednesday 7:00 PM</strong> - Arnold Summit Repeater</div>
+            <div><strong>Saturday 9:00 AM</strong> - Arnold Summit Repeater</div>
+            <div><strong>Duration:</strong> Typically 15-20 minutes</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 p-3 bg-blue-100 border border-blue-200 rounded text-sm">
+        <strong>New to nets?</strong> Start by listening to get familiar with the format. You can join
+        the visitor roll call when ready!
+      </div>
     </div>
 
-    <h2>About the Biweekly Practice Nets</h2>
+    <!-- 2. Participation Basics -->
+    <h2>What to Expect</h2>
     <p>
-      The Ebbetts Radio Safety Net (ERSN) hosts practice nets for GMRS operators in the area. This
-      is a structured communication network designed to provide updates, share information of
-      interest, and foster connection among radio operators. The net operates on GMRS channel 20
-      (GMRS Repeater 6) and identifies by voice as WRDC296 R1. All licensed GMRS operators are
-      welcome to join, and those interested in obtaining the PL (CTCSS) code can request it by
-      emailing <a href="mailto:ersnnets@gmail.com">ersnnets@gmail.com</a>.
+      Our nets are welcoming to newcomers—don't worry about making mistakes. Listen first to get
+      comfortable with the flow, then join during visitor roll call when ready. These practice nets
+      focus on building skills, testing equipment, and sharing local emergency preparedness
+      information.
     </p>
 
-    <h2>Net Protocol and Participation</h2>
-    <p>
-      The ERSN net follows a clear structure to keep communication organized and ensure everyone is
-      heard. Here are the main components of the practice net protocol:
-    </p>
+    <h2>Pre-Net Checklist</h2>
+    <ol class="space-y-2">
+      <li><strong>Verify your GMRS license</strong> is current</li>
+      <li><strong>Set your radio</strong> to 462.725 MHz (Channel 20/Repeater 6)</li>
+      <li><strong>Configure PL/CTCSS tones</strong> if you have them (email for access)</li>
+      <li>
+        <strong>Test reception</strong> by listening for conversations or repeater identification
+      </li>
+      <li><strong>Have ready:</strong> call sign, first name, and location</li>
+      <li><strong>Choose a good location</strong> with clear line-of-sight when possible</li>
+      <li><strong>Prepare announcements</strong> you'd like to share (optional)</li>
+    </ol>
 
+    <!-- 3. Net Protocol -->
+    <h2>How the Net Works</h2>
     <ul>
       <li>
-        <strong>Check-In and Announcements:</strong> The net begins with a check-in led by the Net Control
-        Station.
+        <strong>Check-In:</strong> Net Control calls for member check-ins first, then visitors
       </li>
-
       <li>
-        <strong>Member Roll Call:</strong> Stations are called alphabetically by the last letter of their
-        letter group. For example, a call sign of <code>WABC123</code> will be called as <code
-          >C123</code
-        >.
+        <strong>Member Roll Call:</strong> Regular participants called alphabetically by call sign suffix.
+        e.g. `U951` for `WROU951`
       </li>
-
       <li>
-        <strong>Comment Session:</strong> After roll call, participants are welcome to make announcements
-        or share items of general interest. This is an open time for interaction, and we encourage anyone
-        with information to contribute.
+        <strong>Visitor Roll Call:</strong> New or visiting stations welcome to check in, wait for a
+        gap in traffic
       </li>
-
-      <li>
-        <strong>Visitor Roll Call:</strong> After the member roll call, visiting stations are invited
-        to check in with their GMRS call sign, name, and location. Each visitor will be acknowledged
-        in turn.
-      </li>
-
-      <li>
-        <strong>Emergency or Priority Traffic:</strong> Stations with emergency or priority messages
-        may interrupt the net at any time.
-      </li>
+      <li><strong>Comment Session:</strong> Open time for announcements and information sharing</li>
+      <li><strong>Priority Traffic:</strong> Emergency messages can interrupt at any time</li>
     </ul>
 
-    <h2>How to Check-In</h2>
-    <p>To check into the net, follow these steps:</p>
-    <ul>
-      <li>Listen for the prompt to check in, and wait for a pause to announce yourself.</li>
+    <h2>How to Check In</h2>
+    <ol class="space-y-2">
+      <li><strong>Listen for your cue</strong> - Wait for Net Control to call for check-ins</li>
+      <li><strong>Wait for a clear pause</strong> before transmitting</li>
       <li>
-        When prompted, provide your GMRS call sign, name, and location clearly. Indicate if you have
-        any information to share during the Comment Session.
+        <strong>Give your information clearly:</strong> call sign, first name, location<br />
+        <em>Example: "This is Bob, WABC123, Jay, Arnold" or "WXYZ789, Sarah, Forest Meadows"</em>
       </li>
-      <li>
-        If you're a visitor, wait until the Visitor Roll Call, and follow the same check-in
-        procedure.
-      </li>
-    </ul>
+      <li><strong>Mention traffic</strong> if you have information to share later</li>
+      <li><strong>Wait for acknowledgment</strong> from Net Control</li>
+    </ol>
 
-    <h2>End of the Net</h2>
     <p>
-      Once all participants have had a chance to check in and contribute, the net control will make
-      a final call for any late or missed stations. After closing remarks, the repeater will be
-      returned to normal use until the next scheduled net meeting.
+      <strong>For visitors:</strong> Wait until visitor roll call is announced, then follow the same
+      format.
     </p>
+
+    <h2>End of Net</h2>
+    <p>
+      Net Control makes a final call for missed stations, gives closing remarks, then returns the
+      repeater to normal use. Informal conversations often continue after the official net.
+    </p>
+
+    <!-- 4. Guidelines -->
+    <h2>Radio Etiquette</h2>
+    <div class="bg-red-50 border border-red-200 p-4 mt-4 rounded-sm not-prose">
+      <ul class="text-red-800 space-y-2 list-disc list-inside">
+        <li><strong>Keep transmissions brief</strong> to allow others to participate</li>
+        <li><strong>Don't interrupt</strong> unless you have emergency traffic</li>
+        <li><strong>Use proper call signs</strong> and identify yourself clearly</li>
+        <li><strong>Listen actively</strong> and follow Net Control's instructions</li>
+        <li><strong>Be patient</strong> with technical difficulties or new participants</li>
+        <li><strong>Save casual conversations</strong> for after the net closes</li>
+      </ul>
+    </div>
+
+    <h2>Common Terms</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+      <div class="space-y-1">
+        <div><strong>Net Control (NC):</strong> Station managing the net</div>
+        <div><strong>Check-in:</strong> Announcing your presence</div>
+        <div><strong>Traffic:</strong> Information to share</div>
+        <div><strong>PL/CTCSS:</strong> Privacy codes for repeater access</div>
+      </div>
+      <div class="space-y-1">
+        <div><strong>Repeater:</strong> Station extending radio range</div>
+        <div><strong>Roll Call:</strong> Systematic calling of participants</div>
+        <div><strong>QRT:</strong> Going off the air</div>
+        <div><strong>73:</strong> Best wishes/goodbye</div>
+      </div>
+    </div>
+
+    <!-- 5. Support -->
+    <h2>Troubleshooting</h2>
+    <ul class="space-y-2">
+      <li>
+        <strong>Can't hear the net:</strong> Check frequency (462.725 MHz), verify antenna, try better
+        location
+      </li>
+      <li>
+        <strong>Can't access repeater:</strong> Ensure correct PL/CTCSS codes and TSQL settings
+      </li>
+      <li><strong>Weak signal:</strong> Move to higher ground, check antenna orientation</li>
+      <li>
+        <strong>Net not starting:</strong> Verify time/day, check news page for schedule changes
+      </li>
+    </ul>
   </Content>
 </Layout>
