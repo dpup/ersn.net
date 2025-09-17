@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import {
   X,
-  ExternalLink,
   ChevronDown,
   ChevronUp,
-  Copy,
   Construction,
   Ban,
   Truck,
@@ -28,6 +26,7 @@ interface Alert {
   impact?: string;
   startTime?: string;
   expectedEnd?: string;
+  distanceToRouteMeters?: number;
   metadata?: Record<string, unknown>;
 }
 
@@ -179,6 +178,20 @@ const calculateAverageSpeed = (distanceKm: number | undefined, durationMinutes: 
   return `${Math.round(speedMph)} mph (${Math.round(speedKmh)} km/h)`;
 };
 
+const formatDistanceToRoute = (distanceMeters: number | undefined): string => {
+  if (!distanceMeters) return '';
+
+  const distanceMiles = distanceMeters * 0.000621371; // Convert meters to miles
+
+  if (distanceMiles < 0.1) {
+    return 'Very close';
+  } else if (distanceMiles < 1) {
+    return `${(distanceMiles * 5280).toFixed(0)} ft away`;
+  } else {
+    return `${distanceMiles.toFixed(1)} mi away`;
+  }
+};
+
 export default function RouteDetailsDialog({ selectedRoute, onClose }: RouteDetailsDialogProps) {
   const [nearbyExpanded, setNearbyExpanded] = useState(true);
 
@@ -299,7 +312,7 @@ export default function RouteDetailsDialog({ selectedRoute, onClose }: RouteDeta
                         <div className="flex items-start space-x-3 mb-3">
                           <IconComponent className="h-5 w-5 text-stone-600 mt-0.5 flex-shrink-0" />
                           <div className="flex-1">
-                            <h4 className="font-medium text-stone-900 leading-tight">
+                            <h4 className="font-medium text-stone-900 leading-tight capitalize">
                               {alert.locationDescription ? (
                                 <>
                                   {alert.locationDescription}
@@ -339,38 +352,30 @@ export default function RouteDetailsDialog({ selectedRoute, onClose }: RouteDeta
                           {alert.description}
                         </p>
 
-                        {/* Action buttons */}
-                        <div className="flex items-center space-x-4 text-sm ml-8">
-                          {alert.location && (
-                            <a
-                              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(alert.location)}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 transition-colors py-2 px-3 bg-blue-50 rounded-md text-sm font-medium touch-manipulation"
-                            >
-                              <ExternalLink className="h-3 w-3" />
-                              <span>Open on map</span>
-                            </a>
-                          )}
-                        </div>
 
                         {/* More details - only show non-N/A fields */}
-                        {(alert.location || alert.metadata) && (
+                        {(alert.location || alert.metadata || (alert.distanceToRouteMeters && alert.classification !== 'ON_ROUTE')) && (
                           <div className="mt-2 ml-4 sm:ml-8 p-2 sm:p-3 bg-stone-50 rounded text-xs">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                               {alert.location && (
                                 <div>
-                                  <div className="flex items-center space-x-2">
-                                    <span className="text-stone-500 uppercase tracking-wide text-xs">Coordinates</span>
-                                    <button
-                                      type="button"
-                                      className="text-stone-400 hover:text-stone-600"
-                                      aria-label="Copy coordinates"
+                                  <span className="text-stone-500 uppercase tracking-wide text-xs">Coordinates</span>
+                                  <div>
+                                    <a
+                                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(alert.location)}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-blue-600 hover:text-blue-700 underline"
                                     >
-                                      <Copy className="h-3 w-3" />
-                                    </button>
+                                      {alert.location}
+                                    </a>
                                   </div>
-                                  <div className="text-stone-700">{alert.location}</div>
+                                </div>
+                              )}
+                              {alert.distanceToRouteMeters && alert.classification !== 'ON_ROUTE' && (
+                                <div>
+                                  <span className="text-stone-500 uppercase tracking-wide text-xs">Distance</span>
+                                  <div className="text-stone-700">{formatDistanceToRoute(alert.distanceToRouteMeters)}</div>
                                 </div>
                               )}
                               {alert.metadata && Object.entries(alert.metadata).map(([key, value]) => {
@@ -428,7 +433,7 @@ export default function RouteDetailsDialog({ selectedRoute, onClose }: RouteDeta
                             <div className="flex items-start space-x-3">
                               <IconComponent className="h-4 w-4 text-stone-500 mt-0.5 flex-shrink-0" />
                               <div className="flex-1">
-                                <h4 className="font-medium text-stone-800 text-sm leading-tight">
+                                <h4 className="font-medium text-stone-800 text-sm leading-tight capitalize">
                                   {alert.locationDescription ? (
                                     <>
                                       {alert.locationDescription}
@@ -460,22 +465,28 @@ export default function RouteDetailsDialog({ selectedRoute, onClose }: RouteDeta
                                 </p>
 
                                 {/* More details for nearby (smaller and de-emphasized) */}
-                                {(alert.location || alert.metadata) && (
+                                {(alert.location || alert.metadata || (alert.distanceToRouteMeters && alert.classification !== 'ON_ROUTE')) && (
                                   <div className="mt-1 p-2 bg-stone-100 rounded text-xs">
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                       {alert.location && (
                                         <div>
-                                          <div className="flex items-center space-x-1">
-                                            <span className="text-stone-400 uppercase tracking-wide text-xs">Coordinates</span>
-                                            <button
-                                              type="button"
-                                              className="text-stone-300 hover:text-stone-500"
-                                              aria-label="Copy coordinates"
+                                          <span className="text-stone-400 uppercase tracking-wide text-xs">Coordinates</span>
+                                          <div>
+                                            <a
+                                              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(alert.location)}`}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="text-blue-600 hover:text-blue-700 underline text-xs"
                                             >
-                                              <Copy className="h-2 w-2" />
-                                            </button>
+                                              {alert.location}
+                                            </a>
                                           </div>
-                                          <div className="text-stone-600 text-xs">{alert.location}</div>
+                                        </div>
+                                      )}
+                                      {alert.distanceToRouteMeters && alert.classification !== 'ON_ROUTE' && (
+                                        <div>
+                                          <span className="text-stone-400 uppercase tracking-wide text-xs">Distance</span>
+                                          <div className="text-stone-600 text-xs">{formatDistanceToRoute(alert.distanceToRouteMeters)}</div>
                                         </div>
                                       )}
                                       {alert.metadata && Object.entries(alert.metadata).map(([key, value]) => {

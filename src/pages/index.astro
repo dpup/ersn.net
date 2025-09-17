@@ -1,13 +1,12 @@
 ---
 import Layout from '@layouts/Layout.astro';
-import RoadWeatherStatus from '@components/RoadWeatherStatus.tsx';
-import Map from '@components/Map.astro';
 import Hero from '@components/homepage/Hero.astro';
 import EmergencyNotice from '@components/homepage/EmergencyNotice.astro';
-import WelcomeSection from '@components/homepage/WelcomeSection.astro';
+import CallToAction from '@components/homepage/CallToAction.astro';
+import PracticeNetsSchedule from '@components/homepage/PracticeNetsSchedule.astro';
+import CurrentConditions from '@components/homepage/CurrentConditions.tsx';
 import LatestUpdates from '@components/homepage/LatestUpdates.astro';
-import PracticeNets from '@components/homepage/PracticeNets.astro';
-import GettingStarted from '@components/homepage/GettingStarted.astro';
+import Map from '@components/Map.astro';
 
 const frontmatter = {
   title: '',
@@ -19,18 +18,17 @@ const frontmatter = {
   <Hero />
   <EmergencyNotice />
 
-  <div class="space-y-8">
-    <RoadWeatherStatus client:load />
-    <WelcomeSection />
-  </div>
+  <div class="">
+    <CallToAction />
 
-  <div class="my-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-    <PracticeNets />
-    <LatestUpdates />
-  </div>
+    <div class="space-y-8 my-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <PracticeNetsSchedule />
+        <CurrentConditions client:load />
+      </div>
 
-  <div class="space-y-8 my-8">
-    <GettingStarted />
-    <Map />
+      <LatestUpdates />
+      <Map />
+    </div>
   </div>
 </Layout>

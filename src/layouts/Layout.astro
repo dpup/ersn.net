@@ -8,7 +8,7 @@ const { frontmatter } = Astro.props;
 
 const headerLinks = [
   { title: 'Home', href: '/', selected: false },
-  { title: 'Practice Net', href: '/nets', selected: false },
+  { title: 'Practice Nets', href: '/nets', selected: false },
   { title: 'News', href: '/news', selected: false },
 ];
 
@@ -32,9 +32,9 @@ const footerLinks = [
   { title: 'About ERSN', href: '/about' },
 ];
 
-headerLinks.forEach(
-  (section) => (section.selected = section.href.substring(1) === Astro.url.pathname.split('/')[1]),
-);
+headerLinks.forEach((section) => {
+  section.selected = section.href.substring(1) === Astro.url.pathname.split('/')[1];
+});
 ---
 
 <!doctype html>
@@ -331,6 +331,7 @@ headerLinks.forEach(
     <div class="max-w-5xl mx-auto px-4">
       <slot />
     </div>
+
 
     <footer class="bg-stone-200 border-t border-stone-300">
       <div class="max-w-5xl mx-auto px-4 md:px-8 py-8">

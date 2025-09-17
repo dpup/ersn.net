@@ -33,6 +33,7 @@ interface Alert {
   impact?: string;
   startTime?: string;
   expectedEnd?: string;
+  distanceToRouteMeters?: number;
   metadata?: Record<string, unknown>;
 }
 
@@ -348,6 +349,7 @@ export default function RoadWeatherStatus() {
           impact: (alertObj.impact as string) || undefined,
           startTime: (alertObj.startTime as string) || undefined,
           expectedEnd: (alertObj.expectedEnd as string) || (alertObj.end as string) || undefined,
+          distanceToRouteMeters: (alertObj.distanceToRouteMeters as number) || undefined,
           metadata: (alertObj.metadata as Record<string, unknown>) || undefined
         };
       };
@@ -618,6 +620,12 @@ export default function RoadWeatherStatus() {
               )}
             </div>
           </div>
+        </div>
+        <div className="m-4 p-3 bg-stone-50 rounded border border-stone-200">
+          <p className="text-xs text-stone-600 text-center">
+            <strong>Source:</strong> Google Maps • Caltrans • OpenWeather<br /> 
+            <strong>Update Frequency:</strong> Every 5 minutes
+          </p>
         </div>
 
       </div>
