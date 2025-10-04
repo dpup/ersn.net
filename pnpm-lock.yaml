@@ -36,7 +36,7 @@ dependencies:
     specifier: ^2.3.4
     version: 2.3.4
   astro:
-    specifier: ^5.6.1
+    specifier: ^5.13.2
     version: 5.14.1(@types/node@24.6.2)(typescript@5.9.3)
   astro-icon:
     specifier: ^1.1.5
