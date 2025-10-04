@@ -251,7 +251,6 @@ export default function RoadWeatherStatus() {
   const [error, setError] = useState<string | null>(null);
   const [selectedRoute, setSelectedRoute] = useState<RoadSegment | null>(null);
   const [selectedWeather, setSelectedWeather] = useState<WeatherLocation | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
 
   const fetchData = useCallback(async () => {
     try {
@@ -427,13 +426,12 @@ export default function RoadWeatherStatus() {
           const severityOrder = { CRITICAL: 0, WARNING: 1, INFO: 2, ALERT_SEVERITY_UNSPECIFIED: 3 };
           return severityOrder[a.severity] - severityOrder[b.severity];
         }),
-        lastUpdated: new Date().toLocaleTimeString()
+        lastUpdated: roads.lastUpdated || weather.lastUpdated || new Date().toISOString()
       };
 
 
       console.log('Transformed data:', transformedData);
       setData(transformedData);
-      setLastUpdated(new Date());
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load data';
       setError(errorMessage);
@@ -445,8 +443,8 @@ export default function RoadWeatherStatus() {
 
   useEffect(() => {
     fetchData();
-    // Refresh every 5 minutes
-    const interval = setInterval(fetchData, 5 * 60 * 1000);
+    // Refresh every 15 minutes
+    const interval = setInterval(fetchData, 15 * 60 * 1000);
     return () => clearInterval(interval);
   }, [fetchData]);
 
@@ -623,8 +621,8 @@ export default function RoadWeatherStatus() {
         </div>
         <div className="m-4 p-3 bg-stone-50 rounded border border-stone-200">
           <p className="text-xs text-stone-600 text-center">
-            <strong>Source:</strong> Google Maps • Caltrans • OpenWeather<br /> 
-            <strong>Update Frequency:</strong> Every 5 minutes
+            <strong>Source:</strong> Google Maps • Caltrans • OpenWeather<br />
+            <strong>Last Updated:</strong> {formatHumanTime(data.lastUpdated)} • <strong>Update Frequency:</strong> Every 15 minutes
           </p>
         </div>
 
