@@ -1,0 +1,321 @@
+---
+import Content from '@components/Content.astro';
+import Layout from '@layouts/Layout.astro';
+
+const frontmatter = {
+  title: 'Emergency Radio Net Playbook',
+  description:
+    'Simple guidance for running and participating in emergency radio nets during wildfires, snowstorms, and other disasters.',
+};
+---
+
+<Layout frontmatter={frontmatter}>
+  <Content>
+    <h1>ERSN Emergency Radio Net Playbook</h1>
+    <p class="text-lg text-stone-600 mb-6">
+      For Use During Wildfires, Snowstorms, and Other Disasters
+    </p>
+
+    <h2>Purpose</h2>
+    <p>
+      This playbook provides simple guidance for how to run and participate in an emergency radio
+      net, in particular when phone and internet service may be unavailable. The goal is to ensure
+      communication is clear, orderly, and useful for everyone listening.
+    </p>
+
+    <h2>What is a Net?</h2>
+    <p>
+      A net is a structured radio conversation where one station acts as Net Control and directs
+      all communication. This prevents people from talking over each other and keeps critical
+      updates from being missed.
+    </p>
+
+    <h2>What qualifies as an emergency?</h2>
+    <p>
+      An emergency net can be established at the discretion of an ERSN member, but typically it
+      will be associated with wildfires in the area, power outages, cell-service disruption, or
+      severe snow storms.
+    </p>
+
+    <h2>Who Should Be Net Control?</h2>
+    <p>
+      The most experienced operator available, with the clearest and strongest connection to the
+      group (often the person who reaches the repeater most reliably).
+    </p>
+    <p>
+      If that person needs a break or loses power, another station should step in. Ideally,
+      multiple backups are identified in advance.
+    </p>
+
+    <h2>Net Control Responsibilities</h2>
+    <ul>
+      <li>Announce the net and type ("directed net" = all traffic goes through Net Control).</li>
+      <li>Keep a log of who has checked in and what updates are shared.</li>
+      <li>
+        Decide which traffic has priority:
+        <ul>
+          <li><strong>Emergency</strong> (life safety, urgent evacuation)</li>
+          <li><strong>Priority</strong> (urgent but not immediately life-threatening)</li>
+          <li>
+            <strong>Informational</strong> (road closures, shelter status, weather conditions)
+          </li>
+          <li><strong>Routine</strong> (general coordination, questions)</li>
+        </ul>
+      </li>
+      <li>Poll for active stations regularly if few people are on the air.</li>
+      <li>Hand off duties every 2–4 hours if possible, to prevent fatigue.</li>
+    </ul>
+
+    <h2>Timing Guidelines</h2>
+    <div class="overflow-x-auto mb-6">
+      <table class="min-w-full border-collapse border border-stone-300">
+        <thead class="bg-stone-100">
+          <tr>
+            <th class="border border-stone-300 px-4 py-2 text-left">Interval</th>
+            <th class="border border-stone-300 px-4 py-2 text-left">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="border border-stone-300 px-4 py-2">Immediate</td>
+            <td class="border border-stone-300 px-4 py-2"
+              >Net Control opens the net and calls for emergency/priority updates</td
+            >
+          </tr>
+          <tr>
+            <td class="border border-stone-300 px-4 py-2">5 min</td>
+            <td class="border border-stone-300 px-4 py-2"
+              >First round of polling: "Any stations, please check in"</td
+            >
+          </tr>
+          <tr>
+            <td class="border border-stone-300 px-4 py-2">10–15 min</td>
+            <td class="border border-stone-300 px-4 py-2"
+              >Additional polling if activity is low</td
+            >
+          </tr>
+          <tr>
+            <td class="border border-stone-300 px-4 py-2">30 min</td>
+            <td class="border border-stone-300 px-4 py-2"
+              >Summary of who is checked in and any key updates</td
+            >
+          </tr>
+          <tr>
+            <td class="border border-stone-300 px-4 py-2">60–90 min</td>
+            <td class="border border-stone-300 px-4 py-2">Full roll call of all known stations</td>
+          </tr>
+          <tr>
+            <td class="border border-stone-300 px-4 py-2">2–4 hrs</td>
+            <td class="border border-stone-300 px-4 py-2"
+              >Rotate Net Control to a rested operator</td
+            >
+          </tr>
+          <tr>
+            <td class="border border-stone-300 px-4 py-2">End</td>
+            <td class="border border-stone-300 px-4 py-2"
+              >Announce the net is closing when conditions stabilize</td
+            >
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>How to Interact with the Net</h2>
+    <p>
+      As a participant in the net, your role is to keep communication clear, brief, and helpful for
+      everyone listening.
+    </p>
+    <p>
+      Always wait for Net Control to acknowledge you before speaking, unless you have an emergency
+      update that affects safety or evacuation. Use plain language, avoid unnecessary chatter, and
+      share information that others in the community may need—such as road closures, shelter
+      status, or evacuation changes.
+    </p>
+    <p>
+      Think of the net as a shared lifeline: every transmission should add value and keep the
+      channel available for critical traffic.
+    </p>
+
+    <h3>Emergency Updates</h3>
+    <p>Use immediately, even if someone else is talking. Say "Emergency" or "Break Break" clearly at the start.</p>
+    <div class="bg-stone-50 border-l-4 border-stone-400 p-4 mb-4">
+      <p class="font-mono text-sm">
+        <strong>Example:</strong><br />
+        Emergency. Cal Fire have notified that the fire has crossed Moran Road near the bridge.
+        Immediate evacuation needed for homes east of the river.
+      </p>
+    </div>
+
+    <h3>Priority Updates</h3>
+    <p>For urgent but not immediately life-threatening information.</p>
+    <div class="bg-stone-50 border-l-4 border-stone-400 p-4 mb-4">
+      <p class="font-mono text-sm">
+        <strong>Example:</strong><br />
+        Priority traffic. This is Bob on Pine Drive. A tree has fallen and blocked the exit to
+        Highway 4. If you need to exit, drive South.
+      </p>
+    </div>
+
+    <h3>Informational Updates</h3>
+    <p>
+      Useful for situational awareness, but not urgent. Wait for Net Control to call for updates or
+      for a break in traffic.
+    </p>
+    <div class="bg-stone-50 border-l-4 border-stone-400 p-4 mb-4">
+      <p class="font-mono text-sm">
+        <strong>Example:</strong><br />
+        Net Control, this is Ben X123. Informational traffic: the snowplows have opened up Blagen Road.
+      </p>
+    </div>
+
+    <h3>General Questions / Routine</h3>
+    <p>Ask permission before speaking, to avoid tying up the net.</p>
+    <div class="bg-stone-50 border-l-4 border-stone-400 p-4 mb-4">
+      <p class="font-mono text-sm">
+        <strong>Example:</strong><br />
+        <strong>Jenny:</strong> Net Control, this is Jenny Y456. Routine Traffic.<br />
+        <strong>NC:</strong> This is Net Control, go ahead Jenny.<br />
+        <strong>Jenny:</strong> Can anyone confirm the status of Highway 4 at Dorrington?
+      </p>
+    </div>
+
+    <h3>Check-Ins / Status</h3>
+    <p>
+      When Net Control calls roll, reply with your identifier, location, and whether you have
+      updates.
+    </p>
+    <div class="bg-stone-50 border-l-4 border-stone-400 p-4 mb-4">
+      <p class="font-mono text-sm">
+        <strong>Example:</strong><br />
+        This is Sarah Z999, at the fire station, no traffic at this time.
+      </p>
+    </div>
+
+    <h3>Notes</h3>
+    <ul>
+      <li>
+        <strong>If activity is low:</strong> Net Control should call for check-ins every 10–15 minutes.
+      </li>
+      <li>
+        <strong>Responding to "CQ"</strong> (a general call: "is anyone listening?"): Net Control
+        should reply and invite the caller to check in.
+      </li>
+      <li>Keep transmissions under 30 seconds to allow others a chance to break in.</li>
+      <li>
+        Pause 2–3 seconds before speaking after pressing transmit, in case someone with a weak
+        signal is trying to break through.
+      </li>
+      <li>Use plain language whenever possible — avoid codes, jargon, or abbreviations.</li>
+      <li>
+        If the Net is busy, Net Control may ask for callsigns only, before inviting members to
+        transmit traffic
+      </li>
+    </ul>
+
+    <h2>Net Control Scripts</h2>
+
+    <h3>Opening the net</h3>
+    <div class="bg-stone-50 border border-stone-300 p-4 mb-6">
+      <p class="font-mono text-sm whitespace-pre-line">
+This is [Identifier/Callsign], acting as Net Control for the ERSN Emergency Net.
+
+This is a directed net — please do not transmit unless called by Net Control, or if you have emergency or priority information.
+
+Emergency information is anything that affects immediate safety, such as fire approaching homes, medical needs, or blocked evacuation routes.
+
+Priority information includes urgent but not life-threatening updates, such as major road closures or supply shortages.
+
+At this time, are there any stations with emergency or priority traffic? Please call now.
+
+[Pause ~10 seconds]
+
+Hearing none, we will now begin check-ins.
+
+When called, please give your name, callsign, your location, and whether you have any updates.
+
+If you have no updates, simply say "no traffic."
+
+[Call roll call]
+
+Are there any additional stations wishing to check in at this time?
+
+Please call Net Control with your callsign only. When called, please give name, callsign, location and whether you have traffic.
+      </p>
+    </div>
+
+    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+      <p class="text-sm">
+        <strong>A note on the roll call:</strong> if the net is expected to be busy and have many
+        regular members checking in, going through the full roster may make most sense. However, in
+        emergencies it is likely that few people are online at the start of the incident. In which
+        case, you can provide a more open-ended check-in calling stations by their callsign suffix.
+      </p>
+      <p class="font-mono text-sm mt-2">
+        <strong>NC:</strong> Calling stations with callsign ending in 1, provide only your callsign.<br
+        />
+        <strong>Traffic:</strong> U951 G431<br />
+        <strong>NC:</strong> Heard U951 and G431. U951, go ahead with your checkin.<br />
+        <strong>U951:</strong> Dan, U951 here in Pinebrook. No traffic.<br />
+        <strong>NC:</strong> Got you U951, go ahead G431 with your checkin.<br />
+        <strong>G431:</strong> Xander, G431 in White Pines. Informational traffic relating to road
+        conditions.
+      </p>
+    </div>
+
+    <h3>Hourly roll call</h3>
+    <div class="bg-stone-50 border border-stone-300 p-4 mb-6">
+      <p class="font-mono text-sm whitespace-pre-line">
+This is Net Control [Identifier]. We will now conduct a roll call to verify which stations are active.
+
+When called, please respond with your identifier, location, and whether you have any updates.
+
+If you have no updates, simply say "no traffic."
+
+[Read down the roster of stations from your log, pausing after each one]
+
+Are there any additional stations wishing to check in at this time?
+
+Please call Net Control now.
+      </p>
+    </div>
+
+    <h3>Net control handover</h3>
+    <p class="mb-4">
+      Incoming net control should track a regular rollcall to get a current roster. If missed, the
+      outgoing net control should read off active stations.
+    </p>
+    <p class="font-semibold mb-2">Outgoing net control:</p>
+    <div class="bg-stone-50 border border-stone-300 p-4 mb-4">
+      <p class="font-mono text-sm whitespace-pre-line">
+This is Net Control [Old Identifier]. I am handing Net Control duties to [New Identifier] at [time]. Please direct all traffic to them from this point forward.
+
+Thank you for your participation.
+      </p>
+    </div>
+
+    <p class="font-semibold mb-2">Incoming net control:</p>
+    <div class="bg-stone-50 border border-stone-300 p-4 mb-6">
+      <p class="font-mono text-sm whitespace-pre-line">
+This is [New Identifier], now serving as Net Control for the ERSN Emergency Net.
+
+I have received the current roster and log from [Old Identifier].
+
+Please continue to direct all traffic through me.
+
+Are there any stations with emergency or priority traffic before we resume normal operations?
+
+Please call now.
+      </p>
+    </div>
+
+    <h3>Closing the Net</h3>
+    <p class="mb-2">When the emergency has passed:</p>
+    <div class="bg-stone-50 border border-stone-300 p-4 mb-6">
+      <p class="font-mono text-sm whitespace-pre-line">
+This is Net Control [Identifier], closing the ERSN Emergency Net at [time].
+
+Normal use of this channel may now resume. Thank you to all stations who participated.
+      </p>
+    </div>
+  </Content>
+</Layout>
