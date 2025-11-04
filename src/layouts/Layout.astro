@@ -14,13 +14,16 @@ const headerLinks = [
 
 const resourceLinks = [
   { title: 'About ERSN', href: '/about' },
+  { title: 'Contact ERSN', href: 'mailto:ersnnets@gmail.com' },
+  { separator: true },
   { title: 'GMRS Guide', href: '/gmrs' },
   { title: 'Channels', href: '/channels' },
   { title: 'Meshtastic', href: '/mesh' },
+  { title: 'Emergency Net Playbook', href: '/resources/emergency-net-playbook' },
+  { separator: true },
   { title: 'Preparation', href: '/prep' },
-  { title: 'Burn Day Information', href: 'https://burnday.ersn.net' },
   { title: 'Emergency Contacts', href: '/emergency' },
-  { title: 'Contact ERSN', href: 'mailto:ersnnets@gmail.com' },
+  { title: 'Burn Day Information', href: 'https://burnday.ersn.net' },
 ];
 
 const footerLinks = [
@@ -188,14 +191,18 @@ headerLinks.forEach((section) => {
                 class="absolute dropdown-menu right-0 mt-0 py-2 w-48 bg-white rounded-md shadow-lg z-10 border border-stone-200"
               >
                 {
-                  resourceLinks.map((link) => (
-                    <a
-                      href={link.href}
-                      class="block px-4 py-2 text-sm text-stone-700 hover:bg-stone-100 hover:text-stone-900"
-                    >
-                      {link.title}
-                    </a>
-                  ))
+                  resourceLinks.map((link) =>
+                    link.separator ? (
+                      <hr class="my-1 border-stone-200" />
+                    ) : (
+                      <a
+                        href={link.href}
+                        class="block px-4 py-2 text-sm text-stone-700 hover:bg-stone-100 hover:text-stone-900"
+                      >
+                        {link.title}
+                      </a>
+                    ),
+                  )
                 }
               </div>
             </div>
@@ -259,14 +266,18 @@ headerLinks.forEach((section) => {
               </p>
               <div class="flex flex-col space-y-1 mt-2">
                 {
-                  resourceLinks.map((link) => (
-                    <a
-                      href={link.href}
-                      class="text-stone-700 hover:text-stone-900 px-2 py-2 capitalize transition-colors border-b border-stone-100"
-                    >
-                      {link.title}
-                    </a>
-                  ))
+                  resourceLinks.map((link) =>
+                    link.separator ? (
+                      <hr class="my-2 border-stone-200" />
+                    ) : (
+                      <a
+                        href={link.href}
+                        class="text-stone-700 hover:text-stone-900 px-2 py-2 capitalize transition-colors border-b border-stone-100"
+                      >
+                        {link.title}
+                      </a>
+                    ),
+                  )
                 }
               </div>
             </div>
