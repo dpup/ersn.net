@@ -12,14 +12,10 @@ const frontmatter = {
 <Layout frontmatter={frontmatter}>
   <Content>
     <h1>ERSN Emergency Radio Net Playbook</h1>
-    <p class="text-lg text-stone-600 mb-6">
-      For Use During Wildfires, Snowstorms, and Other Disasters
-    </p>
 
-    <h2>Purpose</h2>
     <p>
       This playbook provides simple guidance for how to run and participate in an emergency radio
-      net, in particular when phone and internet service may be unavailable. The goal is to ensure
+      net during wildfires, snowstorms, and other disasters, particularly when phone and internet service may be unavailable. The goal is to ensure
       communication is clear, orderly, and useful for everyone listening.
     </p>
 
@@ -138,21 +134,31 @@ const frontmatter = {
 
     <h3>Emergency Updates</h3>
     <p>Use immediately, even if someone else is talking. Say "Emergency" or "Break Break" clearly at the start.</p>
-    <div class="bg-stone-50 border-l-4 border-stone-400 p-4 mb-4">
+    <div class="bg-stone-50 border-l-4 border-stone-400 rounded p-4 mb-4 [&_p]:mb-2 [&_p:last-child]:mb-0">
       <p class="font-mono text-sm">
-        <strong>Mike M789:</strong> Net Control, this is Mike M789. Emergency traffic.<br />
-        <strong>NC:</strong> This is Net Control, go ahead M789 with emergency traffic.<br />
-        <strong>Mike M789:</strong> Cal Fire have notified that the fire has crossed Moran Road near the bridge. Immediate evacuation needed for homes east of the river.<br />
+        <strong>Mike M789:</strong> Net Control, this is Mike M789. Emergency traffic.
+      </p>
+      <p class="font-mono text-sm">
+        <strong>NC:</strong> This is Net Control, go ahead M789 with emergency traffic.
+      </p>
+      <p class="font-mono text-sm">
+        <strong>Mike M789:</strong> Cal Fire have notified that the fire has crossed Moran Road near the bridge. Immediate evacuation needed for homes east of the river.
+      </p>
+      <p class="font-mono text-sm">
         <strong>NC:</strong> Confirmed emergency traffic. Fire has crossed Moran Road near the bridge. Immediate evacuation for homes east of the river.
       </p>
     </div>
 
     <h3>Priority Updates</h3>
     <p>For urgent but not immediately life-threatening information.</p>
-    <div class="bg-stone-50 border-l-4 border-stone-400 p-4 mb-4">
+    <div class="bg-stone-50 border-l-4 border-stone-400 rounded p-4 mb-4 [&_p]:mb-2 [&_p:last-child]:mb-0">
       <p class="font-mono text-sm">
-        <strong>Bob B456:</strong> Net Control, this is Bob B456. Priority traffic.<br />
-        <strong>NC:</strong> This is Net Control, go ahead B456 with priority traffic.<br />
+        <strong>Bob B456:</strong> Net Control, this is Bob B456. Priority traffic.
+      </p>
+      <p class="font-mono text-sm">
+        <strong>NC:</strong> This is Net Control, go ahead B456 with priority traffic.
+      </p>
+      <p class="font-mono text-sm">
         <strong>Bob B456:</strong> A tree has fallen and blocked the exit to Highway 4 at Pine Drive. If you need to exit, drive South.
       </p>
     </div>
@@ -162,20 +168,28 @@ const frontmatter = {
       Useful for situational awareness, but not urgent. Wait for Net Control to call for updates or
       for a break in traffic.
     </p>
-    <div class="bg-stone-50 border-l-4 border-stone-400 p-4 mb-4">
+    <div class="bg-stone-50 border-l-4 border-stone-400 rounded p-4 mb-4 [&_p]:mb-2 [&_p:last-child]:mb-0">
       <p class="font-mono text-sm">
-        <strong>Ben X123:</strong> Net Control, this is Ben X123. Informational traffic.<br />
-        <strong>NC:</strong> This is Net Control, go ahead X123 with informational traffic.<br />
+        <strong>Ben X123:</strong> Net Control, this is Ben X123. Informational traffic.
+      </p>
+      <p class="font-mono text-sm">
+        <strong>NC:</strong> This is Net Control, go ahead X123 with informational traffic.
+      </p>
+      <p class="font-mono text-sm">
         <strong>Ben X123:</strong> The snowplows have opened up Blagen Road.
       </p>
     </div>
 
     <h3>General Questions / Routine</h3>
     <p>Ask permission before speaking, to avoid tying up the net.</p>
-    <div class="bg-stone-50 border-l-4 border-stone-400 p-4 mb-4">
+    <div class="bg-stone-50 border-l-4 border-stone-400 rounded p-4 mb-4 [&_p]:mb-2 [&_p:last-child]:mb-0">
       <p class="font-mono text-sm">
-        <strong>Jenny Y456:</strong> Net Control, this is Jenny Y456. Routine traffic.<br />
-        <strong>NC:</strong> This is Net Control, go ahead Y456 with routine traffic.<br />
+        <strong>Jenny Y456:</strong> Net Control, this is Jenny Y456. Routine traffic.
+      </p>
+      <p class="font-mono text-sm">
+        <strong>NC:</strong> This is Net Control, go ahead Y456 with routine traffic.
+      </p>
+      <p class="font-mono text-sm">
         <strong>Jenny Y456:</strong> Can anyone confirm the status of Highway 4 at Dorrington?
       </p>
     </div>
@@ -185,9 +199,11 @@ const frontmatter = {
       When Net Control calls roll, reply with your identifier, location, and whether you have
       updates.
     </p>
-    <div class="bg-stone-50 border-l-4 border-stone-400 p-4 mb-4">
+    <div class="bg-stone-50 border-l-4 border-stone-400 rounded p-4 mb-4 [&_p]:mb-2 [&_p:last-child]:mb-0">
       <p class="font-mono text-sm">
-        <strong>NC:</strong> Calling Sarah Z999.<br />
+        <strong>NC:</strong> Calling Sarah Z999.
+      </p>
+      <p class="font-mono text-sm">
         <strong>Sarah Z999:</strong> This is Sarah Z999, at the fire station, no traffic at this time.
       </p>
     </div>
@@ -216,9 +232,8 @@ const frontmatter = {
     <h2>Net Control Scripts</h2>
 
     <h3>Opening the net</h3>
-    <div class="bg-stone-50 border border-stone-300 p-4 mb-6">
-      <p class="font-mono text-sm whitespace-pre-line">
-This is [Identifier/Callsign], acting as Net Control for the ERSN Emergency Net.
+    <div class="bg-stone-50 border-l-4 border-stone-400 rounded p-4 mb-6">
+      <p class="font-mono text-sm whitespace-pre-line">This is [Identifier/Callsign], acting as Net Control for the ERSN Emergency Net.
 
 This is a directed net — please do not transmit unless called by Net Control, or if you have emergency or priority information.
 
@@ -240,33 +255,40 @@ If you have no updates, simply say "no traffic."
 
 Are there any additional stations wishing to check in at this time?
 
-Please call Net Control with your callsign only. When called, please give name, callsign, location and whether you have traffic.
-      </p>
+Please call Net Control with your callsign only. When called, please give name, callsign, location and whether you have traffic.</p>
     </div>
 
-    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+    <div class="bg-stone-50 border-l-4 border-stone-400 rounded p-4 mb-6 [&_p]:mb-2 [&_p:last-child]:mb-0">
       <p class="text-sm">
         <strong>A note on the roll call:</strong> if the net is expected to be busy and have many
         regular members checking in, going through the full roster may make most sense. However, in
         emergencies it is likely that few people are online at the start of the incident. In which
         case, you can provide a more open-ended check-in calling stations by their callsign suffix.
       </p>
-      <p class="font-mono text-sm mt-2">
-        <strong>NC:</strong> Calling stations with callsign ending in 1, provide only your callsign.<br
-        />
-        <strong>Traffic:</strong> U951 G431<br />
-        <strong>NC:</strong> Heard U951 and G431. U951, go ahead with your checkin.<br />
-        <strong>U951:</strong> Dan, U951 here in Pinebrook. No traffic.<br />
-        <strong>NC:</strong> Got you U951, go ahead G431 with your checkin.<br />
+      <p class="font-mono text-sm">
+        <strong>NC:</strong> Calling stations with callsign ending in 1, provide only your callsign.
+      </p>
+      <p class="font-mono text-sm">
+        <strong>Traffic:</strong> U951 G431
+      </p>
+      <p class="font-mono text-sm">
+        <strong>NC:</strong> Heard U951 and G431. U951, go ahead with your checkin.
+      </p>
+      <p class="font-mono text-sm">
+        <strong>U951:</strong> Dan, U951 here in Pinebrook. No traffic.
+      </p>
+      <p class="font-mono text-sm">
+        <strong>NC:</strong> Got you U951, go ahead G431 with your checkin.
+      </p>
+      <p class="font-mono text-sm">
         <strong>G431:</strong> Xander, G431 in White Pines. Informational traffic relating to road
         conditions.
       </p>
     </div>
 
     <h3>Hourly roll call</h3>
-    <div class="bg-stone-50 border border-stone-300 p-4 mb-6">
-      <p class="font-mono text-sm whitespace-pre-line">
-This is Net Control [Identifier]. We will now conduct a roll call to verify which stations are active.
+    <div class="bg-stone-50 border-l-4 border-stone-400 rounded p-4 mb-6">
+      <p class="font-mono text-sm whitespace-pre-line">This is Net Control [Identifier]. We will now conduct a roll call to verify which stations are active.
 
 When called, please respond with your identifier, location, and whether you have any updates.
 
@@ -276,8 +298,7 @@ If you have no updates, simply say "no traffic."
 
 Are there any additional stations wishing to check in at this time?
 
-Please call Net Control now.
-      </p>
+Please call Net Control now.</p>
     </div>
 
     <h3>Net control handover</h3>
@@ -286,18 +307,15 @@ Please call Net Control now.
       outgoing net control should read off active stations.
     </p>
     <p class="font-semibold mb-2">Outgoing net control:</p>
-    <div class="bg-stone-50 border border-stone-300 p-4 mb-4">
-      <p class="font-mono text-sm whitespace-pre-line">
-This is Net Control [Old Identifier]. I am handing Net Control duties to [New Identifier] at [time]. Please direct all traffic to them from this point forward.
+    <div class="bg-stone-50 border-l-4 border-stone-400 rounded p-4 mb-4">
+      <p class="font-mono text-sm whitespace-pre-line">This is Net Control [Old Identifier]. I am handing Net Control duties to [New Identifier] at [time]. Please direct all traffic to them from this point forward.
 
-Thank you for your participation.
-      </p>
+Thank you for your participation.</p>
     </div>
 
     <p class="font-semibold mb-2">Incoming net control:</p>
-    <div class="bg-stone-50 border border-stone-300 p-4 mb-6">
-      <p class="font-mono text-sm whitespace-pre-line">
-This is [New Identifier], now serving as Net Control for the ERSN Emergency Net.
+    <div class="bg-stone-50 border-l-4 border-stone-400 rounded p-4 mb-6">
+      <p class="font-mono text-sm whitespace-pre-line">This is [New Identifier], now serving as Net Control for the ERSN Emergency Net.
 
 I have received the current roster and log from [Old Identifier].
 
@@ -305,18 +323,15 @@ Please continue to direct all traffic through me.
 
 Are there any stations with emergency or priority traffic before we resume normal operations?
 
-Please call now.
-      </p>
+Please call now.</p>
     </div>
 
     <h3>Closing the Net</h3>
     <p class="mb-2">When the emergency has passed:</p>
-    <div class="bg-stone-50 border border-stone-300 p-4 mb-6">
-      <p class="font-mono text-sm whitespace-pre-line">
-This is Net Control [Identifier], closing the ERSN Emergency Net at [time].
+    <div class="bg-stone-50 border-l-4 border-stone-400 rounded p-4 mb-6">
+      <p class="font-mono text-sm whitespace-pre-line">This is Net Control [Identifier], closing the ERSN Emergency Net at [time].
 
-Normal use of this channel may now resume. Thank you to all stations who participated.
-      </p>
+Normal use of this channel may now resume. Thank you to all stations who participated.</p>
     </div>
   </Content>
 </Layout>
