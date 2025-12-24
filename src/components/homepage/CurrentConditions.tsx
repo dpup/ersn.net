@@ -91,6 +91,36 @@ const getWeatherIcon = (iconCode: string): ReactElement => {
   return iconMap[iconCode] || <Cloud className="h-4 w-4 text-gray-500" />;
 };
 
+// Normalize severity values to match API variations
+const normalizeSeverity = (rawSeverity: string | undefined): 'CRITICAL' | 'WARNING' | null => {
+  if (!rawSeverity) return null;
+
+  const severityUpper = rawSeverity.toUpperCase();
+  if (severityUpper === 'CRITICAL' || severityUpper === 'WARNING') {
+    return severityUpper as 'CRITICAL' | 'WARNING';
+  }
+
+  // Handle non-standard values (same logic as RoadWeatherStatus)
+  const severityLower = rawSeverity.toLowerCase();
+  if (
+    severityLower.includes('critical') ||
+    severityLower.includes('severe') ||
+    severityLower.includes('emergency')
+  ) {
+    return 'CRITICAL';
+  }
+  if (
+    severityLower.includes('warning') ||
+    severityLower.includes('major') ||
+    severityLower.includes('high') ||
+    severityLower.includes('important')
+  ) {
+    return 'WARNING';
+  }
+
+  return null;
+};
+
 // Helper to collect and normalize alerts from API data
 const collectAlerts = (
   roadData: RoadApiResponse | null,
@@ -101,11 +131,11 @@ const collectAlerts = (
   // Collect road alerts
   roadData?.roads.forEach((road) => {
     road.alerts.forEach((alert) => {
-      const severity = alert.severity?.toUpperCase();
-      if (severity === 'CRITICAL' || severity === 'WARNING') {
+      const severity = normalizeSeverity(alert.severity);
+      if (severity) {
         alerts.push({
           id: alert.id,
-          severity: severity as 'CRITICAL' | 'WARNING',
+          severity,
           title: alert.title || alert.description,
           description: alert.description,
           type: 'road',
@@ -117,11 +147,11 @@ const collectAlerts = (
   // Collect weather alerts
   weatherData?.weatherData.forEach((location) => {
     location.alerts.forEach((alert) => {
-      const severity = alert.severity?.toUpperCase();
-      if (severity === 'CRITICAL' || severity === 'WARNING') {
+      const severity = normalizeSeverity(alert.severity);
+      if (severity) {
         alerts.push({
           id: alert.id,
-          severity: severity as 'CRITICAL' | 'WARNING',
+          severity,
           title: alert.title || alert.description || '',
           description: alert.description,
           type: 'weather',
