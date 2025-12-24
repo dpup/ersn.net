@@ -513,63 +513,71 @@ export default function RoadWeatherStatus() {
 
   console.log('Rendering with data:', data);
 
-  // Filter important alerts (CRITICAL and WARNING)
-  const importantAlerts = data.alerts.filter(
-    (alert) => alert.severity === 'CRITICAL' || alert.severity === 'WARNING',
-  );
-  const criticalAlerts = importantAlerts.filter((a) => a.severity === 'CRITICAL');
-  const warningAlerts = importantAlerts.filter((a) => a.severity === 'WARNING');
+  // Show all alerts - trust the API to send only relevant ones
+  const allAlerts = data.alerts;
 
   return (
     <div className="my-8">
       {/* Active Alerts Section - Displayed prominently at top */}
-      {importantAlerts.length > 0 && (
+      {allAlerts.length > 0 && (
         <div className="mb-6 bg-white border border-stone-300 rounded-sm overflow-hidden">
           <div className="p-4 sm:p-6">
             <div className="flex items-center space-x-3 mb-4">
               <AlertTriangle className="h-5 w-5 text-amber-600" aria-hidden="true" />
               <h3 className="text-lg sm:text-xl font-serif text-stone-800">Active Alerts</h3>
               <span className="text-xs text-stone-500 bg-stone-100 px-2 py-1 rounded">
-                {importantAlerts.length}
+                {allAlerts.length}
               </span>
             </div>
 
             <div className="space-y-3">
-              {/* Critical Alerts */}
-              {criticalAlerts.map((alert, index) => (
-                <div
-                  key={alert.id || `critical-${index}`}
-                  className="p-3 rounded-md border bg-red-50 border-red-200"
-                >
-                  <div className="flex items-start space-x-2">
-                    <OctagonX className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <div className="font-medium text-red-800 text-sm">{alert.title}</div>
-                      {alert.condensedSummary && alert.condensedSummary !== alert.title && (
-                        <div className="text-red-700 text-xs mt-1">{alert.condensedSummary}</div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
+              {allAlerts.map((alert, index) => {
+                const isCritical = alert.severity === 'CRITICAL';
+                const isWarning = alert.severity === 'WARNING';
+                const bgColor = isCritical
+                  ? 'bg-red-50 border-red-200'
+                  : isWarning
+                    ? 'bg-yellow-50 border-yellow-200'
+                    : 'bg-blue-50 border-blue-200';
+                const textColor = isCritical
+                  ? 'text-red-800'
+                  : isWarning
+                    ? 'text-yellow-800'
+                    : 'text-blue-800';
+                const summaryColor = isCritical
+                  ? 'text-red-700'
+                  : isWarning
+                    ? 'text-yellow-700'
+                    : 'text-blue-700';
+                const iconColor = isCritical
+                  ? 'text-red-600'
+                  : isWarning
+                    ? 'text-yellow-600'
+                    : 'text-blue-600';
 
-              {/* Warning Alerts */}
-              {warningAlerts.map((alert, index) => (
-                <div
-                  key={alert.id || `warning-${index}`}
-                  className="p-3 rounded-md border bg-yellow-50 border-yellow-200"
-                >
-                  <div className="flex items-start space-x-2">
-                    <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <div className="font-medium text-yellow-800 text-sm">{alert.title}</div>
-                      {alert.condensedSummary && alert.condensedSummary !== alert.title && (
-                        <div className="text-yellow-700 text-xs mt-1">{alert.condensedSummary}</div>
+                return (
+                  <div
+                    key={alert.id || `alert-${index}`}
+                    className={`p-3 rounded-md border ${bgColor}`}
+                  >
+                    <div className="flex items-start space-x-2">
+                      {isCritical ? (
+                        <OctagonX className={`h-4 w-4 ${iconColor} mt-0.5 flex-shrink-0`} />
+                      ) : (
+                        <AlertTriangle className={`h-4 w-4 ${iconColor} mt-0.5 flex-shrink-0`} />
                       )}
+                      <div>
+                        <div className={`font-medium ${textColor} text-sm`}>{alert.title}</div>
+                        {alert.condensedSummary && alert.condensedSummary !== alert.title && (
+                          <div className={`${summaryColor} text-xs mt-1`}>
+                            {alert.condensedSummary}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>

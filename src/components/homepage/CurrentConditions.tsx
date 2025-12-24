@@ -91,7 +91,7 @@ const getWeatherIcon = (iconCode: string): ReactElement => {
   return iconMap[iconCode] || <Cloud className="h-4 w-4 text-gray-500" />;
 };
 
-// Helper to collect and normalize alerts from API data
+// Helper to collect alerts from API data
 const collectAlerts = (
   roadData: RoadApiResponse | null,
   weatherData: WeatherApiResponse | null,
@@ -101,41 +101,30 @@ const collectAlerts = (
   // Collect road alerts
   roadData?.roads.forEach((road) => {
     road.alerts.forEach((alert) => {
-      const severity = alert.severity?.toUpperCase();
-      if (severity === 'CRITICAL' || severity === 'WARNING') {
-        alerts.push({
-          id: alert.id,
-          severity: severity as 'CRITICAL' | 'WARNING',
-          title: alert.title || alert.description,
-          description: alert.description,
-          type: 'road',
-        });
-      }
+      alerts.push({
+        id: alert.id,
+        severity: (alert.severity?.toUpperCase() as Alert['severity']) || 'INFO',
+        title: alert.title || alert.description,
+        description: alert.description,
+        type: 'road',
+      });
     });
   });
 
   // Collect weather alerts
   weatherData?.weatherData.forEach((location) => {
     location.alerts.forEach((alert) => {
-      const severity = alert.severity?.toUpperCase();
-      if (severity === 'CRITICAL' || severity === 'WARNING') {
-        alerts.push({
-          id: alert.id,
-          severity: severity as 'CRITICAL' | 'WARNING',
-          title: alert.title || alert.description || '',
-          description: alert.description,
-          type: 'weather',
-        });
-      }
+      alerts.push({
+        id: alert.id,
+        severity: (alert.severity?.toUpperCase() as Alert['severity']) || 'INFO',
+        title: alert.title || alert.description || '',
+        description: alert.description,
+        type: 'weather',
+      });
     });
   });
 
-  // Sort by severity (CRITICAL first)
-  return alerts.sort((a, b) => {
-    if (a.severity === 'CRITICAL' && b.severity !== 'CRITICAL') return -1;
-    if (a.severity !== 'CRITICAL' && b.severity === 'CRITICAL') return 1;
-    return 0;
-  });
+  return alerts;
 };
 
 export default function CurrentConditions() {
