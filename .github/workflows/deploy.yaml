@@ -44,6 +44,6 @@ jobs:
         run: aws s3 sync ./dist/_astro s3://${{ vars.S3_BUCKET_NAME }}/_astro --size-only --cache-control max-age=31536000
       - id: deploy-other
         name: Deploy everything else to s3
-        run: aws s3 sync ./dist/ s3://${{ vars.S3_BUCKET_NAME }}/ --size-only --cache-control max-age=60 --exclude "*_astro/*"
+        run: aws s3 sync ./dist/ s3://${{ vars.S3_BUCKET_NAME }}/ --cache-control max-age=60 --exclude "*_astro/*"
       - name: Invalidate cloudfront cache
         run: aws cloudfront create-invalidation --distribution-id ${{ vars.CF_DISTRO_ID }} --paths "/*" "/"
