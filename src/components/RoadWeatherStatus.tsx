@@ -14,6 +14,7 @@ import {
   MapPin,
   CircleAlert,
   OctagonX,
+  Link,
 } from 'lucide-react';
 import RouteDetailsDialog from './RouteDetailsDialog';
 import WeatherDetailsDialog from './WeatherDetailsDialog';
@@ -38,6 +39,17 @@ interface Alert {
   metadata?: Record<string, unknown>;
 }
 
+// Chain Control Info from API
+interface ChainControlInfo {
+  level: 'CHAIN_CONTROL_LEVEL_UNSPECIFIED' | 'CHAIN_CONTROL_LEVEL_NONE' | 'CHAIN_CONTROL_LEVEL_R1' | 'CHAIN_CONTROL_LEVEL_R2' | 'CHAIN_CONTROL_LEVEL_R3';
+  locationName?: string;
+  latitude?: number;
+  longitude?: number;
+  effectiveTime?: string;
+  direction?: string;
+  description?: string;
+}
+
 // API Response Interfaces
 interface RoadApiResponse {
   roads: {
@@ -51,6 +63,7 @@ interface RoadApiResponse {
     congestionLevel: string;
     delayMinutes: number;
     chainControl: string;
+    chainControlInfo?: ChainControlInfo;
     alerts: {
       id: string;
       severity: string;
@@ -120,6 +133,7 @@ interface RoadSegment {
   durationMinutes?: number;
   distanceKm?: number;
   chainControl?: string;
+  chainControlInfo?: ChainControlInfo;
   rawStatus?: string;
   statusExplanation?: string;
 }
@@ -472,6 +486,7 @@ export default function RoadWeatherStatus() {
             durationMinutes: road.durationMinutes,
             distanceKm: road.distanceKm,
             chainControl: road.chainControl,
+            chainControlInfo: road.chainControlInfo,
             rawStatus: road.status,
             statusExplanation: road.statusExplanation,
           };
@@ -669,6 +684,14 @@ export default function RoadWeatherStatus() {
                               <span className="font-medium text-stone-800 truncate">
                                 {segment.from} → {segment.to}
                               </span>
+                              {/* Chain Control Icon */}
+                              {segment.chainControlInfo &&
+                                segment.chainControlInfo.level !== 'CHAIN_CONTROL_LEVEL_NONE' &&
+                                segment.chainControlInfo.level !== 'CHAIN_CONTROL_LEVEL_UNSPECIFIED' && (
+                                  <div className="flex items-center flex-shrink-0 text-blue-600" title="Chain control in effect">
+                                    <Link className="h-4 w-4" />
+                                  </div>
+                                )}
                               {segment.alertCount > 0 &&
                                 (() => {
                                   const onRouteAlerts = segment.alerts.filter(

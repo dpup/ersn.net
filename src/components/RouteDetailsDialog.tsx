@@ -8,9 +8,18 @@ import {
   Snowflake,
   CheckCircle,
   AlertTriangle,
+  Link,
+  MapPin,
+  Clock,
 } from 'lucide-react';
 import Dialog, { DialogHeader, DialogContent } from './Dialog';
-import { type Alert, type RoadSegment, formatHumanTime, formatEnumValue } from './types';
+import {
+  type Alert,
+  type RoadSegment,
+  type ChainControlInfo,
+  formatHumanTime,
+  formatEnumValue,
+} from './types';
 
 interface RouteDetailsDialogProps {
   selectedRoute: RoadSegment;
@@ -24,6 +33,27 @@ const formatMetadataValue = (value: string): string => {
     return formatHumanTime(value) || value;
   }
   return formatEnumValue(value);
+};
+
+const getChainControlDisplay = (info: ChainControlInfo) => {
+  const levelMap: Record<string, { label: string; color: string; description: string }> = {
+    CHAIN_CONTROL_LEVEL_R1: {
+      label: 'R1',
+      color: 'bg-yellow-100 text-yellow-800 border-yellow-300',
+      description: 'Chains required except for vehicles with snow tires',
+    },
+    CHAIN_CONTROL_LEVEL_R2: {
+      label: 'R2',
+      color: 'bg-orange-100 text-orange-800 border-orange-300',
+      description: 'Chains required except 4WD/AWD with snow tires on all wheels',
+    },
+    CHAIN_CONTROL_LEVEL_R3: {
+      label: 'R3',
+      color: 'bg-red-100 text-red-800 border-red-300',
+      description: 'Chains required on all vehicles, no exceptions',
+    },
+  };
+  return levelMap[info.level] || null;
 };
 
 const getIncidentChip = (alert: Alert) => {
@@ -182,6 +212,85 @@ export default function RouteDetailsDialog({ selectedRoute, onClose }: RouteDeta
                 )}
               </div>
             </div>
+
+            {/* Chain Control Section */}
+            {selectedRoute.chainControlInfo &&
+              selectedRoute.chainControlInfo.level !== 'CHAIN_CONTROL_LEVEL_NONE' &&
+              selectedRoute.chainControlInfo.level !== 'CHAIN_CONTROL_LEVEL_UNSPECIFIED' && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="flex items-start space-x-3">
+                    <Link className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <h3 className="font-medium text-blue-900 text-lg">Chain Control</h3>
+                        {(() => {
+                          const display = getChainControlDisplay(selectedRoute.chainControlInfo!);
+                          return display ? (
+                            <span
+                              className={`px-2 py-0.5 text-xs font-bold rounded border ${display.color}`}
+                            >
+                              {display.label}
+                            </span>
+                          ) : null;
+                        })()}
+                      </div>
+
+                      {/* Description from API or fallback */}
+                      <p className="text-blue-800 text-sm mb-3">
+                        {selectedRoute.chainControlInfo.description ||
+                          getChainControlDisplay(selectedRoute.chainControlInfo)?.description}
+                      </p>
+
+                      {/* Location and timing details */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                        {selectedRoute.chainControlInfo.locationName && (
+                          <div className="flex items-start space-x-2">
+                            <MapPin className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                            <div>
+                              <span className="text-blue-600 text-xs uppercase tracking-wide block">
+                                Location
+                              </span>
+                              <span className="text-blue-800">
+                                {selectedRoute.chainControlInfo.locationName}
+                                {selectedRoute.chainControlInfo.direction &&
+                                  ` (${selectedRoute.chainControlInfo.direction})`}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                        {selectedRoute.chainControlInfo.effectiveTime && (
+                          <div className="flex items-start space-x-2">
+                            <Clock className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                            <div>
+                              <span className="text-blue-600 text-xs uppercase tracking-wide block">
+                                Effective
+                              </span>
+                              <span className="text-blue-800">
+                                {formatHumanTime(selectedRoute.chainControlInfo.effectiveTime)}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Map link if coordinates available */}
+                      {selectedRoute.chainControlInfo.latitude &&
+                        selectedRoute.chainControlInfo.longitude && (
+                          <a
+                            href={`https://www.google.com/maps/search/?api=1&query=${selectedRoute.chainControlInfo.latitude},${selectedRoute.chainControlInfo.longitude}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center space-x-1 text-blue-700 hover:text-blue-900 text-xs mt-3 underline"
+                          >
+                            <MapPin className="h-3 w-3" />
+                            <span>View on map</span>
+                          </a>
+                        )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
             {/* On Route Alerts */}
             {onRouteAlerts.length > 0 && (
               <div>
