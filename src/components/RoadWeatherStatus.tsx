@@ -13,7 +13,7 @@ import {
   Clock,
   MapPin,
   CircleAlert,
-  OctagonX
+  OctagonX,
 } from 'lucide-react';
 import RouteDetailsDialog from './RouteDetailsDialog';
 import WeatherDetailsDialog from './WeatherDetailsDialog';
@@ -100,7 +100,6 @@ interface WeatherApiResponse {
   }[];
   lastUpdated: string;
 }
-
 
 // Display Interfaces
 interface RoadSegment {
@@ -219,7 +218,6 @@ const getRoadStatusText = (segment: RoadSegment) => {
   }
 };
 
-
 // Helper function to humanize timestamps (simplified version for main component)
 const formatHumanTime = (timestamp: string | undefined): string => {
   if (!timestamp) return '';
@@ -237,13 +235,12 @@ const formatHumanTime = (timestamp: string | undefined): string => {
     return date.toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
     });
   } catch (error) {
     return timestamp;
   }
 };
-
 
 export default function RoadWeatherStatus() {
   const [data, setData] = useState<ApiData | null>(null);
@@ -264,7 +261,7 @@ export default function RoadWeatherStatus() {
         fetch('https://info.ersn.net/api/v1/weather', {
           method: 'GET',
           mode: 'cors',
-        })
+        }),
       ]);
 
       if (!roadsResponse.ok || !weatherResponse.ok) {
@@ -300,11 +297,12 @@ export default function RoadWeatherStatus() {
         }
 
         // Get severity from multiple possible fields
-        const rawSeverity = (alertObj.severity as string) ||
-                           (alertObj.priority as string) ||
-                           (alertObj.urgency as string) ||
-                           (alertObj.level as string) ||
-                           'INFO';
+        const rawSeverity =
+          (alertObj.severity as string) ||
+          (alertObj.priority as string) ||
+          (alertObj.urgency as string) ||
+          (alertObj.level as string) ||
+          'INFO';
 
         // Normalize severity values to match API spec
         let normalizedSeverity: Alert['severity'] = 'INFO';
@@ -314,22 +312,38 @@ export default function RoadWeatherStatus() {
         } else {
           // Fallback mapping for non-standard values
           const severityLower = rawSeverity.toLowerCase();
-          if (severityLower.includes('critical') || severityLower.includes('severe') || severityLower.includes('emergency')) {
+          if (
+            severityLower.includes('critical') ||
+            severityLower.includes('severe') ||
+            severityLower.includes('emergency')
+          ) {
             normalizedSeverity = 'CRITICAL';
-          } else if (severityLower.includes('warning') || severityLower.includes('major') || severityLower.includes('high') || severityLower.includes('important')) {
+          } else if (
+            severityLower.includes('warning') ||
+            severityLower.includes('major') ||
+            severityLower.includes('high') ||
+            severityLower.includes('important')
+          ) {
             normalizedSeverity = 'WARNING';
-          } else if (severityLower.includes('info') || severityLower.includes('advisory') || severityLower.includes('minor')) {
+          } else if (
+            severityLower.includes('info') ||
+            severityLower.includes('advisory') ||
+            severityLower.includes('minor')
+          ) {
             normalizedSeverity = 'INFO';
           }
         }
-
 
         // Get classification
         const rawClassification = (alertObj.classification as string) || undefined;
         let classification: Alert['classification'];
         if (rawClassification) {
           const classificationUpper = rawClassification.toUpperCase();
-          if (['ON_ROUTE', 'NEARBY', 'DISTANT', 'ALERT_CLASSIFICATION_UNSPECIFIED'].includes(classificationUpper)) {
+          if (
+            ['ON_ROUTE', 'NEARBY', 'DISTANT', 'ALERT_CLASSIFICATION_UNSPECIFIED'].includes(
+              classificationUpper,
+            )
+          ) {
             classification = classificationUpper as Alert['classification'];
           }
         }
@@ -339,8 +353,16 @@ export default function RoadWeatherStatus() {
           type,
           severity: normalizedSeverity,
           classification,
-          title: (alertObj.title as string) || (alertObj.event as string) || (alertObj.description as string) || 'Alert',
-          description: (alertObj.description as string) || (alertObj.title as string) || (alertObj.event as string) || 'No description available',
+          title:
+            (alertObj.title as string) ||
+            (alertObj.event as string) ||
+            (alertObj.description as string) ||
+            'Alert',
+          description:
+            (alertObj.description as string) ||
+            (alertObj.title as string) ||
+            (alertObj.event as string) ||
+            'No description available',
           condensedSummary: (alertObj.condensedSummary as string) || undefined,
           location: locationText,
           locationDescription: (alertObj.locationDescription as string) || undefined,
@@ -349,7 +371,7 @@ export default function RoadWeatherStatus() {
           startTime: (alertObj.startTime as string) || undefined,
           expectedEnd: (alertObj.expectedEnd as string) || (alertObj.end as string) || undefined,
           distanceToRouteMeters: (alertObj.distanceToRouteMeters as number) || undefined,
-          metadata: (alertObj.metadata as Record<string, unknown>) || undefined
+          metadata: (alertObj.metadata as Record<string, unknown>) || undefined,
         };
       };
 
@@ -358,27 +380,30 @@ export default function RoadWeatherStatus() {
 
       // Transform API data to our format
       const transformedData: ApiData = {
-        roads: roads.roads.map(road => {
+        roads: roads.roads.map((road) => {
           // Parse the section to extract from/to (e.g., "Angels Camp to Murphys")
           const sectionParts = road.section.split(' to ');
           const from = sectionParts[0] || road.name;
           const to = sectionParts[1] || 'Destination';
 
           // Transform road alerts
-          const roadAlerts = road.alerts.map(alert => transformAlert(alert, 'road'));
+          const roadAlerts = road.alerts.map((alert) => transformAlert(alert, 'road'));
           allAlerts.push(...roadAlerts);
 
           // Map status to our expected values (factor in alerts)
           let status: 'clear' | 'delays' | 'restrictions' | 'closed' = 'clear';
           if (road.status?.toLowerCase() === 'closed') {
             status = 'closed';
-          } else if (roadAlerts.some(alert => alert.severity === 'CRITICAL')) {
+          } else if (roadAlerts.some((alert) => alert.severity === 'CRITICAL')) {
             status = 'restrictions';
           } else if (road.delayMinutes > 0) {
             status = 'delays';
           } else if (road.chainControl && road.chainControl.toLowerCase() !== 'none') {
             status = 'restrictions';
-          } else if (road.congestionLevel?.toLowerCase() === 'clear' && road.status?.toLowerCase() === 'open') {
+          } else if (
+            road.congestionLevel?.toLowerCase() === 'clear' &&
+            road.status?.toLowerCase() === 'open'
+          ) {
             status = 'clear';
           }
 
@@ -387,7 +412,10 @@ export default function RoadWeatherStatus() {
             to,
             status,
             delayMinutes: road.delayMinutes,
-            description: road.chainControl && road.chainControl.toLowerCase() !== 'none' ? `Chain control: ${road.chainControl}` : undefined,
+            description:
+              road.chainControl && road.chainControl.toLowerCase() !== 'none'
+                ? `Chain control: ${road.chainControl}`
+                : undefined,
             alertCount: roadAlerts.length,
             alerts: roadAlerts,
             // Additional metadata
@@ -396,17 +424,17 @@ export default function RoadWeatherStatus() {
             distanceKm: road.distanceKm,
             chainControl: road.chainControl,
             rawStatus: road.status,
-            statusExplanation: road.statusExplanation
+            statusExplanation: road.statusExplanation,
           };
         }),
-        weather: weather.weatherData.map(w => {
+        weather: weather.weatherData.map((w) => {
           // Transform weather alerts and add to global collection
-          const weatherAlerts = w.alerts.map(alert => transformAlert(alert, 'weather'));
+          const weatherAlerts = w.alerts.map((alert) => transformAlert(alert, 'weather'));
           allAlerts.push(...weatherAlerts);
 
           return {
             name: w.locationName,
-            temperature: Math.round(w.temperatureCelsius * 9/5 + 32), // Convert to Fahrenheit
+            temperature: Math.round((w.temperatureCelsius * 9) / 5 + 32), // Convert to Fahrenheit
             condition: w.weatherDescription,
             icon: w.weatherIcon,
             // Extended weather data
@@ -418,7 +446,7 @@ export default function RoadWeatherStatus() {
             windDirectionDegrees: w.windDirectionDegrees,
             visibilityKm: w.visibilityKm,
             weatherMain: w.weatherMain,
-            alerts: weatherAlerts
+            alerts: weatherAlerts,
           };
         }),
         alerts: allAlerts.sort((a, b) => {
@@ -426,9 +454,8 @@ export default function RoadWeatherStatus() {
           const severityOrder = { CRITICAL: 0, WARNING: 1, INFO: 2, ALERT_SEVERITY_UNSPECIFIED: 3 };
           return severityOrder[a.severity] - severityOrder[b.severity];
         }),
-        lastUpdated: roads.lastUpdated || weather.lastUpdated || new Date().toISOString()
+        lastUpdated: roads.lastUpdated || weather.lastUpdated || new Date().toISOString(),
       };
-
 
       console.log('Transformed data:', transformedData);
       setData(transformedData);
@@ -486,8 +513,68 @@ export default function RoadWeatherStatus() {
 
   console.log('Rendering with data:', data);
 
+  // Filter important alerts (CRITICAL and WARNING)
+  const importantAlerts = data.alerts.filter(
+    (alert) => alert.severity === 'CRITICAL' || alert.severity === 'WARNING',
+  );
+  const criticalAlerts = importantAlerts.filter((a) => a.severity === 'CRITICAL');
+  const warningAlerts = importantAlerts.filter((a) => a.severity === 'WARNING');
+
   return (
     <div className="my-8">
+      {/* Active Alerts Section - Displayed prominently at top */}
+      {importantAlerts.length > 0 && (
+        <div className="mb-6 bg-white border border-stone-300 rounded-sm overflow-hidden">
+          <div className="p-4 sm:p-6">
+            <div className="flex items-center space-x-3 mb-4">
+              <AlertTriangle className="h-5 w-5 text-amber-600" aria-hidden="true" />
+              <h3 className="text-lg sm:text-xl font-serif text-stone-800">Active Alerts</h3>
+              <span className="text-xs text-stone-500 bg-stone-100 px-2 py-1 rounded">
+                {importantAlerts.length}
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              {/* Critical Alerts */}
+              {criticalAlerts.map((alert, index) => (
+                <div
+                  key={alert.id || `critical-${index}`}
+                  className="p-3 rounded-md border bg-red-50 border-red-200"
+                >
+                  <div className="flex items-start space-x-2">
+                    <OctagonX className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <div className="font-medium text-red-800 text-sm">{alert.title}</div>
+                      {alert.condensedSummary && alert.condensedSummary !== alert.title && (
+                        <div className="text-red-700 text-xs mt-1">{alert.condensedSummary}</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Warning Alerts */}
+              {warningAlerts.map((alert, index) => (
+                <div
+                  key={alert.id || `warning-${index}`}
+                  className="p-3 rounded-md border bg-yellow-50 border-yellow-200"
+                >
+                  <div className="flex items-start space-x-2">
+                    <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <div className="font-medium text-yellow-800 text-sm">{alert.title}</div>
+                      {alert.condensedSummary && alert.condensedSummary !== alert.title && (
+                        <div className="text-yellow-700 text-xs mt-1">{alert.condensedSummary}</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="bg-white border border-stone-300 rounded-sm overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
           {/* Road Conditions */}
@@ -518,23 +605,28 @@ export default function RoadWeatherStatus() {
                               <span className="font-medium text-stone-800 truncate">
                                 {segment.from} → {segment.to}
                               </span>
-                              {segment.alertCount > 0 && (() => {
-                                const onRouteAlerts = segment.alerts.filter(alert => alert.classification === 'ON_ROUTE');
-                                const hasOnRoute = onRouteAlerts.length > 0;
+                              {segment.alertCount > 0 &&
+                                (() => {
+                                  const onRouteAlerts = segment.alerts.filter(
+                                    (alert) => alert.classification === 'ON_ROUTE',
+                                  );
+                                  const hasOnRoute = onRouteAlerts.length > 0;
 
-                                return (
-                                  <div className={`flex items-center space-x-1 flex-shrink-0 ${
-                                    hasOnRoute ? 'text-red-600' : 'text-yellow-600'
-                                  }`}>
-                                    <AlertTriangle className="h-4 w-4" />
-                                    {hasOnRoute && (
-                                      <span className="text-xs font-medium bg-red-100 px-1.5 py-0.5 rounded">
-                                        {onRouteAlerts.length > 9 ? '9+' : onRouteAlerts.length}
-                                      </span>
-                                    )}
-                                  </div>
-                                );
-                              })()}
+                                  return (
+                                    <div
+                                      className={`flex items-center space-x-1 flex-shrink-0 ${
+                                        hasOnRoute ? 'text-red-600' : 'text-yellow-600'
+                                      }`}
+                                    >
+                                      <AlertTriangle className="h-4 w-4" />
+                                      {hasOnRoute && (
+                                        <span className="text-xs font-medium bg-red-100 px-1.5 py-0.5 rounded">
+                                          {onRouteAlerts.length > 9 ? '9+' : onRouteAlerts.length}
+                                        </span>
+                                      )}
+                                    </div>
+                                  );
+                                })()}
                             </div>
                           </div>
                         </div>
@@ -542,47 +634,11 @@ export default function RoadWeatherStatus() {
                           {getRoadStatusText(segment)}
                         </div>
                       </button>
-
                     </div>
                   );
                 })
               )}
             </div>
-
-            {/* Critical Alerts Only - moved to top */}
-            {data.alerts.filter(alert => alert.severity === 'CRITICAL').length > 0 && (
-              <div className="mb-4 pb-4 border-b border-stone-200">
-                <div className="flex items-center space-x-2 mb-3">
-                  <OctagonX className="h-4 w-4 text-red-600" />
-                  <span className="text-sm font-medium text-red-800">Critical Alerts</span>
-                </div>
-                <div className="space-y-2">
-                  {data.alerts
-                    .filter(alert => alert.severity === 'CRITICAL')
-                    .slice(0, 3)
-                    .map((alert, index) => {
-                      // Use description if available and different from title, otherwise use title
-                      const summary = alert.description && alert.description !== alert.title
-                        ? alert.description
-                        : alert.title;
-                      return (
-                        <div
-                          key={alert.id || `critical-${index}`}
-                          className="p-3 rounded-md border bg-red-50 border-red-200 text-red-800 text-sm"
-                        >
-                          <div className="font-medium leading-tight">{String(summary)}</div>
-                        </div>
-                      );
-                    })
-                  }
-                  {data.alerts.filter(alert => alert.severity === 'CRITICAL').length > 3 && (
-                    <div className="text-xs text-red-600 pl-2 font-medium">
-                      +{data.alerts.filter(alert => alert.severity === 'CRITICAL').length - 3} more critical alerts
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Weather Status */}
@@ -597,23 +653,22 @@ export default function RoadWeatherStatus() {
                 <p className="text-stone-600 text-sm italic">No weather data available</p>
               ) : (
                 data.weather.map((location) => (
-                <div key={location.name} className="border-b border-stone-100 last:border-b-0">
-                  <button
-                    type="button"
-                    onClick={() => setSelectedWeather(location)}
-                    className="w-full cursor-pointer flex items-center justify-between py-3 px-2 hover:bg-stone-50 transition-colors rounded-sm touch-manipulation"
-                  >
-                    <div className="flex items-center space-x-3 flex-1 min-w-0">
-                      {getWeatherIcon(location.icon)}
-                      <div className="font-medium text-stone-800 truncate">
-                        {location.name}
+                  <div key={location.name} className="border-b border-stone-100 last:border-b-0">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedWeather(location)}
+                      className="w-full cursor-pointer flex items-center justify-between py-3 px-2 hover:bg-stone-50 transition-colors rounded-sm touch-manipulation"
+                    >
+                      <div className="flex items-center space-x-3 flex-1 min-w-0">
+                        {getWeatherIcon(location.icon)}
+                        <div className="font-medium text-stone-800 truncate">{location.name}</div>
                       </div>
-                    </div>
-                    <div className="text-sm flex-shrink-0 ml-2">
-                      <span className="text-stone-500 capitalize">{location.condition}</span> • <span className="font-medium text-stone-700">{location.temperature}°F</span>
-                    </div>
-                  </button>
-                </div>
+                      <div className="text-sm flex-shrink-0 ml-2">
+                        <span className="text-stone-500 capitalize">{location.condition}</span> •{' '}
+                        <span className="font-medium text-stone-700">{location.temperature}°F</span>
+                      </div>
+                    </button>
+                  </div>
                 ))
               )}
             </div>
@@ -621,19 +676,17 @@ export default function RoadWeatherStatus() {
         </div>
         <div className="m-4 p-3 bg-stone-50 rounded border border-stone-200">
           <p className="text-xs text-stone-600 text-center">
-            <strong>Source:</strong> Google Maps • Caltrans • OpenWeather<br />
-            <strong>Last Updated:</strong> {formatHumanTime(data.lastUpdated)} • <strong>Update Frequency:</strong> Every 15 minutes
+            <strong>Source:</strong> Google Maps • Caltrans • OpenWeather
+            <br />
+            <strong>Last Updated:</strong> {formatHumanTime(data.lastUpdated)} •{' '}
+            <strong>Update Frequency:</strong> Every 15 minutes
           </p>
         </div>
-
       </div>
 
       {/* Route Details Dialog */}
       {selectedRoute && (
-        <RouteDetailsDialog
-          selectedRoute={selectedRoute}
-          onClose={() => setSelectedRoute(null)}
-        />
+        <RouteDetailsDialog selectedRoute={selectedRoute} onClose={() => setSelectedRoute(null)} />
       )}
 
       {/* Weather Details Dialog */}

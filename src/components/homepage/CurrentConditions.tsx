@@ -1,6 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { ReactElement } from 'react';
-import { Zap, Eye, CloudRain, CloudSnow, Sun, Cloud, ChevronRight } from 'lucide-react';
+import {
+  Zap,
+  Eye,
+  CloudRain,
+  CloudSnow,
+  Sun,
+  Cloud,
+  ChevronRight,
+  AlertTriangle,
+  OctagonX,
+} from 'lucide-react';
 
 interface RoadApiResponse {
   roads: {
@@ -44,6 +54,14 @@ interface RepeaterInfo {
   status: 'up' | 'down' | 'unknown';
 }
 
+interface Alert {
+  id?: string;
+  severity: 'CRITICAL' | 'WARNING' | 'INFO';
+  title: string;
+  description?: string;
+  type: 'road' | 'weather';
+}
+
 const repeaters: RepeaterInfo[] = [
   { name: 'Murphys', frequency: '462.725', status: 'down' },
   { name: 'Arnold Summit', frequency: '462.725', status: 'up' },
@@ -71,6 +89,53 @@ const getWeatherIcon = (iconCode: string): ReactElement => {
     '50n': <Eye className="h-4 w-4 text-gray-500" />,
   };
   return iconMap[iconCode] || <Cloud className="h-4 w-4 text-gray-500" />;
+};
+
+// Helper to collect and normalize alerts from API data
+const collectAlerts = (
+  roadData: RoadApiResponse | null,
+  weatherData: WeatherApiResponse | null,
+): Alert[] => {
+  const alerts: Alert[] = [];
+
+  // Collect road alerts
+  roadData?.roads.forEach((road) => {
+    road.alerts.forEach((alert) => {
+      const severity = alert.severity?.toUpperCase();
+      if (severity === 'CRITICAL' || severity === 'WARNING') {
+        alerts.push({
+          id: alert.id,
+          severity: severity as 'CRITICAL' | 'WARNING',
+          title: alert.title || alert.description,
+          description: alert.description,
+          type: 'road',
+        });
+      }
+    });
+  });
+
+  // Collect weather alerts
+  weatherData?.weatherData.forEach((location) => {
+    location.alerts.forEach((alert) => {
+      const severity = alert.severity?.toUpperCase();
+      if (severity === 'CRITICAL' || severity === 'WARNING') {
+        alerts.push({
+          id: alert.id,
+          severity: severity as 'CRITICAL' | 'WARNING',
+          title: alert.title || alert.description || '',
+          description: alert.description,
+          type: 'weather',
+        });
+      }
+    });
+  });
+
+  // Sort by severity (CRITICAL first)
+  return alerts.sort((a, b) => {
+    if (a.severity === 'CRITICAL' && b.severity !== 'CRITICAL') return -1;
+    if (a.severity !== 'CRITICAL' && b.severity === 'CRITICAL') return 1;
+    return 0;
+  });
 };
 
 export default function CurrentConditions() {
@@ -145,6 +210,10 @@ export default function CurrentConditions() {
     );
   }
 
+  const alerts = collectAlerts(roadData, weatherData);
+  const hasCritical = alerts.some((a) => a.severity === 'CRITICAL');
+  const hasAlerts = alerts.length > 0;
+
   return (
     <div className="bg-white border border-stone-300 rounded-sm p-6 flex flex-col">
       <div className="flex items-center space-x-3 mb-4">
@@ -152,6 +221,34 @@ export default function CurrentConditions() {
         <h3 className="text-xl font-serif text-stone-800">Current Conditions</h3>
         <span className="text-xs text-stone-500 bg-stone-100 px-2 py-1 rounded">Live</span>
       </div>
+
+      {/* Active Alerts Banner */}
+      {hasAlerts && (
+        <a
+          href="/status"
+          className={`mb-4 p-3 rounded-md flex items-center justify-between transition-colors ${
+            hasCritical
+              ? 'bg-red-50 border border-red-200 hover:bg-red-100'
+              : 'bg-yellow-50 border border-yellow-200 hover:bg-yellow-100'
+          }`}
+        >
+          <div className="flex items-center space-x-2">
+            {hasCritical ? (
+              <OctagonX className="h-4 w-4 text-red-600 flex-shrink-0" />
+            ) : (
+              <AlertTriangle className="h-4 w-4 text-yellow-600 flex-shrink-0" />
+            )}
+            <span
+              className={`text-sm font-medium ${hasCritical ? 'text-red-800' : 'text-yellow-800'}`}
+            >
+              {alerts.length} active weather {alerts.length === 1 ? 'alert' : 'alerts'}
+            </span>
+          </div>
+          <ChevronRight
+            className={`h-4 w-4 flex-shrink-0 ${hasCritical ? 'text-red-600' : 'text-yellow-600'}`}
+          />
+        </a>
+      )}
 
       <div className="flex-1 flex flex-col">
         <div className="space-y-4 text-sm flex-1">
