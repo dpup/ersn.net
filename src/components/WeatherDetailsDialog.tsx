@@ -1,11 +1,9 @@
-import { useState } from 'react';
 import type { ReactElement } from 'react';
 import {
   Thermometer,
   Wind,
   Eye,
   Droplets,
-  Compass,
   Sun,
   Cloud,
   CloudRain,
@@ -14,8 +12,6 @@ import {
   Zap,
   AlertTriangle,
   CheckCircle,
-  ChevronDown,
-  ChevronUp,
 } from 'lucide-react';
 import Dialog, { DialogHeader, DialogContent, DialogQuickActions } from './Dialog';
 import { type Alert, type WeatherLocation, getSeverityColors } from './types';
@@ -63,6 +59,41 @@ const getSeverityBadge = (severity: Alert['severity']) => {
   return getSeverityColors(severity).badge;
 };
 
+// Format details text: **text** to bold, \n\n to paragraphs, \n to <br>
+const formatDetails = (details: string): React.ReactNode => {
+  // Split by double newlines to create paragraphs
+  const paragraphs = details.split(/\n\n/);
+
+  return paragraphs.map((paragraph, pIndex) => {
+    // Split by single newlines within paragraph
+    const lines = paragraph.split(/\n/);
+
+    const formattedLines = lines.map((line, lIndex) => {
+      // Convert **text** to bold
+      const parts = line.split(/(\*\*[^*]+\*\*)/g);
+      const formatted = parts.map((part, i) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+          return <strong key={i}>{part.slice(2, -2)}</strong>;
+        }
+        return part;
+      });
+
+      return (
+        <span key={lIndex}>
+          {formatted}
+          {lIndex < lines.length - 1 && <br />}
+        </span>
+      );
+    });
+
+    return (
+      <p key={pIndex} className={pIndex > 0 ? 'mt-2' : ''}>
+        {formattedLines}
+      </p>
+    );
+  });
+};
+
 
 const getWindDirection = (degrees: number | undefined): string => {
   if (degrees === undefined || degrees === null) return '—';
@@ -91,15 +122,12 @@ export default function WeatherDetailsDialog({
   selectedWeather,
   onClose,
 }: WeatherDetailsDialogProps) {
-  const [routeAlertsExpanded, setRouteAlertsExpanded] = useState(true);
-  const [generalAlertsExpanded, setGeneralAlertsExpanded] = useState(false);
-
   const alerts = selectedWeather.alerts || [];
   const routeAlerts = alerts.filter((alert) => alert.classification === 'ON_ROUTE');
   const generalAlerts = alerts.filter((alert) => alert.classification !== 'ON_ROUTE');
 
   const showQuickActions =
-    routeAlerts.length > 0 || (selectedWeather.windSpeedKmh && selectedWeather.windSpeedKmh > 25);
+    selectedWeather.windSpeedKmh && selectedWeather.windSpeedKmh > 25;
 
   return (
     <Dialog onClose={onClose} maxWidth="2xl">
@@ -115,20 +143,9 @@ export default function WeatherDetailsDialog({
 
       {showQuickActions && (
         <DialogQuickActions>
-          {routeAlerts.length > 0 && (
-            <button
-              type="button"
-              className="text-sm px-4 py-2 bg-red-100 text-red-800 rounded-lg border border-red-200 hover:bg-red-200 transition-colors font-medium touch-manipulation"
-              onClick={() => setRouteAlertsExpanded(true)}
-            >
-              View route alerts
-            </button>
-          )}
-          {selectedWeather.windSpeedKmh && selectedWeather.windSpeedKmh > 25 && (
-            <span className="text-sm px-4 py-2 bg-orange-100 text-orange-800 rounded-lg border border-orange-200 font-medium">
-              High winds - drive carefully
-            </span>
-          )}
+          <span className="text-sm px-4 py-2 bg-orange-100 text-orange-800 rounded-lg border border-orange-200 font-medium">
+            High winds - drive carefully
+          </span>
         </DialogQuickActions>
       )}
 
@@ -199,142 +216,105 @@ export default function WeatherDetailsDialog({
                     </div>
                   </div>
                 )}
-
-                <div className="flex items-center space-x-3 p-2 bg-white rounded border border-stone-100">
-                  <Compass className="h-5 w-5 text-gray-500 flex-shrink-0" />
-                  <div className="min-w-0">
-                    <span className="text-stone-500 uppercase tracking-wide text-xs block">Wind direction</span>
-                    <div className="text-stone-700 font-medium text-base">
-                      {selectedWeather.windDirectionDegrees !== undefined && selectedWeather.windDirectionDegrees !== null
-                        ? `${selectedWeather.windDirectionDegrees}° (${getWindDirection(selectedWeather.windDirectionDegrees)})`
-                        : '—'
-                      }
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
 
             {/* Route-Relevant Alerts */}
             {routeAlerts.length > 0 && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <button
-                  type="button"
-                  onClick={() => setRouteAlertsExpanded(!routeAlertsExpanded)}
-                  className="flex items-center space-x-2 w-full text-left font-medium text-red-900 hover:text-red-700 transition-colors mb-3 p-2 -m-2 rounded touch-manipulation"
-                >
+                <div className="flex items-center space-x-2 mb-3">
                   <AlertTriangle className="h-5 w-5 text-red-600" />
-                  <span className="text-lg">Affects your route ({routeAlerts.length})</span>
-                  {routeAlertsExpanded ? (
-                    <ChevronUp className="h-4 w-4" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4" />
-                  )}
-                </button>
+                  <span className="text-lg font-medium text-red-900">Affects your route ({routeAlerts.length})</span>
+                </div>
 
-                {routeAlertsExpanded && (
-                  <div className="space-y-3">
-                    {routeAlerts.map((alert, index) => (
-                      <div
-                        key={alert.id || index}
-                        className={`border rounded-lg p-4 bg-white ${
-                          alert.severity === 'CRITICAL' ? 'border-red-300' :
-                          alert.severity === 'WARNING' ? 'border-orange-300' :
-                          'border-yellow-300'
-                        }`}
-                      >
-                        <div className="flex items-start space-x-3">
-                          <div className="flex items-center space-x-2 mt-0.5">
-                            {getSeverityIcon(alert.severity)}
-                            <span className={`px-2 py-1 text-xs font-medium rounded-full border ${getSeverityBadge(alert.severity)}`}>
-                              {alert.severity.toLowerCase()}
-                            </span>
+                <div className="space-y-3">
+                  {routeAlerts.map((alert, index) => (
+                    <div
+                      key={alert.id || index}
+                      className={`border rounded-lg p-4 bg-white ${
+                        alert.severity === 'CRITICAL' ? 'border-red-300' :
+                        alert.severity === 'WARNING' ? 'border-orange-300' :
+                        'border-yellow-300'
+                      }`}
+                    >
+                      <div className="flex items-start space-x-3">
+                        <div className="flex items-center space-x-2 mt-0.5">
+                          {getSeverityIcon(alert.severity)}
+                          <span className={`px-2 py-1 text-xs font-medium rounded-full border ${getSeverityBadge(alert.severity)}`}>
+                            {alert.severity.toLowerCase()}
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-medium text-stone-900 leading-tight mb-1">
+                            {alert.title}
+                          </h4>
+                          <div className="text-stone-700 text-sm leading-relaxed mb-2">
+                            {alert.details ? formatDetails(alert.details) : alert.description}
                           </div>
-                          <div className="flex-1">
-                            <h4 className="font-medium text-stone-900 leading-tight mb-1">
-                              {alert.title}
-                            </h4>
-                            <p className="text-stone-700 text-sm leading-relaxed mb-2">
-                              {alert.description}
-                            </p>
-                            {(alert.startTime || alert.expectedEnd) && (
-                              <div className="bg-stone-50 rounded p-2 text-xs text-stone-600">
-                                <div className="font-medium mb-1">Timing:</div>
-                                {alert.startTime && (
-                                  <div>Starts: {new Date(alert.startTime).toLocaleString()}</div>
-                                )}
-                                {alert.expectedEnd && (
-                                  <div>Ends: {new Date(alert.expectedEnd).toLocaleString()}</div>
-                                )}
-                              </div>
-                            )}
-                          </div>
+                          {(alert.startTime || alert.expectedEnd) && (
+                            <div className="bg-stone-50 rounded p-2 text-xs text-stone-600">
+                              <div className="font-medium mb-1">Timing:</div>
+                              {alert.startTime && (
+                                <div>Starts: {new Date(alert.startTime).toLocaleString()}</div>
+                              )}
+                              {alert.expectedEnd && (
+                                <div>Ends: {new Date(alert.expectedEnd).toLocaleString()}</div>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
-                    ))}
-                  </div>
-                )}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
             {/* General Weather Alerts */}
             {generalAlerts.length > 0 && (
               <div>
-                <button
-                  type="button"
-                  onClick={() => setGeneralAlertsExpanded(!generalAlertsExpanded)}
-                  className="flex items-center space-x-2 w-full text-left font-medium text-stone-900 hover:text-stone-700 transition-colors mb-3 p-2 -m-2 rounded touch-manipulation"
-                >
-                  <span className="text-lg">General area alerts ({generalAlerts.length})</span>
-                  {generalAlertsExpanded ? (
-                    <ChevronUp className="h-4 w-4" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4" />
-                  )}
-                </button>
+                <h3 className="text-lg font-medium text-stone-900 mb-3">General area alerts ({generalAlerts.length})</h3>
 
-                {generalAlertsExpanded && (
-                  <div className="space-y-3">
-                    {generalAlerts.map((alert, index) => (
-                      <div
-                        key={alert.id || index}
-                        className={`border rounded-lg p-4 ${
-                          alert.severity === 'CRITICAL' ? 'bg-red-50 border-red-200' :
-                          alert.severity === 'WARNING' ? 'bg-orange-50 border-orange-200' :
-                          'bg-yellow-50 border-yellow-200'
-                        }`}
-                      >
-                        <div className="flex items-start space-x-3">
-                          <div className="flex items-center space-x-2 mt-0.5">
-                            {getSeverityIcon(alert.severity)}
-                            <span className={`px-2 py-1 text-xs font-medium rounded-full border ${getSeverityBadge(alert.severity)}`}>
-                              {alert.severity.toLowerCase()}
-                            </span>
+                <div className="space-y-3">
+                  {generalAlerts.map((alert, index) => (
+                    <div
+                      key={alert.id || index}
+                      className={`border rounded-lg p-4 ${
+                        alert.severity === 'CRITICAL' ? 'bg-red-50 border-red-200' :
+                        alert.severity === 'WARNING' ? 'bg-orange-50 border-orange-200' :
+                        'bg-yellow-50 border-yellow-200'
+                      }`}
+                    >
+                      <div className="flex items-start space-x-3">
+                        <div className="flex items-center space-x-2 mt-0.5">
+                          {getSeverityIcon(alert.severity)}
+                          <span className={`px-2 py-1 text-xs font-medium rounded-full border ${getSeverityBadge(alert.severity)}`}>
+                            {alert.severity.toLowerCase()}
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-medium text-stone-900 leading-tight mb-1">
+                            {alert.title}
+                          </h4>
+                          <div className="text-stone-700 text-sm leading-relaxed mb-2">
+                            {alert.details ? formatDetails(alert.details) : alert.description}
                           </div>
-                          <div className="flex-1">
-                            <h4 className="font-medium text-stone-900 leading-tight mb-1">
-                              {alert.title}
-                            </h4>
-                            <p className="text-stone-700 text-sm leading-relaxed mb-2">
-                              {alert.description}
-                            </p>
-                            {(alert.startTime || alert.expectedEnd) && (
-                              <div className="bg-stone-50 rounded p-2 text-xs text-stone-600">
-                                <div className="font-medium mb-1">Timing:</div>
-                                {alert.startTime && (
-                                  <div>Starts: {new Date(alert.startTime).toLocaleString()}</div>
-                                )}
-                                {alert.expectedEnd && (
-                                  <div>Ends: {new Date(alert.expectedEnd).toLocaleString()}</div>
-                                )}
-                              </div>
-                            )}
-                          </div>
+                          {(alert.startTime || alert.expectedEnd) && (
+                            <div className="bg-stone-50 rounded p-2 text-xs text-stone-600">
+                              <div className="font-medium mb-1">Timing:</div>
+                              {alert.startTime && (
+                                <div>Starts: {new Date(alert.startTime).toLocaleString()}</div>
+                              )}
+                              {alert.expectedEnd && (
+                                <div>Ends: {new Date(alert.expectedEnd).toLocaleString()}</div>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
-                    ))}
-                  </div>
-                )}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 

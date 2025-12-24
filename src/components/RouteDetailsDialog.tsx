@@ -1,7 +1,4 @@
-import { useState } from 'react';
 import {
-  ChevronDown,
-  ChevronUp,
   Construction,
   Ban,
   Truck,
@@ -99,9 +96,9 @@ const calculateAverageSpeed = (distanceKm: number | undefined, durationMinutes: 
   if (!distanceKm || !durationMinutes || durationMinutes === 0) return '';
 
   const speedKmh = (distanceKm / durationMinutes) * 60;
-  const speedMph = speedKmh * 0.621371; // Convert to mph
+  const speedMph = speedKmh * 0.621371;
 
-  return `${Math.round(speedMph)} mph (${Math.round(speedKmh)} km/h)`;
+  return `${Math.round(speedMph)} mph`;
 };
 
 const formatDistanceToRoute = (distanceMeters: number | undefined): string => {
@@ -119,8 +116,6 @@ const formatDistanceToRoute = (distanceMeters: number | undefined): string => {
 };
 
 export default function RouteDetailsDialog({ selectedRoute, onClose }: RouteDetailsDialogProps) {
-  const [nearbyExpanded, setNearbyExpanded] = useState(true);
-
   const onRouteAlerts = selectedRoute.alerts.filter((alert) => alert.classification === 'ON_ROUTE');
   const nearbyAlerts = selectedRoute.alerts.filter((alert) => alert.classification === 'NEARBY');
 
@@ -185,28 +180,20 @@ export default function RouteDetailsDialog({ selectedRoute, onClose }: RouteDeta
         <div className="space-y-4 sm:space-y-6">
             {/* Route Metadata */}
             <div className="bg-stone-50 border border-stone-200 rounded-lg p-3 sm:p-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 text-sm">
+              <div className="grid grid-cols-2 gap-4 text-sm">
                 {selectedRoute.distanceKm && (
                   <div>
-                    <span className="text-stone-500 uppercase tracking-wide text-xs">Distance</span>
-                    <div className="text-stone-700 font-medium">
-                      {Math.round(selectedRoute.distanceKm * 0.621371)} mi ({selectedRoute.distanceKm} km)
+                    <span className="text-stone-500 text-xs block mb-0.5">Distance</span>
+                    <div className="text-stone-800 font-semibold text-lg">
+                      {Math.round(selectedRoute.distanceKm * 0.621371)} mi
                     </div>
                   </div>
                 )}
                 {calculateAverageSpeed(selectedRoute.distanceKm, selectedRoute.durationMinutes) && (
                   <div>
-                    <span className="text-stone-500 uppercase tracking-wide text-xs">Average speed</span>
-                    <div className="text-stone-700 font-medium">
+                    <span className="text-stone-500 text-xs block mb-0.5">Avg speed</span>
+                    <div className="text-stone-800 font-semibold text-lg">
                       {calculateAverageSpeed(selectedRoute.distanceKm, selectedRoute.durationMinutes)}
-                    </div>
-                  </div>
-                )}
-                {selectedRoute.statusExplanation && (
-                  <div className="sm:col-span-2 lg:col-span-2">
-                    <span className="text-stone-500 uppercase tracking-wide text-xs">Status details</span>
-                    <div className="text-stone-700 font-medium">
-                      {selectedRoute.statusExplanation}
                     </div>
                   </div>
                 )}
@@ -395,117 +382,104 @@ export default function RouteDetailsDialog({ selectedRoute, onClose }: RouteDeta
               </div>
             )}
 
-            {/* Nearby Alerts (Collapsible) */}
+            {/* Nearby Alerts */}
             {nearbyAlerts.length > 0 && (
               <div>
-                <button
-                  type="button"
-                  onClick={() => setNearbyExpanded(!nearbyExpanded)}
-                  className="flex items-center space-x-2 w-full text-left font-medium text-stone-900 hover:text-stone-700 transition-colors p-2 -m-2 rounded touch-manipulation"
-                >
-                  <span className="text-lg">Nearby ({nearbyAlerts.length})</span>
-                  {nearbyExpanded ? (
-                    <ChevronUp className="h-4 w-4" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4" />
-                  )}
-                </button>
+                <h3 className="text-lg font-medium text-stone-900 mb-4">Nearby ({nearbyAlerts.length})</h3>
 
-                {nearbyExpanded && (
-                  <div className="mt-4 space-y-2 sm:space-y-3">
-                    {nearbyAlerts
-                      .sort((a, b) => {
-                        const severityOrder = { CRITICAL: 0, WARNING: 1, INFO: 2, ALERT_SEVERITY_UNSPECIFIED: 3 };
-                        return severityOrder[a.severity] - severityOrder[b.severity];
-                      })
-                      .map((alert, index) => {
-                        const incidentChip = getIncidentChip(alert);
-                        const impactChip = getImpactChip(alert.impact);
-                        const IconComponent = incidentChip.icon;
+                <div className="space-y-2 sm:space-y-3">
+                  {nearbyAlerts
+                    .sort((a, b) => {
+                      const severityOrder = { CRITICAL: 0, WARNING: 1, INFO: 2, ALERT_SEVERITY_UNSPECIFIED: 3 };
+                      return severityOrder[a.severity] - severityOrder[b.severity];
+                    })
+                    .map((alert, index) => {
+                      const incidentChip = getIncidentChip(alert);
+                      const impactChip = getImpactChip(alert.impact);
+                      const IconComponent = incidentChip.icon;
 
-                        return (
-                          <div key={alert.id || index} className="border border-stone-100 rounded-lg p-2 sm:p-3 bg-stone-50">
-                            <div className="flex items-start space-x-3">
-                              <IconComponent className="h-4 w-4 text-stone-500 mt-0.5 flex-shrink-0" />
-                              <div className="flex-1">
-                                <h4 className="font-medium text-stone-800 text-sm leading-tight capitalize">
-                                  {alert.locationDescription ? (
-                                    <>
-                                      {alert.locationDescription}
-                                      {alert.incidentType && ` (${formatEnumValue(alert.incidentType)})`}
-                                    </>
-                                  ) : (
-                                    alert.title
-                                  )}
-                                </h4>
+                      return (
+                        <div key={alert.id || index} className="border border-stone-100 rounded-lg p-2 sm:p-3 bg-stone-50">
+                          <div className="flex items-start space-x-3">
+                            <IconComponent className="h-4 w-4 text-stone-500 mt-0.5 flex-shrink-0" />
+                            <div className="flex-1">
+                              <h4 className="font-medium text-stone-800 text-sm leading-tight capitalize">
+                                {alert.locationDescription ? (
+                                  <>
+                                    {alert.locationDescription}
+                                    {alert.incidentType && ` (${formatEnumValue(alert.incidentType)})`}
+                                  </>
+                                ) : (
+                                  alert.title
+                                )}
+                              </h4>
 
-                                <div className="flex items-center space-x-2 mt-1">
-                                  <span className={`inline-flex items-center px-1.5 py-0.5 text-xs font-medium rounded ${incidentChip.color}`}>
-                                    {incidentChip.label}
+                              <div className="flex items-center space-x-2 mt-1">
+                                <span className={`inline-flex items-center px-1.5 py-0.5 text-xs font-medium rounded ${incidentChip.color}`}>
+                                  {incidentChip.label}
+                                </span>
+                                {impactChip && (
+                                  <span className={`inline-flex items-center px-1.5 py-0.5 text-xs font-medium rounded ${impactChip.color}`}>
+                                    {impactChip.label}
                                   </span>
-                                  {impactChip && (
-                                    <span className={`inline-flex items-center px-1.5 py-0.5 text-xs font-medium rounded ${impactChip.color}`}>
-                                      {impactChip.label}
-                                    </span>
-                                  )}
-                                  {alert.startTime && (
-                                    <span className="text-xs text-stone-500">
-                                      {formatHumanTime(alert.startTime)}
-                                    </span>
-                                  )}
-                                </div>
-
-                                <p className="text-stone-600 text-xs mt-1 leading-relaxed">
-                                  {alert.description}
-                                </p>
-
-                                {/* More details for nearby (smaller and de-emphasized) */}
-                                {(alert.location || alert.metadata || (alert.distanceToRouteMeters && alert.classification !== 'ON_ROUTE')) && (
-                                  <div className="mt-1 p-2 bg-stone-100 rounded text-xs">
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                      {alert.location && (
-                                        <div>
-                                          <span className="text-stone-400 uppercase tracking-wide text-xs">Coordinates</span>
-                                          <div>
-                                            <a
-                                              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(alert.location)}`}
-                                              target="_blank"
-                                              rel="noopener noreferrer"
-                                              className="text-blue-600 hover:text-blue-700 underline text-xs"
-                                            >
-                                              {alert.location}
-                                            </a>
-                                          </div>
-                                        </div>
-                                      )}
-                                      {alert.distanceToRouteMeters && alert.classification !== 'ON_ROUTE' && (
-                                        <div>
-                                          <span className="text-stone-400 uppercase tracking-wide text-xs">Distance</span>
-                                          <div className="text-stone-600 text-xs">{formatDistanceToRoute(alert.distanceToRouteMeters)}</div>
-                                        </div>
-                                      )}
-                                      {alert.metadata && Object.entries(alert.metadata).map(([key, value]) => {
-                                        const formattedValue = formatMetadataValue(String(value));
-                                        if (!formattedValue || formattedValue.toLowerCase() === 'none' || formattedValue.toLowerCase() === 'n/a') {
-                                          return null;
-                                        }
-                                        return (
-                                          <div key={key}>
-                                            <span className="text-stone-400 uppercase tracking-wide text-xs">{formatEnumValue(key)}</span>
-                                            <div className="text-stone-600 text-xs">{formattedValue}</div>
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
-                                  </div>
+                                )}
+                                {alert.startTime && (
+                                  <span className="text-xs text-stone-500">
+                                    {formatHumanTime(alert.startTime)}
+                                  </span>
                                 )}
                               </div>
+
+                              <p className="text-stone-600 text-xs mt-1 leading-relaxed">
+                                {alert.description}
+                              </p>
+
+                              {/* More details for nearby (smaller and de-emphasized) */}
+                              {(alert.location || alert.metadata || (alert.distanceToRouteMeters && alert.classification !== 'ON_ROUTE')) && (
+                                <div className="mt-1 p-2 bg-stone-100 rounded text-xs">
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {alert.location && (
+                                      <div>
+                                        <span className="text-stone-400 uppercase tracking-wide text-xs">Coordinates</span>
+                                        <div>
+                                          <a
+                                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(alert.location)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-600 hover:text-blue-700 underline text-xs"
+                                          >
+                                            {alert.location}
+                                          </a>
+                                        </div>
+                                      </div>
+                                    )}
+                                    {alert.distanceToRouteMeters && alert.classification !== 'ON_ROUTE' && (
+                                      <div>
+                                        <span className="text-stone-400 uppercase tracking-wide text-xs">Distance</span>
+                                        <div className="text-stone-600 text-xs">{formatDistanceToRoute(alert.distanceToRouteMeters)}</div>
+                                      </div>
+                                    )}
+                                    {alert.metadata && Object.entries(alert.metadata).map(([key, value]) => {
+                                      const formattedValue = formatMetadataValue(String(value));
+                                      if (!formattedValue || formattedValue.toLowerCase() === 'none' || formattedValue.toLowerCase() === 'n/a') {
+                                        return null;
+                                      }
+                                      return (
+                                        <div key={key}>
+                                          <span className="text-stone-400 uppercase tracking-wide text-xs">{formatEnumValue(key)}</span>
+                                          <div className="text-stone-600 text-xs">{formattedValue}</div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
-                        );
-                      })}
-                  </div>
-                )}
+                        </div>
+                      );
+                    })}
+                </div>
               </div>
             )}
 

@@ -8,6 +8,9 @@ export interface Alert {
   title: string;
   description: string;
   condensedSummary?: string;
+  headline?: string;
+  summary?: string;
+  details?: string;
   location?: string;
   locationDescription?: string;
   incidentType?: string;
