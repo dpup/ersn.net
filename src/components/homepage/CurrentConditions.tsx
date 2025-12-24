@@ -91,37 +91,7 @@ const getWeatherIcon = (iconCode: string): ReactElement => {
   return iconMap[iconCode] || <Cloud className="h-4 w-4 text-gray-500" />;
 };
 
-// Normalize severity values to match API variations
-const normalizeSeverity = (rawSeverity: string | undefined): 'CRITICAL' | 'WARNING' | null => {
-  if (!rawSeverity) return null;
-
-  const severityUpper = rawSeverity.toUpperCase();
-  if (severityUpper === 'CRITICAL' || severityUpper === 'WARNING') {
-    return severityUpper as 'CRITICAL' | 'WARNING';
-  }
-
-  // Handle non-standard values (same logic as RoadWeatherStatus)
-  const severityLower = rawSeverity.toLowerCase();
-  if (
-    severityLower.includes('critical') ||
-    severityLower.includes('severe') ||
-    severityLower.includes('emergency')
-  ) {
-    return 'CRITICAL';
-  }
-  if (
-    severityLower.includes('warning') ||
-    severityLower.includes('major') ||
-    severityLower.includes('high') ||
-    severityLower.includes('important')
-  ) {
-    return 'WARNING';
-  }
-
-  return null;
-};
-
-// Helper to collect and normalize alerts from API data
+// Helper to collect alerts from API data
 const collectAlerts = (
   roadData: RoadApiResponse | null,
   weatherData: WeatherApiResponse | null,
@@ -131,41 +101,30 @@ const collectAlerts = (
   // Collect road alerts
   roadData?.roads.forEach((road) => {
     road.alerts.forEach((alert) => {
-      const severity = normalizeSeverity(alert.severity);
-      if (severity) {
-        alerts.push({
-          id: alert.id,
-          severity,
-          title: alert.title || alert.description,
-          description: alert.description,
-          type: 'road',
-        });
-      }
+      alerts.push({
+        id: alert.id,
+        severity: (alert.severity?.toUpperCase() as Alert['severity']) || 'INFO',
+        title: alert.title || alert.description,
+        description: alert.description,
+        type: 'road',
+      });
     });
   });
 
   // Collect weather alerts
   weatherData?.weatherData.forEach((location) => {
     location.alerts.forEach((alert) => {
-      const severity = normalizeSeverity(alert.severity);
-      if (severity) {
-        alerts.push({
-          id: alert.id,
-          severity,
-          title: alert.title || alert.description || '',
-          description: alert.description,
-          type: 'weather',
-        });
-      }
+      alerts.push({
+        id: alert.id,
+        severity: (alert.severity?.toUpperCase() as Alert['severity']) || 'INFO',
+        title: alert.title || alert.description || '',
+        description: alert.description,
+        type: 'weather',
+      });
     });
   });
 
-  // Sort by severity (CRITICAL first)
-  return alerts.sort((a, b) => {
-    if (a.severity === 'CRITICAL' && b.severity !== 'CRITICAL') return -1;
-    if (a.severity !== 'CRITICAL' && b.severity === 'CRITICAL') return 1;
-    return 0;
-  });
+  return alerts;
 };
 
 export default function CurrentConditions() {
