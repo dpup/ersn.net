@@ -44,7 +44,12 @@ interface Alert {
 
 // Chain Control Info from API
 interface ChainControlInfo {
-  level: 'CHAIN_CONTROL_LEVEL_UNSPECIFIED' | 'CHAIN_CONTROL_LEVEL_NONE' | 'CHAIN_CONTROL_LEVEL_R1' | 'CHAIN_CONTROL_LEVEL_R2' | 'CHAIN_CONTROL_LEVEL_R3';
+  level:
+    | 'CHAIN_CONTROL_LEVEL_UNSPECIFIED'
+    | 'CHAIN_CONTROL_LEVEL_NONE'
+    | 'CHAIN_CONTROL_LEVEL_R1'
+    | 'CHAIN_CONTROL_LEVEL_R2'
+    | 'CHAIN_CONTROL_LEVEL_R3';
   locationName?: string;
   latitude?: number;
   longitude?: number;
@@ -375,7 +380,9 @@ export default function RoadWeatherStatus() {
           normalizedSeverity = eventSeverity;
         } else if (rawSeverity) {
           const severityUpper = rawSeverity.toUpperCase();
-          if (['CRITICAL', 'WARNING', 'INFO', 'ALERT_SEVERITY_UNSPECIFIED'].includes(severityUpper)) {
+          if (
+            ['CRITICAL', 'WARNING', 'INFO', 'ALERT_SEVERITY_UNSPECIFIED'].includes(severityUpper)
+          ) {
             normalizedSeverity = severityUpper as Alert['severity'];
           } else {
             // Fallback mapping for non-standard values
@@ -438,9 +445,7 @@ export default function RoadWeatherStatus() {
           summary: (alertObj.summary as string) || undefined,
           details: (alertObj.details as string) || undefined,
           condensedSummary:
-            (alertObj.condensedSummary as string) ||
-            (alertObj.headline as string) ||
-            undefined,
+            (alertObj.condensedSummary as string) || (alertObj.headline as string) || undefined,
           location: locationText,
           locationDescription: (alertObj.locationDescription as string) || undefined,
           incidentType: (alertObj.incidentType as string) || (alertObj.type as string) || undefined,
@@ -529,12 +534,15 @@ export default function RoadWeatherStatus() {
         }),
         alerts: allAlerts
           // Deduplicate by title (same alert may cover multiple locations)
-          .filter((alert, index, self) =>
-            index === self.findIndex(a => a.title === alert.title)
-          )
+          .filter((alert, index, self) => index === self.findIndex((a) => a.title === alert.title))
           .sort((a, b) => {
             // Sort by severity: CRITICAL > WARNING > INFO > ALERT_SEVERITY_UNSPECIFIED
-            const severityOrder = { CRITICAL: 0, WARNING: 1, INFO: 2, ALERT_SEVERITY_UNSPECIFIED: 3 };
+            const severityOrder = {
+              CRITICAL: 0,
+              WARNING: 1,
+              INFO: 2,
+              ALERT_SEVERITY_UNSPECIFIED: 3,
+            };
             return severityOrder[a.severity] - severityOrder[b.severity];
           }),
         lastUpdated: roads.lastUpdated || weather.lastUpdated || new Date().toISOString(),
@@ -701,8 +709,12 @@ export default function RoadWeatherStatus() {
                               {/* Chain Control Icon */}
                               {segment.chainControlInfo &&
                                 segment.chainControlInfo.level !== 'CHAIN_CONTROL_LEVEL_NONE' &&
-                                segment.chainControlInfo.level !== 'CHAIN_CONTROL_LEVEL_UNSPECIFIED' && (
-                                  <div className="flex items-center flex-shrink-0 text-blue-600" title="Chain control in effect">
+                                segment.chainControlInfo.level !==
+                                  'CHAIN_CONTROL_LEVEL_UNSPECIFIED' && (
+                                  <div
+                                    className="flex items-center flex-shrink-0 text-blue-600"
+                                    title="Chain control in effect"
+                                  >
                                     <Link className="h-4 w-4" />
                                   </div>
                                 )}
