@@ -28,6 +28,9 @@ interface Alert {
   classification?: 'ON_ROUTE' | 'NEARBY' | 'DISTANT' | 'ALERT_CLASSIFICATION_UNSPECIFIED';
   title: string;
   description: string;
+  headline?: string; // Brief summary for weather alerts
+  summary?: string; // Concise overview
+  details?: string; // Formatted markdown details
   condensedSummary?: string;
   location?: string;
   locationDescription?: string;
@@ -104,6 +107,9 @@ interface WeatherApiResponse {
       description?: string;
       event?: string; // NWS event type e.g. "Winter Storm Warning", "Flood Watch"
       senderName?: string; // e.g. "NWS Sacramento CA"
+      headline?: string; // Brief summary (125 chars max)
+      summary?: string; // Concise overview of hazards and actions
+      details?: string; // Formatted markdown with sections
       condensedSummary?: string;
       classification?: string;
       impact?: string;
@@ -421,12 +427,20 @@ export default function RoadWeatherStatus() {
             (alertObj.event as string) ||
             (alertObj.description as string) ||
             'Alert',
+          // For weather alerts, prefer summary over raw description
           description:
+            (alertObj.summary as string) ||
             (alertObj.description as string) ||
             (alertObj.title as string) ||
             (alertObj.event as string) ||
             'No description available',
-          condensedSummary: (alertObj.condensedSummary as string) || undefined,
+          headline: (alertObj.headline as string) || undefined,
+          summary: (alertObj.summary as string) || undefined,
+          details: (alertObj.details as string) || undefined,
+          condensedSummary:
+            (alertObj.condensedSummary as string) ||
+            (alertObj.headline as string) ||
+            undefined,
           location: locationText,
           locationDescription: (alertObj.locationDescription as string) || undefined,
           incidentType: (alertObj.incidentType as string) || (alertObj.type as string) || undefined,
