@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import {
-  X,
   ChevronDown,
   ChevronUp,
   Construction,
@@ -8,120 +7,17 @@ import {
   Truck,
   Snowflake,
   CheckCircle,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react';
-
-// Import types and helper functions from the main component
-interface Alert {
-  id?: string;
-  type: 'road' | 'weather';
-  severity: 'CRITICAL' | 'WARNING' | 'INFO' | 'ALERT_SEVERITY_UNSPECIFIED';
-  classification?: 'ON_ROUTE' | 'NEARBY' | 'DISTANT' | 'ALERT_CLASSIFICATION_UNSPECIFIED';
-  title: string;
-  description: string;
-  condensedSummary?: string;
-  location?: string;
-  locationDescription?: string;
-  incidentType?: string;
-  impact?: string;
-  startTime?: string;
-  expectedEnd?: string;
-  distanceToRouteMeters?: number;
-  metadata?: Record<string, unknown>;
-}
-
-interface RoadSegment {
-  from: string;
-  to: string;
-  status: 'clear' | 'delays' | 'restrictions' | 'closed';
-  delayMinutes?: number;
-  description?: string;
-  alertCount: number;
-  alerts: Alert[];
-  congestionLevel?: string;
-  durationMinutes?: number;
-  distanceKm?: number;
-  chainControl?: string;
-  rawStatus?: string;
-  statusExplanation?: string;
-}
+import Dialog, { DialogHeader, DialogContent } from './Dialog';
+import { type Alert, type RoadSegment, formatHumanTime, formatEnumValue } from './types';
 
 interface RouteDetailsDialogProps {
   selectedRoute: RoadSegment;
   onClose: () => void;
 }
 
-// Helper functions (duplicated from main component - could be moved to utils)
-const formatEnumValue = (value: string | undefined | null): string => {
-  if (!value) return '';
-
-  let formatted = value
-    .replace(/_/g, ' ')
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    .toLowerCase()
-    .replace(/^\w/, c => c.toUpperCase())
-    .trim();
-
-  if (formatted.toLowerCase() === 'restricted') {
-    formatted = 'Restrictions';
-  }
-
-  return formatted;
-};
-
-const formatHumanTime = (timestamp: string | undefined): string => {
-  if (!timestamp) return '';
-
-  try {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / (1000 * 60));
-    const diffHours = Math.floor(diffMins / 60);
-    const diffDays = Math.floor(diffHours / 24);
-
-    if (diffMs > 0) {
-      if (diffMins < 60) {
-        return diffMins <= 1 ? 'Just now' : `${diffMins} min ago`;
-      } else if (diffHours < 24) {
-        return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-      } else if (diffDays < 7) {
-        return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-      }
-    }
-
-    const isToday = date.toDateString() === now.toDateString();
-    const isThisYear = date.getFullYear() === now.getFullYear();
-
-    if (isToday) {
-      return date.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      });
-    } else if (isThisYear) {
-      return date.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      });
-    } else {
-      return date.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      });
-    }
-  } catch (error) {
-    return timestamp;
-  }
-};
-
+// Helper functions
 const formatMetadataValue = (value: string): string => {
   const isoDateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
   if (isoDateRegex.test(value)) {
@@ -195,78 +91,68 @@ const formatDistanceToRoute = (distanceMeters: number | undefined): string => {
 export default function RouteDetailsDialog({ selectedRoute, onClose }: RouteDetailsDialogProps) {
   const [nearbyExpanded, setNearbyExpanded] = useState(true);
 
-  const onRouteAlerts = selectedRoute.alerts.filter(alert => alert.classification === 'ON_ROUTE');
-  const nearbyAlerts = selectedRoute.alerts.filter(alert => alert.classification === 'NEARBY');
+  const onRouteAlerts = selectedRoute.alerts.filter((alert) => alert.classification === 'ON_ROUTE');
+  const nearbyAlerts = selectedRoute.alerts.filter((alert) => alert.classification === 'NEARBY');
 
   return (
-    <div
-      className="fixed inset-0 bg-black/20 flex items-end sm:items-center justify-center p-0 sm:p-4 z-50 backdrop-blur-sm"
-      onClick={onClose}
-      onKeyDown={(e) => e.key === 'Escape' && onClose()}
-      role="dialog"
-      aria-modal="true"
-    >
-      <div
-        className="bg-white rounded-t-xl sm:rounded-lg w-full max-w-4xl max-h-[95vh] sm:max-h-[85vh] flex flex-col sm:min-w-[600px] shadow-lg touch-pan-y"
-        onClick={(e) => e.stopPropagation()}
-        onKeyDown={(e) => e.stopPropagation()}
-        role="document"
-      >
-        {/* Header Section - Fixed */}
-        <div className="p-4 sm:p-6 border-b border-stone-200 flex-shrink-0">
-          {/* Mobile drag indicator */}
-          <div className="w-12 h-1 bg-stone-300 rounded-full mx-auto mb-4 sm:hidden" />
-
-          <div className="flex items-start justify-between">
-            <div className="flex-1 min-w-0">
-              {/* Outcome-first header */}
-              <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 text-base sm:text-lg font-medium text-stone-800">
-                <div className="font-semibold truncate">{selectedRoute.from} → {selectedRoute.to}</div>
-                <div className="flex flex-wrap items-center text-sm sm:text-base mt-1 sm:mt-0">
-                  <span className="mx-2 text-stone-400 hidden sm:inline">•</span>
-                  {typeof selectedRoute.delayMinutes === 'number' && selectedRoute.delayMinutes > 0 && (
-                    <>
-                      <span className="text-orange-600 bg-orange-50 px-2 py-1 rounded text-xs sm:text-sm font-medium">+{selectedRoute.delayMinutes} min delay</span>
-                      {(selectedRoute.congestionLevel || selectedRoute.rawStatus) && <span className="mx-2 text-stone-400 hidden sm:inline">•</span>}
-                    </>
-                  )}
-                  {selectedRoute.congestionLevel && (
-                    <>
-                      <span className={`px-2 py-1 rounded text-xs sm:text-sm font-medium ${
-                        selectedRoute.congestionLevel.toLowerCase() === 'clear' ? 'text-green-700 bg-green-50' :
-                        selectedRoute.congestionLevel.toLowerCase() === 'moderate' ? 'text-yellow-700 bg-yellow-50' : 'text-red-700 bg-red-50'
-                      }`}>
-                        {formatEnumValue(selectedRoute.congestionLevel)} traffic
-                      </span>
-                      {selectedRoute.rawStatus && <span className="mx-2 text-stone-400 hidden sm:inline">•</span>}
-                    </>
-                  )}
-                  {selectedRoute.rawStatus && (
-                    <span className={`px-2 py-1 rounded text-xs sm:text-sm font-medium ${
-                      selectedRoute.rawStatus.toLowerCase() === 'closed' ? 'text-red-700 bg-red-50' :
-                      selectedRoute.rawStatus.toLowerCase() === 'restricted' ? 'text-orange-700 bg-orange-50' : 'text-green-700 bg-green-50'
-                    }`}>
-                      {formatEnumValue(selectedRoute.rawStatus)}
-                    </span>
-                  )}
-                </div>
-              </div>
+    <Dialog onClose={onClose} maxWidth="2xl">
+      <DialogHeader onClose={onClose}>
+        <div className="flex-1 min-w-0">
+          {/* Outcome-first header */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 text-base sm:text-lg font-medium text-stone-800">
+            <div className="font-semibold truncate">
+              {selectedRoute.from} → {selectedRoute.to}
             </div>
-
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-stone-400 hover:text-stone-600 transition-colors p-2 -m-2 flex-shrink-0"
-              aria-label="Close dialog"
-            >
-              <X className="h-5 w-5" />
-            </button>
+            <div className="flex flex-wrap items-center text-sm sm:text-base mt-1 sm:mt-0">
+              <span className="mx-2 text-stone-400 hidden sm:inline">•</span>
+              {typeof selectedRoute.delayMinutes === 'number' && selectedRoute.delayMinutes > 0 && (
+                <>
+                  <span className="text-orange-600 bg-orange-50 px-2 py-1 rounded text-xs sm:text-sm font-medium">
+                    +{selectedRoute.delayMinutes} min delay
+                  </span>
+                  {(selectedRoute.congestionLevel || selectedRoute.rawStatus) && (
+                    <span className="mx-2 text-stone-400 hidden sm:inline">•</span>
+                  )}
+                </>
+              )}
+              {selectedRoute.congestionLevel && (
+                <>
+                  <span
+                    className={`px-2 py-1 rounded text-xs sm:text-sm font-medium ${
+                      selectedRoute.congestionLevel.toLowerCase() === 'clear'
+                        ? 'text-green-700 bg-green-50'
+                        : selectedRoute.congestionLevel.toLowerCase() === 'moderate'
+                          ? 'text-yellow-700 bg-yellow-50'
+                          : 'text-red-700 bg-red-50'
+                    }`}
+                  >
+                    {formatEnumValue(selectedRoute.congestionLevel)} traffic
+                  </span>
+                  {selectedRoute.rawStatus && (
+                    <span className="mx-2 text-stone-400 hidden sm:inline">•</span>
+                  )}
+                </>
+              )}
+              {selectedRoute.rawStatus && (
+                <span
+                  className={`px-2 py-1 rounded text-xs sm:text-sm font-medium ${
+                    selectedRoute.rawStatus.toLowerCase() === 'closed'
+                      ? 'text-red-700 bg-red-50'
+                      : selectedRoute.rawStatus.toLowerCase() === 'restricted'
+                        ? 'text-orange-700 bg-orange-50'
+                        : 'text-green-700 bg-green-50'
+                  }`}
+                >
+                  {formatEnumValue(selectedRoute.rawStatus)}
+                </span>
+              )}
+            </div>
           </div>
         </div>
+      </DialogHeader>
 
-        {/* Scrollable Content Area */}
-        <div className="p-4 sm:p-6 overflow-y-auto flex-1">
-          <div className="space-y-4 sm:space-y-6">
+      <DialogContent>
+        <div className="space-y-4 sm:space-y-6">
             {/* Route Metadata */}
             <div className="bg-stone-50 border border-stone-200 rounded-lg p-3 sm:p-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 text-sm">
@@ -514,17 +400,16 @@ export default function RouteDetailsDialog({ selectedRoute, onClose }: RouteDeta
               </div>
             )}
 
-            {/* No alerts state */}
-            {onRouteAlerts.length === 0 && nearbyAlerts.length === 0 && (
-              <div className="text-center py-8">
-                <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-3" />
-                <h3 className="font-medium text-stone-900 mb-1">All clear on your route</h3>
-                <p className="text-stone-600 text-sm">No incidents or alerts affecting this route.</p>
-              </div>
-            )}
-          </div>
+          {/* No alerts state */}
+          {onRouteAlerts.length === 0 && nearbyAlerts.length === 0 && (
+            <div className="text-center py-8">
+              <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-3" />
+              <h3 className="font-medium text-stone-900 mb-1">All clear on your route</h3>
+              <p className="text-stone-600 text-sm">No incidents or alerts affecting this route.</p>
+            </div>
+          )}
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

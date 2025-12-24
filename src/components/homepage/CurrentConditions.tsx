@@ -31,6 +31,18 @@ interface RoadApiResponse {
   lastUpdated: string;
 }
 
+interface WeatherAlert {
+  id?: string;
+  severity?: string;
+  title?: string;
+  description?: string;
+  event?: string; // NWS event type e.g. "Winter Storm Warning"
+  senderName?: string;
+  startTimestamp?: number;
+  endTimestamp?: number;
+  tags?: string[];
+}
+
 interface WeatherApiResponse {
   weatherData: {
     locationId: string;
@@ -38,12 +50,7 @@ interface WeatherApiResponse {
     weatherDescription: string;
     weatherIcon: string;
     temperatureCelsius: number;
-    alerts: Array<{
-      id?: string;
-      severity?: string;
-      title?: string;
-      description?: string;
-    }>;
+    alerts: WeatherAlert[];
   }[];
   lastUpdated: string;
 }
@@ -91,36 +98,45 @@ const getWeatherIcon = (iconCode: string): ReactElement => {
   return iconMap[iconCode] || <Cloud className="h-4 w-4 text-gray-500" />;
 };
 
-// Helper to collect alerts from API data
+// Helper to collect alerts from API data (deduplicated by title)
 const collectAlerts = (
   roadData: RoadApiResponse | null,
   weatherData: WeatherApiResponse | null,
 ): Alert[] => {
   const alerts: Alert[] = [];
+  const seenTitles = new Set<string>();
 
   // Collect road alerts
   roadData?.roads.forEach((road) => {
     road.alerts.forEach((alert) => {
-      alerts.push({
-        id: alert.id,
-        severity: (alert.severity?.toUpperCase() as Alert['severity']) || 'INFO',
-        title: alert.title || alert.description,
-        description: alert.description,
-        type: 'road',
-      });
+      const title = alert.title || alert.description;
+      if (title && !seenTitles.has(title)) {
+        seenTitles.add(title);
+        alerts.push({
+          id: alert.id,
+          severity: (alert.severity?.toUpperCase() as Alert['severity']) || 'INFO',
+          title,
+          description: alert.description,
+          type: 'road',
+        });
+      }
     });
   });
 
-  // Collect weather alerts
+  // Collect weather alerts (deduplicate by title/event - same alert may cover multiple locations)
   weatherData?.weatherData.forEach((location) => {
     location.alerts.forEach((alert) => {
-      alerts.push({
-        id: alert.id,
-        severity: (alert.severity?.toUpperCase() as Alert['severity']) || 'INFO',
-        title: alert.title || alert.description || '',
-        description: alert.description,
-        type: 'weather',
-      });
+      const title = alert.event || alert.title || alert.description || '';
+      if (title && !seenTitles.has(title)) {
+        seenTitles.add(title);
+        alerts.push({
+          id: alert.id,
+          severity: (alert.severity?.toUpperCase() as Alert['severity']) || 'INFO',
+          title,
+          description: alert.description,
+          type: 'weather',
+        });
+      }
     });
   });
 

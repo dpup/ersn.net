@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import type { ReactElement } from 'react';
 import {
-  X,
   Thermometer,
   Wind,
   Eye,
@@ -16,41 +15,10 @@ import {
   AlertTriangle,
   CheckCircle,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
 } from 'lucide-react';
-
-interface Alert {
-  id?: string;
-  type: 'road' | 'weather';
-  severity: 'CRITICAL' | 'WARNING' | 'INFO' | 'ALERT_SEVERITY_UNSPECIFIED';
-  classification?: 'ON_ROUTE' | 'NEARBY' | 'DISTANT' | 'ALERT_CLASSIFICATION_UNSPECIFIED';
-  title: string;
-  description: string;
-  condensedSummary?: string;
-  location?: string;
-  locationDescription?: string;
-  incidentType?: string;
-  impact?: string;
-  startTime?: string;
-  expectedEnd?: string;
-  metadata?: Record<string, unknown>;
-}
-
-interface WeatherLocation {
-  name: string;
-  temperature: number;
-  condition: string;
-  icon: string;
-  locationId?: string;
-  temperatureCelsius?: number;
-  feelsLikeCelsius?: number;
-  humidityPercent?: number;
-  windSpeedKmh?: number;
-  windDirectionDegrees?: number;
-  visibilityKm?: number;
-  weatherMain?: string;
-  alerts?: Alert[];
-}
+import Dialog, { DialogHeader, DialogContent, DialogQuickActions } from './Dialog';
+import { type Alert, type WeatherLocation, getSeverityColors } from './types';
 
 interface WeatherDetailsDialogProps {
   selectedWeather: WeatherLocation;
@@ -86,26 +54,13 @@ const getWeatherIcon = (iconCode: string, size: 'sm' | 'lg' = 'sm') => {
   return iconMap[iconCode] || <Cloud className={`${sizeClass} text-gray-500`} />;
 };
 
-const getSeverityIcon = (severity: string) => {
-  switch (severity) {
-    case 'CRITICAL':
-      return <AlertTriangle className="h-5 w-5 text-red-600" />;
-    case 'WARNING':
-      return <AlertTriangle className="h-5 w-5 text-orange-600" />;
-    default:
-      return <AlertTriangle className="h-5 w-5 text-yellow-600" />;
-  }
+const getSeverityIcon = (severity: Alert['severity']) => {
+  const colors = getSeverityColors(severity);
+  return <AlertTriangle className={`h-5 w-5 ${colors.icon}`} />;
 };
 
-const getSeverityBadge = (severity: string) => {
-  switch (severity) {
-    case 'CRITICAL':
-      return 'bg-red-100 text-red-800 border-red-200';
-    case 'WARNING':
-      return 'bg-orange-100 text-orange-800 border-orange-200';
-    default:
-      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-  }
+const getSeverityBadge = (severity: Alert['severity']) => {
+  return getSeverityColors(severity).badge;
 };
 
 
@@ -132,82 +87,53 @@ const convertKmToMiles = (km: number | undefined): number => {
   return Math.round(km * 0.621371);
 };
 
-export default function WeatherDetailsDialog({ selectedWeather, onClose }: WeatherDetailsDialogProps) {
+export default function WeatherDetailsDialog({
+  selectedWeather,
+  onClose,
+}: WeatherDetailsDialogProps) {
   const [routeAlertsExpanded, setRouteAlertsExpanded] = useState(true);
   const [generalAlertsExpanded, setGeneralAlertsExpanded] = useState(false);
 
   const alerts = selectedWeather.alerts || [];
-  const routeAlerts = alerts.filter(alert => alert.classification === 'ON_ROUTE');
-  const generalAlerts = alerts.filter(alert => alert.classification !== 'ON_ROUTE');
+  const routeAlerts = alerts.filter((alert) => alert.classification === 'ON_ROUTE');
+  const generalAlerts = alerts.filter((alert) => alert.classification !== 'ON_ROUTE');
+
+  const showQuickActions =
+    routeAlerts.length > 0 || (selectedWeather.windSpeedKmh && selectedWeather.windSpeedKmh > 25);
 
   return (
-    <div
-      className="fixed inset-0 bg-black/20 flex items-end sm:items-center justify-center p-0 sm:p-4 z-50 backdrop-blur-sm"
-      onClick={onClose}
-      onKeyDown={(e) => e.key === 'Escape' && onClose()}
-      role="dialog"
-      aria-modal="true"
-    >
-      <div
-        className="bg-white rounded-t-xl sm:rounded-lg w-full max-w-2xl max-h-[95vh] sm:max-h-[85vh] flex flex-col shadow-lg touch-pan-y"
-        onClick={(e) => e.stopPropagation()}
-        onKeyDown={(e) => e.stopPropagation()}
-        role="document"
-      >
-        {/* Header Section */}
-        <div className="p-4 sm:p-6 border-b border-stone-200 flex-shrink-0">
-          {/* Mobile drag indicator */}
-          <div className="w-12 h-1 bg-stone-300 rounded-full mx-auto mb-4 sm:hidden" />
+    <Dialog onClose={onClose} maxWidth="2xl">
+      <DialogHeader onClose={onClose}>
+        {getWeatherIcon(selectedWeather.icon, 'lg')}
+        <div className="flex-1 min-w-0">
+          <h2 className="text-lg sm:text-xl font-semibold text-stone-800 truncate">
+            {selectedWeather.name}
+          </h2>
+          <p className="text-stone-600 text-sm capitalize">{selectedWeather.condition}</p>
+        </div>
+      </DialogHeader>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3 flex-1 min-w-0">
-              {getWeatherIcon(selectedWeather.icon, 'lg')}
-              <div className="flex-1 min-w-0">
-                <h2 className="text-lg sm:text-xl font-semibold text-stone-800 truncate">
-                  {selectedWeather.name}
-                </h2>
-                <p className="text-stone-600 text-sm capitalize">
-                  {selectedWeather.condition}
-                </p>
-              </div>
-            </div>
-
+      {showQuickActions && (
+        <DialogQuickActions>
+          {routeAlerts.length > 0 && (
             <button
               type="button"
-              onClick={onClose}
-              className="text-stone-400 hover:text-stone-600 transition-colors p-2 -m-2 flex-shrink-0"
-              aria-label="Close dialog"
+              className="text-sm px-4 py-2 bg-red-100 text-red-800 rounded-lg border border-red-200 hover:bg-red-200 transition-colors font-medium touch-manipulation"
+              onClick={() => setRouteAlertsExpanded(true)}
             >
-              <X className="h-5 w-5" />
+              View route alerts
             </button>
-          </div>
-        </div>
+          )}
+          {selectedWeather.windSpeedKmh && selectedWeather.windSpeedKmh > 25 && (
+            <span className="text-sm px-4 py-2 bg-orange-100 text-orange-800 rounded-lg border border-orange-200 font-medium">
+              High winds - drive carefully
+            </span>
+          )}
+        </DialogQuickActions>
+      )}
 
-        {/* Quick Actions */}
-        {(routeAlerts.length > 0 || (selectedWeather.windSpeedKmh && selectedWeather.windSpeedKmh > 25)) && (
-          <div className="px-4 sm:px-6 py-3 bg-stone-50 border-b border-stone-200">
-            <div className="flex flex-wrap gap-2">
-              {routeAlerts.length > 0 && (
-                <button
-                  type="button"
-                  className="text-sm px-4 py-2 bg-red-100 text-red-800 rounded-lg border border-red-200 hover:bg-red-200 transition-colors font-medium touch-manipulation"
-                  onClick={() => setRouteAlertsExpanded(true)}
-                >
-                  View route alerts
-                </button>
-              )}
-              {selectedWeather.windSpeedKmh && selectedWeather.windSpeedKmh > 25 && (
-                <span className="text-sm px-4 py-2 bg-orange-100 text-orange-800 rounded-lg border border-orange-200 font-medium">
-                  High winds - drive carefully
-                </span>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Scrollable Content Area */}
-        <div className="p-4 sm:p-6 overflow-y-auto flex-1">
-          <div className="space-y-4">
+      <DialogContent>
+        <div className="space-y-4">
             {/* Current Conditions */}
             <div className="bg-stone-50 border border-stone-200 rounded-lg p-4">
               <h3 className="font-medium text-stone-900 mb-3 text-lg">What to expect right now</h3>
@@ -262,7 +188,7 @@ export default function WeatherDetailsDialog({ selectedWeather, onClose }: Weath
                   </div>
                 )}
 
-                {selectedWeather.visibilityKm && (
+                {selectedWeather.visibilityKm !== undefined && selectedWeather.visibilityKm > 0 && (
                   <div className="flex items-center space-x-3 p-2 bg-white rounded border border-stone-100">
                     <Eye className="h-5 w-5 text-gray-500 flex-shrink-0" />
                     <div className="min-w-0">
@@ -412,17 +338,16 @@ export default function WeatherDetailsDialog({ selectedWeather, onClose }: Weath
               </div>
             )}
 
-            {/* No alerts state */}
-            {alerts.length === 0 && (
-              <div className="text-center py-6">
-                <CheckCircle className="h-10 w-10 text-green-500 mx-auto mb-2" />
-                <h3 className="font-medium text-stone-900 mb-1">All clear</h3>
-                <p className="text-stone-600 text-sm">No weather alerts for this location.</p>
-              </div>
-            )}
-          </div>
+          {/* No alerts state */}
+          {alerts.length === 0 && (
+            <div className="text-center py-6">
+              <CheckCircle className="h-10 w-10 text-green-500 mx-auto mb-2" />
+              <h3 className="font-medium text-stone-900 mb-1">All clear</h3>
+              <p className="text-stone-600 text-sm">No weather alerts for this location.</p>
+            </div>
+          )}
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

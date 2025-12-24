@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import RouteDetailsDialog from './RouteDetailsDialog';
 import WeatherDetailsDialog from './WeatherDetailsDialog';
+import AlertDetailsDialog from './AlertDetailsDialog';
 
 // Alert interfaces
 interface Alert {
@@ -88,13 +89,17 @@ interface WeatherApiResponse {
       severity?: string;
       title?: string;
       description?: string;
-      event?: string;
+      event?: string; // NWS event type e.g. "Winter Storm Warning", "Flood Watch"
+      senderName?: string; // e.g. "NWS Sacramento CA"
       condensedSummary?: string;
       classification?: string;
       impact?: string;
       locationDescription?: string;
       startTime?: string;
+      startTimestamp?: number; // Unix timestamp
+      endTimestamp?: number; // Unix timestamp
       type?: string;
+      tags?: string[]; // e.g. ["Flood"], ["Wind", "Snow/Ice"]
       metadata?: Record<string, unknown>;
     }[];
   }[];
@@ -248,6 +253,7 @@ export default function RoadWeatherStatus() {
   const [error, setError] = useState<string | null>(null);
   const [selectedRoute, setSelectedRoute] = useState<RoadSegment | null>(null);
   const [selectedWeather, setSelectedWeather] = useState<WeatherLocation | null>(null);
+  const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -279,6 +285,40 @@ export default function RoadWeatherStatus() {
       console.log('Roads response:', roads);
       console.log('Weather response:', weather);
 
+      // Helper function to infer severity from NWS event types
+      const inferSeverityFromEvent = (event: string | undefined): Alert['severity'] | null => {
+        if (!event) return null;
+        const eventLower = event.toLowerCase();
+
+        // Critical: Emergencies and extreme events
+        if (
+          eventLower.includes('emergency') ||
+          eventLower.includes('extreme') ||
+          eventLower.includes('tornado warning') ||
+          eventLower.includes('flash flood warning') ||
+          eventLower.includes('blizzard warning')
+        ) {
+          return 'CRITICAL';
+        }
+
+        // Warning: NWS "Warning" level events indicate imminent danger
+        if (eventLower.includes('warning')) {
+          return 'WARNING';
+        }
+
+        // Watch: NWS "Watch" level events indicate potential danger
+        if (eventLower.includes('watch')) {
+          return 'WARNING'; // Treat watches as warnings for visibility
+        }
+
+        // Advisory: Less severe but notable
+        if (eventLower.includes('advisory') || eventLower.includes('statement')) {
+          return 'INFO';
+        }
+
+        return null;
+      };
+
       // Helper function to transform alerts
       const transformAlert = (alert: unknown, type: 'road' | 'weather'): Alert => {
         const alertObj = alert as Record<string, unknown>;
@@ -296,41 +336,50 @@ export default function RoadWeatherStatus() {
           }
         }
 
+        // Get event type for NWS alerts (weather)
+        const eventType = alertObj.event as string | undefined;
+
         // Get severity from multiple possible fields
         const rawSeverity =
           (alertObj.severity as string) ||
           (alertObj.priority as string) ||
           (alertObj.urgency as string) ||
-          (alertObj.level as string) ||
-          'INFO';
+          (alertObj.level as string);
 
         // Normalize severity values to match API spec
         let normalizedSeverity: Alert['severity'] = 'INFO';
-        const severityUpper = rawSeverity.toUpperCase();
-        if (['CRITICAL', 'WARNING', 'INFO', 'ALERT_SEVERITY_UNSPECIFIED'].includes(severityUpper)) {
-          normalizedSeverity = severityUpper as Alert['severity'];
-        } else {
-          // Fallback mapping for non-standard values
-          const severityLower = rawSeverity.toLowerCase();
-          if (
-            severityLower.includes('critical') ||
-            severityLower.includes('severe') ||
-            severityLower.includes('emergency')
-          ) {
-            normalizedSeverity = 'CRITICAL';
-          } else if (
-            severityLower.includes('warning') ||
-            severityLower.includes('major') ||
-            severityLower.includes('high') ||
-            severityLower.includes('important')
-          ) {
-            normalizedSeverity = 'WARNING';
-          } else if (
-            severityLower.includes('info') ||
-            severityLower.includes('advisory') ||
-            severityLower.includes('minor')
-          ) {
-            normalizedSeverity = 'INFO';
+
+        // First try to infer from event type (for NWS weather alerts)
+        const eventSeverity = inferSeverityFromEvent(eventType);
+        if (eventSeverity) {
+          normalizedSeverity = eventSeverity;
+        } else if (rawSeverity) {
+          const severityUpper = rawSeverity.toUpperCase();
+          if (['CRITICAL', 'WARNING', 'INFO', 'ALERT_SEVERITY_UNSPECIFIED'].includes(severityUpper)) {
+            normalizedSeverity = severityUpper as Alert['severity'];
+          } else {
+            // Fallback mapping for non-standard values
+            const severityLower = rawSeverity.toLowerCase();
+            if (
+              severityLower.includes('critical') ||
+              severityLower.includes('severe') ||
+              severityLower.includes('emergency')
+            ) {
+              normalizedSeverity = 'CRITICAL';
+            } else if (
+              severityLower.includes('warning') ||
+              severityLower.includes('major') ||
+              severityLower.includes('high') ||
+              severityLower.includes('important')
+            ) {
+              normalizedSeverity = 'WARNING';
+            } else if (
+              severityLower.includes('info') ||
+              severityLower.includes('advisory') ||
+              severityLower.includes('minor')
+            ) {
+              normalizedSeverity = 'INFO';
+            }
           }
         }
 
@@ -449,11 +498,16 @@ export default function RoadWeatherStatus() {
             alerts: weatherAlerts,
           };
         }),
-        alerts: allAlerts.sort((a, b) => {
-          // Sort by severity: CRITICAL > WARNING > INFO > ALERT_SEVERITY_UNSPECIFIED
-          const severityOrder = { CRITICAL: 0, WARNING: 1, INFO: 2, ALERT_SEVERITY_UNSPECIFIED: 3 };
-          return severityOrder[a.severity] - severityOrder[b.severity];
-        }),
+        alerts: allAlerts
+          // Deduplicate by title (same alert may cover multiple locations)
+          .filter((alert, index, self) =>
+            index === self.findIndex(a => a.title === alert.title)
+          )
+          .sort((a, b) => {
+            // Sort by severity: CRITICAL > WARNING > INFO > ALERT_SEVERITY_UNSPECIFIED
+            const severityOrder = { CRITICAL: 0, WARNING: 1, INFO: 2, ALERT_SEVERITY_UNSPECIFIED: 3 };
+            return severityOrder[a.severity] - severityOrder[b.severity];
+          }),
         lastUpdated: roads.lastUpdated || weather.lastUpdated || new Date().toISOString(),
       };
 
@@ -556,9 +610,11 @@ export default function RoadWeatherStatus() {
                     : 'text-blue-600';
 
                 return (
-                  <div
+                  <button
+                    type="button"
                     key={alert.id || `alert-${index}`}
-                    className={`p-3 rounded-md border ${bgColor}`}
+                    onClick={() => setSelectedAlert(alert)}
+                    className={`w-full text-left p-3 rounded-md border ${bgColor} hover:opacity-90 transition-opacity cursor-pointer`}
                   >
                     <div className="flex items-start space-x-2">
                       {isCritical ? (
@@ -566,16 +622,16 @@ export default function RoadWeatherStatus() {
                       ) : (
                         <AlertTriangle className={`h-4 w-4 ${iconColor} mt-0.5 flex-shrink-0`} />
                       )}
-                      <div>
+                      <div className="flex-1 min-w-0">
                         <div className={`font-medium ${textColor} text-sm`}>{alert.title}</div>
                         {alert.condensedSummary && alert.condensedSummary !== alert.title && (
-                          <div className={`${summaryColor} text-xs mt-1`}>
+                          <div className={`${summaryColor} text-xs mt-1 line-clamp-2`}>
                             {alert.condensedSummary}
                           </div>
                         )}
                       </div>
                     </div>
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -703,6 +759,11 @@ export default function RoadWeatherStatus() {
           selectedWeather={selectedWeather}
           onClose={() => setSelectedWeather(null)}
         />
+      )}
+
+      {/* Alert Details Dialog */}
+      {selectedAlert && (
+        <AlertDetailsDialog alert={selectedAlert} onClose={() => setSelectedAlert(null)} />
       )}
     </div>
   );
