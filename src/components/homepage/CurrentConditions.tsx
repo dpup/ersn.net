@@ -1,14 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { ReactElement } from 'react';
-import {
-  Zap,
-  Eye,
-  CloudRain,
-  CloudSnow,
-  Sun,
-  Cloud,
-  ChevronRight
-} from 'lucide-react';
+import { Zap, Eye, CloudRain, CloudSnow, Sun, Cloud, ChevronRight } from 'lucide-react';
 
 interface RoadApiResponse {
   roads: {
@@ -53,8 +45,8 @@ interface RepeaterInfo {
 }
 
 const repeaters: RepeaterInfo[] = [
-  { name: "Murphys", frequency: "462.725", status: 'up' },
-  { name: "Arnold Summit", frequency: "462.725", status: 'up' }
+  { name: 'Murphys', frequency: '462.725', status: 'down' },
+  { name: 'Arnold Summit', frequency: '462.725', status: 'up' },
 ];
 
 const getWeatherIcon = (iconCode: string): ReactElement => {
@@ -81,7 +73,6 @@ const getWeatherIcon = (iconCode: string): ReactElement => {
   return iconMap[iconCode] || <Cloud className="h-4 w-4 text-gray-500" />;
 };
 
-
 export default function CurrentConditions() {
   const [roadData, setRoadData] = useState<RoadApiResponse | null>(null);
   const [weatherData, setWeatherData] = useState<WeatherApiResponse | null>(null);
@@ -89,7 +80,6 @@ export default function CurrentConditions() {
 
   const fetchData = useCallback(async () => {
     try {
-
       const [roadsResponse, weatherResponse] = await Promise.all([
         fetch('https://info.ersn.net/api/v1/roads', {
           method: 'GET',
@@ -98,7 +88,7 @@ export default function CurrentConditions() {
         fetch('https://info.ersn.net/api/v1/weather', {
           method: 'GET',
           mode: 'cors',
-        })
+        }),
       ]);
 
       if (!roadsResponse.ok || !weatherResponse.ok) {
@@ -133,7 +123,8 @@ export default function CurrentConditions() {
   const getRoadStatusColor = (road: any) => {
     if (road.status?.toLowerCase() === 'closed') return 'text-red-700';
     if (road.delayMinutes > 15) return 'text-red-700';
-    if (road.delayMinutes > 0 || (road.chainControl && road.chainControl.toLowerCase() !== 'none')) return 'text-yellow-700';
+    if (road.delayMinutes > 0 || (road.chainControl && road.chainControl.toLowerCase() !== 'none'))
+      return 'text-yellow-700';
     return 'text-green-700';
   };
 
@@ -159,9 +150,7 @@ export default function CurrentConditions() {
       <div className="flex items-center space-x-3 mb-4">
         <Zap className="h-6 w-6 text-stone-700" />
         <h3 className="text-xl font-serif text-stone-800">Current Conditions</h3>
-        <span className="text-xs text-stone-500 bg-stone-100 px-2 py-1 rounded">
-          Live
-        </span>
+        <span className="text-xs text-stone-500 bg-stone-100 px-2 py-1 rounded">Live</span>
       </div>
 
       <div className="flex-1 flex flex-col">
@@ -180,10 +169,11 @@ export default function CurrentConditions() {
                   );
                 }
 
-                const roadsWithIssues = roadData.roads.filter(road =>
-                  road.status?.toLowerCase() === 'closed' ||
-                  road.delayMinutes > 0 ||
-                  (road.chainControl && road.chainControl.toLowerCase() !== 'none')
+                const roadsWithIssues = roadData.roads.filter(
+                  (road) =>
+                    road.status?.toLowerCase() === 'closed' ||
+                    road.delayMinutes > 0 ||
+                    (road.chainControl && road.chainControl.toLowerCase() !== 'none'),
                 );
 
                 if (roadsWithIssues.length === 0) {
@@ -221,7 +211,7 @@ export default function CurrentConditions() {
                   <div className="flex items-center space-x-1 flex-shrink-0">
                     {getWeatherIcon(location.weatherIcon)}
                     <span className="font-medium text-stone-700">
-                      {Math.round(location.temperatureCelsius * 9/5 + 32)}°F
+                      {Math.round((location.temperatureCelsius * 9) / 5 + 32)}°F
                     </span>
                   </div>
                 </div>
@@ -241,7 +231,9 @@ export default function CurrentConditions() {
               {repeaters.map((repeater) => (
                 <div key={repeater.name} className="flex justify-between items-center">
                   <span className="text-stone-600">{repeater.name}:</span>
-                  <span className={`font-medium ${repeater.status === 'up' ? 'text-green-700' : 'text-red-700'}`}>
+                  <span
+                    className={`font-medium ${repeater.status === 'up' ? 'text-green-700' : 'text-red-700'}`}
+                  >
                     {repeater.status === 'up' ? 'Up' : 'Down'}
                   </span>
                 </div>
@@ -259,7 +251,6 @@ export default function CurrentConditions() {
             <ChevronRight className="h-4 w-4" />
           </a>
         </div>
-
       </div>
     </div>
   );
