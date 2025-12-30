@@ -159,3 +159,98 @@ Learn more: https://ersn.net/mesh
 
 ### Manual Override
 If explicitly instructed to "keep surnames" or "include contact numbers," you may override the default filtering rules for that specific post.
+
+## Repeater Status Management
+
+### Overview
+Repeater statuses are displayed in two key locations that must be kept synchronized:
+1. **Homepage widget** (`src/components/homepage/CurrentConditions.tsx`) - Compact status summary
+2. **Main status page** (`src/pages/status.astro`) - Detailed repeater information
+
+### Updating Repeater Status
+
+When changing a repeater's operational status, **BOTH locations must be updated** to ensure consistency across the site.
+
+#### 1. Homepage Widget (`src/components/homepage/CurrentConditions.tsx`)
+
+**Location**: Lines ~72-76 in the `repeaters` array constant
+
+**Current repeaters**:
+```typescript
+const repeaters: RepeaterInfo[] = [
+  { name: 'Forest Meadows', frequency: '462.725', status: 'up' },
+  { name: 'Murphys', frequency: '462.725', status: 'down' },
+  { name: 'Arnold Summit', frequency: '462.725', status: 'up' },
+];
+```
+
+**Status Values**:
+- `'up'` - Repeater is operational (displays as "Up" in green)
+- `'down'` - Repeater is offline (displays as "Down" in red)
+- `'unknown'` - Status unclear (not currently used in display)
+
+**To change status**: Update the `status` field for the target repeater
+
+#### 2. Status Page (`src/pages/status.astro`)
+
+**Location**: Lines ~46-84 in the repeater status section
+
+**Elements to update for each repeater**:
+- **Status indicator** (line ~51, ~70): `<div class="w-3 h-3 bg-green-500 rounded-full"></div>`
+  - `bg-green-500` for operational
+  - `bg-red-500` for offline
+  - `bg-yellow-500` for degraded/maintenance
+- **Status badge** (line ~54-56, ~73-75): `<span class="text-xs text-green-700 bg-green-100 px-2 py-1 rounded">Operational</span>`
+  - **Operational**: `text-green-700 bg-green-100` with "Operational" text
+  - **Offline**: `text-red-700 bg-red-100` with "Offline" text
+  - **Maintenance**: `text-yellow-700 bg-yellow-100` with "Maintenance" text
+
+### Adding New Repeaters
+
+#### 1. Add to Homepage Widget
+Add new entry to the `repeaters` array in `CurrentConditions.tsx`:
+```typescript
+{ name: 'New Repeater Name', frequency: '462.725', status: 'up' },
+```
+
+#### 2. Add to Status Page
+Copy an existing repeater block in `status.astro` and update:
+- Repeater name
+- Status indicator color
+- Status badge text and styling
+- Frequency information
+
+### Removing Repeaters
+
+#### 1. Remove from Homepage Widget
+Delete the entry from the `repeaters` array in `CurrentConditions.tsx`
+
+#### 2. Remove from Status Page
+Delete the entire repeater block from the grid in `status.astro`
+
+### Status Change Checklist
+
+When updating repeater status:
+- [ ] Update `repeaters` array in `src/components/homepage/CurrentConditions.tsx`
+- [ ] Update status indicator in `src/pages/status.astro`
+- [ ] Update status badge in `src/pages/status.astro`
+- [ ] Run `pnpm check` to verify TypeScript compilation
+- [ ] Run `pnpm build` to ensure production build works
+- [ ] Test both homepage and `/status` page to verify changes
+
+### Common Status Scenarios
+
+**Repeater comes online**:
+1. Change `status: 'down'` to `status: 'up'` in homepage widget
+2. Change status indicator to `bg-green-500` in status page
+3. Change status badge to `text-green-700 bg-green-100` with "Operational" text
+
+**Repeater goes offline**:
+1. Change `status: 'up'` to `status: 'down'` in homepage widget
+2. Change status indicator to `bg-red-500` in status page
+3. Change status badge to `text-red-700 bg-red-100` with "Offline" text
+
+**Emergency maintenance**:
+1. Keep `status: 'up'` in homepage widget (or use 'down' if completely inaccessible)
+2. Change status indicator to `bg-yellow-500` in status page
+3. Change status badge to `text-yellow-700 bg-yellow-100` with "Maintenance" text

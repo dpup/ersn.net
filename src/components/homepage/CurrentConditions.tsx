@@ -70,6 +70,7 @@ interface Alert {
 }
 
 const repeaters: RepeaterInfo[] = [
+  { name: 'Forest Meadows', frequency: '462.725', status: 'up' },
   { name: 'Murphys', frequency: '462.725', status: 'down' },
   { name: 'Arnold Summit', frequency: '462.725', status: 'up' },
 ];
