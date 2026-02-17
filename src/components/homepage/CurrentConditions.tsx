@@ -231,10 +231,11 @@ export default function CurrentConditions() {
       {hasAlerts && (
         <a
           href="/status"
-          className={`mb-4 p-3 rounded-md flex items-center justify-between transition-colors ${hasCritical
+          className={`mb-4 p-3 rounded-md flex items-center justify-between transition-colors ${
+            hasCritical
               ? 'bg-red-50 border border-red-200 hover:bg-red-100'
               : 'bg-yellow-50 border border-yellow-200 hover:bg-yellow-100'
-            }`}
+          }`}
         >
           <div className="flex items-center space-x-2">
             {hasCritical ? (
@@ -245,7 +246,7 @@ export default function CurrentConditions() {
             <span
               className={`text-sm font-medium ${hasCritical ? 'text-red-800' : 'text-yellow-800'}`}
             >
-              {alerts.length} active {alerts.length === 1 ? 'alert' : 'alerts'}
+              {alerts.length === 1 ? alerts[0].title : `${alerts.length} active alerts`}
             </span>
           </div>
           <ChevronRight
@@ -317,11 +318,11 @@ export default function CurrentConditions() {
                   </div>
                 </div>
               )) || (
-                  <div className="flex justify-between items-center">
-                    <span className="text-stone-600">Status:</span>
-                    <span className="font-medium text-stone-500">No data</span>
-                  </div>
-                )}
+                <div className="flex justify-between items-center">
+                  <span className="text-stone-600">Status:</span>
+                  <span className="font-medium text-stone-500">No data</span>
+                </div>
+              )}
             </div>
           </div>
 
