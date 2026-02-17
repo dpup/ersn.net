@@ -3,9 +3,11 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
+
 This is an Astro-based website for the Ebbetts Pass Radio Safety Net (ERSN). The site provides information about emergency communications, GMRS radios, mesh networking, and amateur radio resources.
 
 ## Build Commands
+
 - `pnpm dev` or `pnpm start`: Start dev server
 - `pnpm build`: Build for production
 - `pnpm preview`: Preview production build
@@ -13,12 +15,14 @@ This is an Astro-based website for the Ebbetts Pass Radio Safety Net (ERSN). The
 - `pnpm format` or `pnpm fmt`: Format code with Prettier
 
 ## Quality Assurance
+
 - **Always run checks**: After making changes, run `pnpm check` to verify TypeScript compilation
 - **Format code**: Run `pnpm format` before committing to ensure consistent formatting
 - **Test builds**: Run `pnpm build` to ensure production builds work correctly
 - **Preview changes**: Use `pnpm preview` to test the production build locally
 
 ## Code Style Guidelines
+
 - **Formatting**: 100 char line width, 2-space indentation, single quotes, trailing commas
 - **Imports**: Framework imports first, then path aliases (@components, @layouts), then local
 - **Component Structure**: Props declaration in frontmatter, clear script/template separation
@@ -29,6 +33,7 @@ This is an Astro-based website for the Ebbetts Pass Radio Safety Net (ERSN). The
 - **React Components**: Used sparingly when needed for interactivity
 
 ## Autonomous Operation Guidelines
+
 - **Make changes confidently**: You have permission to edit files, add components, and modify content
 - **Follow existing patterns**: Study existing components and pages to understand conventions
 - **Validate changes**: Always run `pnpm check` and `pnpm build` after making changes
@@ -37,6 +42,7 @@ This is an Astro-based website for the Ebbetts Pass Radio Safety Net (ERSN). The
 - **Maintain consistency**: Follow the established patterns for page structure and styling
 
 ## Common Tasks
+
 - **Adding pages**: Create .astro files in src/pages/, use Layout.astro wrapper
 - **Styling**: Use Tailwind CSS classes, follow existing color/spacing patterns
 - **Content updates**: Edit existing .astro files in src/pages/ for content changes
@@ -44,6 +50,7 @@ This is an Astro-based website for the Ebbetts Pass Radio Safety Net (ERSN). The
 - **Asset management**: Add images to src/assets/img/, reference with @img/ alias
 
 ## Technology Stack
+
 - **Framework**: Astro (Static Site Generator)
 - **Styling**: Tailwind CSS
 - **Package Manager**: pnpm
@@ -53,17 +60,19 @@ This is an Astro-based website for the Ebbetts Pass Radio Safety Net (ERSN). The
 ## News & Bulletin Management
 
 ### Adding News Posts
+
 You are authorized to autonomously add news, bulletins, and updates to the website using Astro's content collections.
 
 **Location**: Create new files in `src/content/bulletins/`
 
 **File Format**:
+
 ```markdown
 ---
-title: "Short descriptive title"
+title: 'Short descriptive title'
 date: 2025-06-07T00:00:00Z
-slug: "url-friendly-slug"
-summary: "One or two sentence plain text preview of the post content."
+slug: 'url-friendly-slug'
+summary: 'One or two sentence plain text preview of the post content.'
 ---
 
 Content body with proper markdown formatting.
@@ -81,6 +90,7 @@ Use double line breaks between paragraphs.
 **File Naming**: Use kebab-case names like `practice-net-update.md`
 
 **Summary Requirements**:
+
 - **Plain text only**: No markdown formatting in summaries
 - **1-2 sentences**: Concise preview of the main content
 - **Key details**: Include who, what, when for events
@@ -90,21 +100,25 @@ Use double line breaks between paragraphs.
 ### Content Guidelines & Privacy Rules
 
 **REQUIRED Content Filtering**:
+
 - **Remove surnames**: Use first names only (e.g., "Jay" not "Jay Smith") unless explicitly told to keep them
 - **Remove GMRS codes**: Strip out PL tones, CTCSS codes, access codes, or frequency details
 - **Remove phone numbers**: Never include personal phone numbers unless explicitly instructed
 - **Emergency contacts**: Keep official emergency numbers (911, etc.)
 
 **Content Examples**:
+
 ```markdown
 # ✅ GOOD - Event Formatting
+
 ERSN member Jay will be hosting a practice net on Wednesday.
 
 - **When:** 7:30 PM, Wednesdays
 - **Where:** Forest Meadows Repeater
 - **Contact:** ersnnets@gmail.com for more info
 
-# ❌ BAD  
+# ❌ BAD
+
 Jay Williams will be hosting...
 Use PL tone 156.7 to access...
 Call Jay at (555) 123-4567...
@@ -115,6 +129,7 @@ Single line breaks that don't create paragraphs
 ```
 
 **Markdown Formatting Rules**:
+
 - **Double line breaks** create paragraphs (required for proper rendering)
 - **Use headings** (## Heading) to structure content sections
 - **Event details as lists**: Use bulleted lists for event information, not headings
@@ -124,6 +139,7 @@ Single line breaks that don't create paragraphs
 - **Hyperlink text properly** using `[link text](url)` format instead of bare URLs
 
 **Event Formatting Standard**:
+
 ```markdown
 Event description goes here.
 
@@ -134,17 +150,21 @@ Event description goes here.
 ```
 
 **Link Examples**:
+
 ```markdown
 # ✅ GOOD
+
 Join us at [Pine Brook HOA](http://pinebrookhoa.com/) for the meeting.
 Learn more about [Meshtastic](https://ersn.net/mesh) technology.
 
 # ❌ BAD
+
 Join us at Pine Brook HOA: http://pinebrookhoa.com/
 Learn more: https://ersn.net/mesh
 ```
 
 **Acceptable Content**:
+
 - Event announcements and updates
 - Practice net schedules and changes
 - Equipment testing notifications
@@ -152,18 +172,22 @@ Learn more: https://ersn.net/mesh
 - Educational content about emergency preparedness
 
 **Process**:
+
 1. Create the markdown file with proper frontmatter
 2. Apply content filtering rules automatically
 3. Run `pnpm check` and `pnpm build` to verify
 4. News will automatically appear on homepage and /news page
 
 ### Manual Override
+
 If explicitly instructed to "keep surnames" or "include contact numbers," you may override the default filtering rules for that specific post.
 
 ## Repeater Status Management
 
 ### Overview
+
 Repeater statuses are displayed in two key locations that must be kept synchronized:
+
 1. **Homepage widget** (`src/components/homepage/CurrentConditions.tsx`) - Compact status summary
 2. **Main status page** (`src/pages/status.astro`) - Detailed repeater information
 
@@ -176,6 +200,7 @@ When changing a repeater's operational status, **BOTH locations must be updated*
 **Location**: Lines ~72-76 in the `repeaters` array constant
 
 **Current repeaters**:
+
 ```typescript
 const repeaters: RepeaterInfo[] = [
   { name: 'Forest Meadows', frequency: '462.725', status: 'up' },
@@ -185,6 +210,7 @@ const repeaters: RepeaterInfo[] = [
 ```
 
 **Status Values**:
+
 - `'up'` - Repeater is operational (displays as "Up" in green)
 - `'down'` - Repeater is offline (displays as "Down" in red)
 - `'unknown'` - Status unclear (not currently used in display)
@@ -196,6 +222,7 @@ const repeaters: RepeaterInfo[] = [
 **Location**: Lines ~46-84 in the repeater status section
 
 **Elements to update for each repeater**:
+
 - **Status indicator** (line ~51, ~70): `<div class="w-3 h-3 bg-green-500 rounded-full"></div>`
   - `bg-green-500` for operational
   - `bg-red-500` for offline
@@ -208,13 +235,17 @@ const repeaters: RepeaterInfo[] = [
 ### Adding New Repeaters
 
 #### 1. Add to Homepage Widget
+
 Add new entry to the `repeaters` array in `CurrentConditions.tsx`:
+
 ```typescript
 { name: 'New Repeater Name', frequency: '462.725', status: 'up' },
 ```
 
 #### 2. Add to Status Page
+
 Copy an existing repeater block in `status.astro` and update:
+
 - Repeater name
 - Status indicator color
 - Status badge text and styling
@@ -223,14 +254,17 @@ Copy an existing repeater block in `status.astro` and update:
 ### Removing Repeaters
 
 #### 1. Remove from Homepage Widget
+
 Delete the entry from the `repeaters` array in `CurrentConditions.tsx`
 
 #### 2. Remove from Status Page
+
 Delete the entire repeater block from the grid in `status.astro`
 
 ### Status Change Checklist
 
 When updating repeater status:
+
 - [ ] Update `repeaters` array in `src/components/homepage/CurrentConditions.tsx`
 - [ ] Update status indicator in `src/pages/status.astro`
 - [ ] Update status badge in `src/pages/status.astro`
@@ -241,16 +275,19 @@ When updating repeater status:
 ### Common Status Scenarios
 
 **Repeater comes online**:
+
 1. Change `status: 'down'` to `status: 'up'` in homepage widget
 2. Change status indicator to `bg-green-500` in status page
 3. Change status badge to `text-green-700 bg-green-100` with "Operational" text
 
 **Repeater goes offline**:
+
 1. Change `status: 'up'` to `status: 'down'` in homepage widget
 2. Change status indicator to `bg-red-500` in status page
 3. Change status badge to `text-red-700 bg-red-100` with "Offline" text
 
 **Emergency maintenance**:
+
 1. Keep `status: 'up'` in homepage widget (or use 'down' if completely inaccessible)
 2. Change status indicator to `bg-yellow-500` in status page
 3. Change status badge to `text-yellow-700 bg-yellow-100` with "Maintenance" text

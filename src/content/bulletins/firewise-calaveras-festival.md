@@ -1,8 +1,8 @@
 ---
-title: "FireWise Calaveras Festival"
+title: 'FireWise Calaveras Festival'
 date: 2025-10-04T20:32:00Z
-slug: "firewise-calaveras-festival"
-summary: "Join us at the FireWise Calaveras Festival on November 1st at Angels Camp Fairgrounds for demonstrations, exhibits, and information about home defense."
+slug: 'firewise-calaveras-festival'
+summary: 'Join us at the FireWise Calaveras Festival on November 1st at Angels Camp Fairgrounds for demonstrations, exhibits, and information about home defense.'
 ---
 
 Get a jump on home defense at the FireWise Calaveras Festival!

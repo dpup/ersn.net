@@ -12,9 +12,7 @@ export default defineConfig({
   trailingSlash: 'never',
   integrations: [icon(), mdx(), sitemap(), react()],
   vite: {
-    plugins: [
-      tailwindcss(),
-    ],
+    plugins: [tailwindcss()],
     optimizeDeps: {
       exclude: ['sharp'],
     },

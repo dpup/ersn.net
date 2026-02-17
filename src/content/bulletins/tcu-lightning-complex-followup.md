@@ -1,8 +1,8 @@
 ---
-title: "TCU September Lightning Complex Follow-up"
+title: 'TCU September Lightning Complex Follow-up'
 date: 2025-10-04T00:00:00Z
-slug: "tcu-lightning-complex-followup"
-summary: "EPPOC hosted OES Director Eric Holt at their October meeting to discuss the September lightning fires and the need for improved evacuation data along Highway 4."
+slug: 'tcu-lightning-complex-followup'
+summary: 'EPPOC hosted OES Director Eric Holt at their October meeting to discuss the September lightning fires and the need for improved evacuation data along Highway 4.'
 ---
 
 The [TCU September Lightning Complex](https://www.fire.ca.gov/incidents/2025/9/2/tcu-september-lightning-complex) follow-up meeting has revealed important insights for emergency preparedness.

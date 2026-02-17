@@ -1,8 +1,8 @@
 ---
-title: "Winter Storm Warning: Heavy Snow Through Friday"
+title: 'Winter Storm Warning: Heavy Snow Through Friday'
 date: 2025-12-23T20:30:00Z
-slug: "winter-storm-warning-dec-2025"
-summary: "A significant winter storm will bring 4 to 8 feet of snow above 5,500 feet through Friday evening. Travel is strongly discouraged and power outages are expected."
+slug: 'winter-storm-warning-dec-2025'
+summary: 'A significant winter storm will bring 4 to 8 feet of snow above 5,500 feet through Friday evening. Travel is strongly discouraged and power outages are expected.'
 ---
 
 A Winter Storm Warning is in effect from 10:00 PM tonight through 10:00 PM Friday for the Northern Sierra Nevada region.

@@ -3,16 +3,16 @@ export default {
   printWidth: 100,
   semi: true,
   singleQuote: true,
-  trailingComma: "all",
+  trailingComma: 'all',
   tabWidth: 2,
   useTabs: false,
 
-  plugins: ["prettier-plugin-astro"],
+  plugins: ['prettier-plugin-astro'],
   overrides: [
     {
-      files: "*.astro",
+      files: '*.astro',
       options: {
-        parser: "astro",
+        parser: 'astro',
       },
     },
   ],

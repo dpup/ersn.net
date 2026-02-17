@@ -14,9 +14,9 @@ const frontmatter = {
     <h2>What is Meshtastic?</h2>
     <p>
       <a href="https://meshtastic.org/">Meshtastic</a> is an open-source project that turns inexpensive
-      LoRa radios into a powerful, off-grid mesh communication system. With a Meshtastic device, you
-      can send short text messages and GPS locations to others without the need for cellular or internet
-      access—perfect for emergencies, hiking trips, or rural communities.
+      LoRa radios into a powerful, off-grid mesh communication system. With a Meshtastic device, you can
+      send short text messages and GPS locations to others without the need for cellular or internet access—perfect
+      for emergencies, hiking trips, or rural communities.
     </p>
     <p>
       Meshtastic devices form a mesh network, meaning your messages can hop between radios to reach
@@ -332,7 +332,7 @@ const frontmatter = {
 
     <p>
       Not all nodes in your mesh need the same MQTT configuration. Understanding the different roles
-      and the critical "OK to MQTT" setting helps ensure proper message propagation between 
+      and the critical "OK to MQTT" setting helps ensure proper message propagation between
       separated mesh networks.
     </p>
 
@@ -340,50 +340,58 @@ const frontmatter = {
 
     <ul>
       <li>
-        <strong>Gateway Nodes</strong>: Stationary nodes with WiFi/internet access that bridge 
-        your local mesh to MQTT. These nodes need full MQTT Module configuration (host, username, 
+        <strong>Gateway Nodes</strong>: Stationary nodes with WiFi/internet access that bridge your
+        local mesh to MQTT. These nodes need full MQTT Module configuration (host, username,
         password, etc.) and must have uplink/downlink enabled.
       </li>
       <li>
-        <strong>Regular Mesh Nodes</strong>: Portable or solar nodes without internet access. 
-        These nodes don't need MQTT Module configuration, but they need the "OK to MQTT" 
-        setting enabled if you want their messages to propagate through gateway nodes to 
-        other meshes.
+        <strong>Regular Mesh Nodes</strong>: Portable or solar nodes without internet access. These
+        nodes don't need MQTT Module configuration, but they need the "OK to MQTT" setting enabled
+        if you want their messages to propagate through gateway nodes to other meshes.
       </li>
     </ul>
 
     <h4>The "OK to MQTT" Setting</h4>
 
     <p>
-      <strong>Location:</strong> The "OK to MQTT" setting is found under <strong>LoRa settings</strong> 
-      in your Meshtastic device configuration, not in the MQTT Module section. This is separate from 
-      the <a href="https://meshtastic.org/docs/software/integrations/mqtt/">MQTT Module settings</a> 
+      <strong>Location:</strong> The "OK to MQTT" setting is found under <strong
+        >LoRa settings</strong
+      >
+      in your Meshtastic device configuration, not in the MQTT Module section. This is separate from the
+      <a href="https://meshtastic.org/docs/software/integrations/mqtt/">MQTT Module settings</a>
       that gateway nodes use for broker connection details.
     </p>
 
     <p>
-      This setting controls whether your node's messages can be uploaded to MQTT brokers by gateway 
+      This setting controls whether your node's messages can be uploaded to MQTT brokers by gateway
       nodes in your mesh:
     </p>
 
     <ul>
       <li><strong>Default</strong>: <code>false</code></li>
-      <li><strong>When enabled</strong>: Gateway nodes will forward your messages to MQTT, allowing them to reach other meshes</li>
+      <li>
+        <strong>When enabled</strong>: Gateway nodes will forward your messages to MQTT, allowing
+        them to reach other meshes
+      </li>
       <li><strong>When disabled</strong>: Your messages stay within your local mesh only</li>
     </ul>
 
     <p>
-      <strong>Important:</strong> This is not a cryptographic security feature but a "polite request" 
-      enforced by official firmware. It only applies to channels using the default PSK keys—channels 
-      with custom encryption keys ignore this setting.
+      <strong>Important:</strong> This is not a cryptographic security feature but a "polite request"
+      enforced by official firmware. It only applies to channels using the default PSK keys—channels with
+      custom encryption keys ignore this setting.
     </p>
 
     <h4>Example Scenario</h4>
 
     <p>Consider this five-node setup across two separate mesh areas:</p>
 
-    <div class="diagram-container" style="display: flex; justify-content: center; margin: 1.5rem 0;">
-      <pre style="margin: 0;">
+    <div
+      class="diagram-container"
+      style="display: flex; justify-content: center; margin: 1.5rem 0;"
+    >
+      <pre
+        style="margin: 0;">
     Area 1 (Pinebrook)        MQTT Cloud        Area 2 (Murphy's)
                                   │
     Alpha ────┐                   │                   ┌──── Echo
@@ -401,20 +409,28 @@ const frontmatter = {
     <p><strong>Configuration breakdown:</strong></p>
 
     <ul>
-      <li><strong>Gamma and Delta</strong>: Gateway nodes with full MQTT Module configuration and WiFi</li>
+      <li>
+        <strong>Gamma and Delta</strong>: Gateway nodes with full MQTT Module configuration and WiFi
+      </li>
       <li><strong>Alpha, Beta, Echo</strong>: Regular nodes without MQTT Module configuration</li>
       <li>
         <strong>Message propagation depends on "OK to MQTT" settings:</strong>
         <ul>
-          <li>If Alpha has "OK to MQTT" = <code>true</code>: Alpha's messages reach Echo via Gamma → MQTT → Delta</li>
-          <li>If Alpha has "OK to MQTT" = <code>false</code>: Alpha's messages only reach Beta and Gamma locally</li>
+          <li>
+            If Alpha has "OK to MQTT" = <code>true</code>: Alpha's messages reach Echo via Gamma →
+            MQTT → Delta
+          </li>
+          <li>
+            If Alpha has "OK to MQTT" = <code>false</code>: Alpha's messages only reach Beta and
+            Gamma locally
+          </li>
         </ul>
       </li>
     </ul>
 
     <p>
-      <strong>Key insight:</strong> Only gateway nodes need MQTT Module configuration, but all nodes 
-      that want their messages to cross mesh boundaries need "OK to MQTT" enabled.
+      <strong>Key insight:</strong> Only gateway nodes need MQTT Module configuration, but all nodes that
+      want their messages to cross mesh boundaries need "OK to MQTT" enabled.
     </p>
 
     <hr />
