@@ -1,15 +1,15 @@
 ---
-title: "ERSN Tech Committee Formation"
+title: 'ERSN Tech Committee Formation'
 date: 2025-05-01T01:00:00Z
-slug: "tech-committee-formation"
-summary: "ERSN has formed a new tech committee with Dan as Chair to strengthen network functionality via Meshtastic technology."
+slug: 'tech-committee-formation'
+summary: 'ERSN has formed a new tech committee with Dan as Chair to strengthen network functionality via Meshtastic technology.'
 ---
 
 An exciting development in April was the formation of a tech committee for ERSN. Dan, who created and manages our ERSN website, has graciously volunteered to serve as Chair.
 
 ## First Project
 
-Their first project is strengthening our network functionality via Meshtastic texting technology. 
+Their first project is strengthening our network functionality via Meshtastic texting technology.
 
 ## Get Involved
 

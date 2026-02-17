@@ -1,7 +1,7 @@
 ---
 title: "Murphy's practice net schedule change"
 date: 2025-06-18T23:00:00Z
-slug: "murphys-practice-net-schedule-change"
+slug: 'murphys-practice-net-schedule-change'
 summary: "Jay's practice net for the Forest Meadows Repeater has moved from Wednesday 7:30 PM to Monday 7:00 PM."
 ---
 

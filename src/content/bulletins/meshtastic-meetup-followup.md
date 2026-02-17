@@ -1,8 +1,8 @@
 ---
-title: "Meshtastic Meetup Followup - Building the Motherlode Mesh"
+title: 'Meshtastic Meetup Followup - Building the Motherlode Mesh'
 date: 2025-06-14T00:00:00Z
-slug: "meshtastic-meetup-followup"
-summary: "Recap of the successful Meshtastic meetup at Pine Brook HOA with resources, connections made, and next steps for expanding mesh coverage."
+slug: 'meshtastic-meetup-followup'
+summary: 'Recap of the successful Meshtastic meetup at Pine Brook HOA with resources, connections made, and next steps for expanding mesh coverage.'
 ---
 
 Great to see everyone who came to the Meshtastic meetup at [Pine Brook HOA](http://pinebrookhoa.com/). The presentation deck is [available online](https://gamma.app/docs/Meshtastic-for-ERSN-Supplementing-our-GMRS-Emergency-Communicatio-0uqhv9yfiisu3yp) for anyone who wants to review the material.

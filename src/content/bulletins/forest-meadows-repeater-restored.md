@@ -1,7 +1,7 @@
 ---
-title: "Forest Meadows repeater restored"
+title: 'Forest Meadows repeater restored'
 date: 2025-12-30T05:56:00Z
-slug: "forest-meadows-repeater-restored"
+slug: 'forest-meadows-repeater-restored'
 summary: "The Forest Meadows repeater serving the Arnold and Murphy's area is back online and operational."
 ---
 

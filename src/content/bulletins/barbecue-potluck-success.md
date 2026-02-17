@@ -1,8 +1,8 @@
 ---
-title: "Barbecue/Potluck a Blazing Success!"
+title: 'Barbecue/Potluck a Blazing Success!'
 date: 2024-09-27T00:00:00Z
-slug: "barbecue-potluck-success"
-summary: "Fabulous food and friendship at our September 27th barbecue/potluck event, with special thanks to our hosts and grill master."
+slug: 'barbecue-potluck-success'
+summary: 'Fabulous food and friendship at our September 27th barbecue/potluck event, with special thanks to our hosts and grill master.'
 ---
 
 Barbecue/Potluck a Blazing Success! Saturday, Sept 27th. Fabulous food and friendship, thanks to all who attended!

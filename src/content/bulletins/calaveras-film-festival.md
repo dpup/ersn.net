@@ -1,8 +1,8 @@
 ---
-title: "Calaveras Forest Film Festival and Forum"
+title: 'Calaveras Forest Film Festival and Forum'
 date: 2025-05-30T00:00:00Z
-slug: "calaveras-film-festival"
-summary: "Join us for the Calaveras Forest Film Festival at Bret Harte Theatre on Saturday, May 31st from noon to 5 pm."
+slug: 'calaveras-film-festival'
+summary: 'Join us for the Calaveras Forest Film Festival at Bret Harte Theatre on Saturday, May 31st from noon to 5 pm.'
 ---
 
 - **When:** Saturday, May 31st, noon - 5 pm
