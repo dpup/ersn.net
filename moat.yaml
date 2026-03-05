@@ -1,0 +1,13 @@
+name: ersn-website
+dependencies:
+  - node@20
+  - pnpm
+  - git
+  - claude-code
+grants:
+  - github
+  - ssh:github.com
+#secrets:
+#  GOOGLE_API_KEY: GOOGLE_API_KEY
+ports:
+  web: 4321

@@ -1,0 +1,300 @@
+---
+import Content from '@components/Content.astro';
+import Layout from '@layouts/Layout.astro';
+import { Image } from 'astro:assets';
+import imgRadio from '@img/radio-basics/radio-transmit-receive.png';
+import imgRepeater from '@img/radio-basics/repeater-two-frequencies.png';
+import imgRepeaterVsSimplex from '@img/radio-basics/repeater-vs-simplex.png';
+import imgClobbering from '@img/radio-basics/clobbering.png';
+
+const frontmatter = {
+  title: 'Radio Basics',
+  description:
+    'Frequencies, tones, and the things your radio does without telling you — explained for new GMRS operators.',
+};
+---
+
+<Layout frontmatter={frontmatter}>
+  <Content>
+    <h1>Why You Can Hear Them But They Can't Hear You</h1>
+    <p><em>Frequencies, tones, and the things your radio does without telling you</em></p>
+
+    <p>
+      Every time you press the talk button on a repeater channel, your radio is doing three things
+      at once: transmitting on a frequency that's different from the one you were just listening on,
+      embedding an inaudible tone in your signal, and then — when you release the button —
+      switching back to the original frequency to hear the response. All of it happens instantly,
+      silently, and automatically.
+    </p>
+    <p>
+      Knowing what those three things are, and why they matter, explains most of the confusing
+      behavior people run into on the radio. Including the title of this article.
+    </p>
+
+    <figure class="my-6 not-prose">
+      <Image src={imgRadio} alt="Handheld GMRS radio with labeled arrows showing transmit frequency + tone going out and receive frequency coming in" class="max-w-lg mx-auto block border-0" />
+    </figure>
+
+    <h2>Repeaters Use Two Frequencies</h2>
+    <p>
+      A repeater sits on a hilltop (or a tower, or a rooftop) with a big antenna. Its job is to
+      receive your signal on one frequency and instantly rebroadcast it on a different frequency,
+      giving it much greater range than any handheld could manage on its own. Your radio knows both
+      frequencies and switches between them automatically every time you press and release the talk
+      button.
+    </p>
+
+    <figure class="my-6 not-prose">
+      <Image src={imgRepeater} alt="Diagram showing Radio A transmitting on Frequency 1 to a hilltop repeater, which rebroadcasts on Frequency 2 to Radio B" class="max-w-lg mx-auto block border-0" />
+    </figure>
+
+    <p>On a simplex channel, by contrast, every radio talks and listens on the same frequency. No repeater involved.</p>
+
+    <p>
+      Here's where it gets confusing: the repeater's output frequency is often the same as the
+      simplex frequency for that channel number. So if you're on Channel 15 through the repeater,
+      and someone else is on Channel 15 simplex, strange things happen:
+    </p>
+    <ul>
+      <li>
+        <strong>They hear you fine</strong> — because the repeater is outputting on the same
+        frequency they're listening on.
+      </li>
+      <li>
+        <strong>You might faintly hear them</strong> — if they're close enough for their signal to
+        reach you directly. But their transmission doesn't go through the repeater, so it's not
+        boosted and most people on the repeater won't hear it at all.
+      </li>
+      <li>
+        <strong>They think everything is working</strong> — because from their end, they can hear
+        the whole conversation. They have no way to know their own transmissions aren't getting
+        through.
+      </li>
+    </ul>
+    <p>
+      Two people think they're on the same channel, and in a sense they are — but one radio is
+      working through the repeater and the other isn't.
+    </p>
+
+    <figure class="my-6 not-prose">
+      <Image src={imgRepeaterVsSimplex} alt="Two radios both on Channel 15: Radio A in repeater mode sends transmissions through the repeater for wide coverage, while Radio B in simplex mode hears the repeater output but its own signal is too weak to reach the repeater" class="max-w-lg mx-auto block border-0" />
+    </figure>
+
+    <p>
+      It works the other way too. If someone nearby is talking on simplex — maybe they're out of
+      range of the repeater, or their radio isn't programmed for it — you might hear them clearly on
+      your radio. But because their signal never reaches the repeater, nobody else on the net hears
+      a thing. From your perspective, someone is talking. From everyone else's, the channel is
+      silent.
+    </p>
+    <p>
+      Once you have a mix of repeater and simplex users on the same channel, communication becomes
+      asymmetric in ways that aren't obvious to anyone involved. Person A hears B but not C. Person
+      B hears everyone. Person C only hears what comes through the repeater. And nobody realizes
+      they're each having a different experience of the same channel.
+    </p>
+
+    <h2>CTCSS Tones: A Filter the Repeater Uses</h2>
+    <p>
+      There's a third piece beyond the two frequencies: a CTCSS tone. You might also hear this
+      called a "PL tone" or "Private Line" — same thing, different name. "Private Line" is a
+      Motorola trademark that stuck as common usage, though the name is misleading — it doesn't
+      provide any privacy. Anyone tuned to the same frequency can hear your transmission. The tone
+      is a filter, not a lock.
+    </p>
+    <p>
+      When you transmit, your radio sends a very low-pitched hum along with your voice. It's below
+      the range of normal hearing — you'll never notice it. But the repeater is listening for it.
+    </p>
+    <p>
+      The repeater is programmed to ignore any transmission that doesn't include the correct tone.
+      No tone, no relay. Wrong tone, no relay. This keeps the repeater from being activated by
+      interference, by other repeaters that happen to share the same frequency, or by radios that
+      aren't part of the system.
+    </p>
+    <p>
+      This is the second common problem: if your radio isn't sending the right CTCSS tone, the
+      repeater will not respond — even if you're on the correct frequency, even if you're standing
+      right next to it. Your signal arrives, the repeater checks for the tone, doesn't find it, and
+      does nothing.
+    </p>
+
+    <h2>Tones Work in Both Directions</h2>
+    <p>CTCSS tones have two separate settings on your radio, and they do different things.</p>
+    <p>
+      <strong>Send tone (encode)</strong> is the tone your radio transmits along with your voice.
+      This is what the repeater checks. Without the correct send tone, the repeater ignores you.
+      This is the one that matters most.
+    </p>
+    <p>
+      <strong>Receive tone (decode)</strong> is a filter on your radio's speaker. When it's set,
+      your radio stays silent unless the incoming signal includes the matching tone. It doesn't
+      affect what you transmit — it only controls what you hear.
+    </p>
+    <p>These are independent settings. You can have one without the other.</p>
+    <p>
+      The receive tone is useful because it keeps your radio quiet when there's other traffic on the
+      same frequency that isn't coming through your repeater. Without it, you might hear bits of
+      distant conversations, interference, or signals from other systems. With it set, your speaker
+      only opens when it hears the tone your repeater sends.
+    </p>
+    <p>
+      This matters on ERSN. The Forest Meadows and Arnold Summit repeaters share the same channel
+      but use different CTCSS tones. If your receive tone isn't set, you'll hear traffic from both
+      repeaters and it may not be obvious which one you're hearing. You could be transmitting
+      through Forest Meadows but listening to a conversation on Arnold Summit — and wondering why
+      nobody responds to you. Setting your receive tone to match the repeater you're using filters
+      out the other one, so you only hear traffic from the repeater you're actually talking through.
+    </p>
+    <p>
+      This works in reverse too — if you hear traffic and can identify the tone it's carrying, you
+      know which repeater is relaying it. Each repeater covers a specific area, so identifying the
+      repeater tells you roughly where those people are. Some radios can display the detected CTCSS
+      tone. On others, you'd need to compare what you're hearing against a reference list. Either
+      way, it's a handy tool for situational awareness — especially during emergencies when you want
+      to know which part of the area is active.
+    </p>
+
+
+    <h2>What Tones Can't Do: The Clobbering Problem</h2>
+    <p>
+      There's an important thing CTCSS tones <em>don't</em> do, and misunderstanding this causes
+      real problems.
+    </p>
+    <p>
+      CTCSS is a filter. It decides what your radio plays through the speaker. It does <strong>not</strong> prevent other signals from arriving on the same frequency.
+    </p>
+    <p>
+      Here's the scenario: your repeater is outputting on a frequency, and someone else transmits
+      simplex on that same frequency. Both signals arrive at your radio's antenna at the same time.
+      The radio receives a garbled mix of both. The tone filtering never gets a chance to help
+      because the signal is already corrupted before the radio can sort it out.
+    </p>
+    <p>
+      This is called "clobbering," and it's why someone transmitting simplex on a repeater's output
+      frequency causes problems for <em>everyone</em> on that repeater — regardless of anyone's
+      tone settings.
+    </p>
+    <p>
+      It's also why it matters to know which channels are used by repeaters in your area and to
+      avoid transmitting simplex on them. It's not a courtesy issue. It's a physics issue.
+    </p>
+
+    <figure class="my-6 not-prose">
+      <Image src={imgClobbering} alt="Two signals arriving at one radio simultaneously — one from the repeater and one from a nearby simplex transmission — overlapping into a garbled signal" class="max-w-lg mx-auto block border-0" />
+    </figure>
+
+    <h2>Quick Reference</h2>
+    <dl class="space-y-3">
+      <div>
+        <dt class="font-semibold text-stone-800">Repeater</dt>
+        <dd>
+          A device on a high point that receives your signal on one frequency and rebroadcasts it
+          on another, extending your range.
+        </dd>
+      </div>
+      <div>
+        <dt class="font-semibold text-stone-800">Simplex</dt>
+        <dd>Talking and listening on the same frequency, radio-to-radio, no repeater involved.</dd>
+      </div>
+      <div>
+        <dt class="font-semibold text-stone-800">CTCSS tone</dt>
+        <dd>
+          A sub-audible hum your radio sends (and/or listens for) to filter out unwanted signals.
+          Sometimes called a "privacy tone," though it provides no actual privacy.
+        </dd>
+      </div>
+      <div>
+        <dt class="font-semibold text-stone-800">Send tone (encode)</dt>
+        <dd>
+          The CTCSS tone your radio transmits. Required for the repeater to relay your signal.
+        </dd>
+      </div>
+      <div>
+        <dt class="font-semibold text-stone-800">Receive tone (decode)</dt>
+        <dd>
+          A filter on your speaker. Keeps your radio silent unless the incoming signal carries the
+          matching tone.
+        </dd>
+      </div>
+      <div>
+        <dt class="font-semibold text-stone-800">Offset</dt>
+        <dd>
+          The difference between the two frequencies a repeater uses. Your radio applies this
+          automatically on repeater channels.
+        </dd>
+      </div>
+    </dl>
+
+    <h2>Common "Why Is This Happening?" Scenarios</h2>
+
+    <h3>I can hear everyone, but nobody hears me.</h3>
+    <p>
+      Your radio is probably receiving the repeater's output fine, but your send tone is wrong or
+      missing — so the repeater ignores your transmissions. Have someone check that your encode tone
+      matches the repeater's required tone.
+    </p>
+
+    <h3>I hear garbled audio or two conversations overlapping.</h3>
+    <p>
+      Someone is likely transmitting simplex on the same frequency your repeater outputs on. That's
+      the clobbering problem. There's nothing you can adjust to fix it — the other transmission
+      needs to move to a different channel.
+    </p>
+
+    <h3>My radio is silent even though others say the repeater is active.</h3>
+    <p>
+      Your receive tone (decode) may be set to the wrong value, so your radio is filtering out the
+      repeater's signal. Or you may not be programmed to the correct receive frequency.
+    </p>
+
+    <h3>I can hear people but they sound distant and I can't reach them.</h3>
+    <p>
+      You may be hearing the repeater at the edge of its range. You can receive its boosted signal,
+      but your handheld doesn't have enough power to reach the repeater from where you are. Try
+      moving to higher ground or a location with a clearer line of sight.
+    </p>
+
+    <h3>I hear conversations that don't seem to involve anyone I know.</h3>
+    <p>
+      You're probably hearing traffic from the other repeater. Forest Meadows and Arnold Summit
+      share a channel but use different tones. If your receive tone isn't set, you'll hear both.
+    </p>
+
+    <h3>I can talk through one repeater but not the other.</h3>
+    <p>
+      Your send tone may only be set for one. Each repeater requires its own CTCSS tone to respond.
+      If you've moved from one coverage area to the other, you may need to switch to the correct
+      tone for that repeater.
+    </p>
+
+    <h3>Someone says they can hear me, but I can't hear them.</h3>
+    <p>
+      They may be on simplex nearby. Their signal reaches you directly but doesn't go through the
+      repeater, so it's weak and inconsistent. From their end, they hear you fine through the
+      repeater's output and assume everything is working.
+    </p>
+
+    <h3>I hear someone but nobody else on the net seems to.</h3>
+    <p>
+      You're probably picking up a simplex transmission from someone close by. Their signal never
+      hits the repeater, so you're the only one near enough to hear it.
+    </p>
+
+    <h3>I can hit the repeater from home but not from the other side of the ridge.</h3>
+    <p>
+      Repeaters need line of sight. A hill or ridge between you and the repeater can block your
+      signal entirely, even if you're relatively close. Moving to higher ground or a clearing can
+      make the difference.
+    </p>
+
+    <h3>I hear a brief burst of static every time someone keys up or lets go.</h3>
+    <p>This is normal. It's the squelch opening and closing as the signal starts and stops.</p>
+
+    <hr />
+    <p>
+      Ready to get on the air? The <a href="/gmrs">GMRS Guide</a> covers licensing, radio
+      recommendations, and how to get set up for the ERSN net.
+    </p>
+  </Content>
+</Layout>
