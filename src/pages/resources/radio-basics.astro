@@ -22,9 +22,9 @@ const frontmatter = {
     <p>
       Every time you press the talk button on a repeater channel, your radio is doing three things
       at once: transmitting on a frequency that's different from the one you were just listening on,
-      embedding an inaudible tone in your signal, and then — when you release the button —
-      switching back to the original frequency to hear the response. All of it happens instantly,
-      silently, and automatically.
+      embedding an inaudible tone in your signal, and then — when you release the button — switching
+      back to the original frequency to hear the response. All of it happens instantly, silently,
+      and automatically.
     </p>
     <p>
       Knowing what those three things are, and why they matter, explains most of the confusing
@@ -32,7 +32,11 @@ const frontmatter = {
     </p>
 
     <figure class="my-6 not-prose">
-      <Image src={imgRadio} alt="Handheld GMRS radio with labeled arrows showing transmit frequency + tone going out and receive frequency coming in" class="max-w-lg mx-auto block border-0" />
+      <Image
+        src={imgRadio}
+        alt="Handheld GMRS radio with labeled arrows showing transmit frequency + tone going out and receive frequency coming in"
+        class="w-full max-w-lg mx-auto block border-0"
+      />
     </figure>
 
     <h2>Repeaters Use Two Frequencies</h2>
@@ -45,10 +49,17 @@ const frontmatter = {
     </p>
 
     <figure class="my-6 not-prose">
-      <Image src={imgRepeater} alt="Diagram showing Radio A transmitting on Frequency 1 to a hilltop repeater, which rebroadcasts on Frequency 2 to Radio B" class="max-w-lg mx-auto block border-0" />
+      <Image
+        src={imgRepeater}
+        alt="Diagram showing Radio A transmitting on Frequency 1 to a hilltop repeater, which rebroadcasts on Frequency 2 to Radio B"
+        class="w-full max-w-lg mx-auto block border-0"
+      />
     </figure>
 
-    <p>On a simplex channel, by contrast, every radio talks and listens on the same frequency. No repeater involved.</p>
+    <p>
+      On a simplex channel, by contrast, every radio talks and listens on the same frequency. No
+      repeater involved.
+    </p>
 
     <p>
       Here's where it gets confusing: the repeater's output frequency is often the same as the
@@ -57,18 +68,17 @@ const frontmatter = {
     </p>
     <ul>
       <li>
-        <strong>They hear you fine</strong> — because the repeater is outputting on the same
-        frequency they're listening on.
+        <strong>They hear you fine</strong> — because the repeater is outputting on the same frequency
+        they're listening on.
       </li>
       <li>
-        <strong>You might faintly hear them</strong> — if they're close enough for their signal to
-        reach you directly. But their transmission doesn't go through the repeater, so it's not
-        boosted and most people on the repeater won't hear it at all.
+        <strong>You might faintly hear them</strong> — if they're close enough for their signal to reach
+        you directly. But their transmission doesn't go through the repeater, so it's not boosted and
+        most people on the repeater won't hear it at all.
       </li>
       <li>
-        <strong>They think everything is working</strong> — because from their end, they can hear
-        the whole conversation. They have no way to know their own transmissions aren't getting
-        through.
+        <strong>They think everything is working</strong> — because from their end, they can hear the
+        whole conversation. They have no way to know their own transmissions aren't getting through.
       </li>
     </ul>
     <p>
@@ -77,7 +87,11 @@ const frontmatter = {
     </p>
 
     <figure class="my-6 not-prose">
-      <Image src={imgRepeaterVsSimplex} alt="Two radios both on Channel 15: Radio A in repeater mode sends transmissions through the repeater for wide coverage, while Radio B in simplex mode hears the repeater output but its own signal is too weak to reach the repeater" class="max-w-lg mx-auto block border-0" />
+      <Image
+        src={imgRepeaterVsSimplex}
+        alt="Two radios both on Channel 15: Radio A in repeater mode sends transmissions through the repeater for wide coverage, while Radio B in simplex mode hears the repeater output but its own signal is too weak to reach the repeater"
+        class="w-full max-w-lg mx-auto block border-0"
+      />
     </figure>
 
     <p>
@@ -122,14 +136,14 @@ const frontmatter = {
     <h2>Tones Work in Both Directions</h2>
     <p>CTCSS tones have two separate settings on your radio, and they do different things.</p>
     <p>
-      <strong>Send tone (encode)</strong> is the tone your radio transmits along with your voice.
-      This is what the repeater checks. Without the correct send tone, the repeater ignores you.
-      This is the one that matters most.
+      <strong>Send tone (encode)</strong> is the tone your radio transmits along with your voice. This
+      is what the repeater checks. Without the correct send tone, the repeater ignores you. This is the
+      one that matters most.
     </p>
     <p>
-      <strong>Receive tone (decode)</strong> is a filter on your radio's speaker. When it's set,
-      your radio stays silent unless the incoming signal includes the matching tone. It doesn't
-      affect what you transmit — it only controls what you hear.
+      <strong>Receive tone (decode)</strong> is a filter on your radio's speaker. When it's set, your
+      radio stays silent unless the incoming signal includes the matching tone. It doesn't affect what
+      you transmit — it only controls what you hear.
     </p>
     <p>These are independent settings. You can have one without the other.</p>
     <p>
@@ -155,14 +169,15 @@ const frontmatter = {
       to know which part of the area is active.
     </p>
 
-
     <h2>What Tones Can't Do: The Clobbering Problem</h2>
     <p>
-      There's an important thing CTCSS tones <em>don't</em> do, and misunderstanding this causes
-      real problems.
+      There's an important thing CTCSS tones <em>don't</em> do, and misunderstanding this causes real
+      problems.
     </p>
     <p>
-      CTCSS is a filter. It decides what your radio plays through the speaker. It does <strong>not</strong> prevent other signals from arriving on the same frequency.
+      CTCSS is a filter. It decides what your radio plays through the speaker. It does <strong
+        >not</strong
+      > prevent other signals from arriving on the same frequency.
     </p>
     <p>
       Here's the scenario: your repeater is outputting on a frequency, and someone else transmits
@@ -172,8 +187,7 @@ const frontmatter = {
     </p>
     <p>
       This is called "clobbering," and it's why someone transmitting simplex on a repeater's output
-      frequency causes problems for <em>everyone</em> on that repeater — regardless of anyone's
-      tone settings.
+      frequency causes problems for <em>everyone</em> on that repeater — regardless of anyone's tone settings.
     </p>
     <p>
       It's also why it matters to know which channels are used by repeaters in your area and to
@@ -181,7 +195,11 @@ const frontmatter = {
     </p>
 
     <figure class="my-6 not-prose">
-      <Image src={imgClobbering} alt="Two signals arriving at one radio simultaneously — one from the repeater and one from a nearby simplex transmission — overlapping into a garbled signal" class="max-w-lg mx-auto block border-0" />
+      <Image
+        src={imgClobbering}
+        alt="Two signals arriving at one radio simultaneously — one from the repeater and one from a nearby simplex transmission — overlapping into a garbled signal"
+        class="w-full max-w-lg mx-auto block border-0"
+      />
     </figure>
 
     <h2>Quick Reference</h2>
@@ -189,8 +207,8 @@ const frontmatter = {
       <div>
         <dt class="font-semibold text-stone-800">Repeater</dt>
         <dd>
-          A device on a high point that receives your signal on one frequency and rebroadcasts it
-          on another, extending your range.
+          A device on a high point that receives your signal on one frequency and rebroadcasts it on
+          another, extending your range.
         </dd>
       </div>
       <div>
@@ -293,8 +311,8 @@ const frontmatter = {
 
     <hr />
     <p>
-      Ready to get on the air? The <a href="/gmrs">GMRS Guide</a> covers licensing, radio
-      recommendations, and how to get set up for the ERSN net.
+      Ready to get on the air? The <a href="/gmrs">GMRS Guide</a> covers licensing, radio recommendations,
+      and how to get set up for the ERSN net.
     </p>
   </Content>
 </Layout>
