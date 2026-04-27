@@ -10,7 +10,7 @@ Great news! The Forest Meadows repeater is back online and operational.
 The repeater serves the Arnold and Murphy's area and is an important part of our emergency communications network. Members in these areas can now resume using the repeater for communications and practice nets.
 
 - **Repeater:** Forest Meadows
-- **Frequency:** 462.725 MHz (20RP)
+- **Frequency:** 462.675 MHz (20RP)
 - **Coverage Area:** Arnold, Murphy's, and surrounding areas
 - **Status:** Operational
 
