@@ -203,9 +203,9 @@ When changing a repeater's operational status, **BOTH locations must be updated*
 
 ```typescript
 const repeaters: RepeaterInfo[] = [
-  { name: 'Forest Meadows', frequency: '462.725', status: 'up' },
-  { name: 'Murphys', frequency: '462.725', status: 'down' },
-  { name: 'Arnold Summit', frequency: '462.725', status: 'up' },
+  { name: 'Forest Meadows', frequency: '462.675', status: 'up' },
+  { name: 'Murphys', frequency: '462.675', status: 'down' },
+  { name: 'Arnold Summit', frequency: '462.675', status: 'up' },
 ];
 ```
 
@@ -239,7 +239,7 @@ const repeaters: RepeaterInfo[] = [
 Add new entry to the `repeaters` array in `CurrentConditions.tsx`:
 
 ```typescript
-{ name: 'New Repeater Name', frequency: '462.725', status: 'up' },
+{ name: 'New Repeater Name', frequency: '462.675', status: 'up' },
 ```
 
 #### 2. Add to Status Page

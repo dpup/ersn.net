@@ -70,8 +70,8 @@ interface Alert {
 }
 
 const repeaters: RepeaterInfo[] = [
-  { name: "Murphy's", frequency: '462.725', status: 'up' },
-  { name: 'Arnold Summit', frequency: '462.725', status: 'up' },
+  { name: "Murphy's", frequency: '462.675', status: 'up' },
+  { name: 'Arnold Summit', frequency: '462.675', status: 'up' },
 ];
 
 const getWeatherIcon = (iconCode: string): ReactElement => {
