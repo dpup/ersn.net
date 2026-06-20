@@ -2,31 +2,25 @@
 import Layout from '@layouts/Layout.astro';
 import Content from '@components/Content.astro';
 const frontmatter = {
-  title: 'Meshtastic Working Group',
-  description: 'Information about the subgroup exploring the use of meshtastic within ERSN.',
+  title: 'Mesh Comms Working Group',
+  description: 'Information about the subgroup exploring off-grid mesh communications within ERSN.',
 };
 ---
 
 <Layout frontmatter={frontmatter}>
   <Content>
-    <h1>Meshtastic Working Group</h1>
+    <h1>Mesh Comms Working Group</h1>
 
-    <h2>What is Meshtastic?</h2>
     <p>
-      <a href="https://meshtastic.org/">Meshtastic</a> is an open-source project that turns inexpensive
-      LoRa radios into a powerful, off-grid mesh communication system. With a Meshtastic device, you can
-      send short text messages and GPS locations to others without the need for cellular or internet access—perfect
-      for emergencies, hiking trips, or rural communities.
-    </p>
-    <p>
-      Meshtastic devices form a mesh network, meaning your messages can hop between radios to reach
-      their destination, even if you're not directly within range. This makes it ideal for
-      decentralized communication in areas with limited infrastructure.
+      The ERSN Mesh Comms Working Group explores off-grid text and data communications that can
+      supplement our GMRS voice net. We're not tied to a single product—our focus is on whatever
+      LoRa mesh technology gives the most reliable coverage across our terrain. Today that means
+      <a href="https://meshcore.co.uk/">MeshCore</a>.
     </p>
 
     <hr />
 
-    <h2 id="meshcore">Update: We've Moved to MeshCore</h2>
+    <h2 id="meshcore">Current Network: MeshCore</h2>
 
     <p>
       ERSN has migrated its repeaters and personal nodes over to
@@ -69,19 +63,14 @@ const frontmatter = {
       <strong>SIERRA</strong> channel—please <a href="mailto:ersnnets@gmail.com">contact us</a>.
     </p>
 
-    <p>
-      The Meshtastic information below remains available as background for those still running
-      Meshtastic devices or interested in the history of the working group.
-    </p>
-
     <hr />
 
     <h2>Goals of the Working Group</h2>
 
-    <p>The ERSN Meshtastic Working Group exists to:</p>
+    <p>The ERSN Mesh Comms Working Group exists to:</p>
 
     <ul>
-      <li><strong>Evaluate Meshtastic as a supplement to our GMRS radio net</strong></li>
+      <li><strong>Evaluate mesh comms as a supplement to our GMRS radio net</strong></li>
       <li><strong>Explore deployment of a regional mesh network</strong></li>
       <li><strong>Coordinate channel use and best practices</strong></li>
       <li><strong>Test bridging strategies for linking isolated clusters</strong></li>
@@ -96,7 +85,8 @@ const frontmatter = {
     <div class="toc">
       <h3>Contents</h3>
       <ul>
-        <li><a href="#meshcore">Update: We've Moved to MeshCore</a></li>
+        <li><a href="#meshcore">Current Network: MeshCore</a></li>
+        <li><a href="#meshtastic">Meshtastic (Legacy)</a></li>
         <li><a href="#getting-started">Getting Started with Meshtastic</a></li>
         <li><a href="#range">Range and Coverage</a></li>
         <li><a href="#mqtt">MQTT Bridging</a></li>
@@ -106,7 +96,31 @@ const frontmatter = {
 
     <hr />
 
-    <h2 id="getting-started">Getting Started with Meshtastic</h2>
+    <h2 id="meshtastic">Meshtastic (Legacy)</h2>
+
+    <p>
+      <strong
+        >ERSN's Meshtastic nodes are currently not operational—the network has moved to MeshCore
+        (see above).</strong
+      >
+      The material below is retained as background for those still running Meshtastic devices, and for
+      anyone interested in the history of the working group.
+    </p>
+
+    <h3>What is Meshtastic?</h3>
+    <p>
+      <a href="https://meshtastic.org/">Meshtastic</a> is an open-source project that turns inexpensive
+      LoRa radios into a powerful, off-grid mesh communication system. With a Meshtastic device, you can
+      send short text messages and GPS locations to others without the need for cellular or internet access—perfect
+      for emergencies, hiking trips, or rural communities.
+    </p>
+    <p>
+      Meshtastic devices form a mesh network, meaning your messages can hop between radios to reach
+      their destination, even if you're not directly within range. This makes it ideal for
+      decentralized communication in areas with limited infrastructure.
+    </p>
+
+    <h3 id="getting-started">Getting Started with Meshtastic</h3>
 
     <p>New to Meshtastic? Here's how to begin:</p>
 
@@ -488,7 +502,7 @@ const frontmatter = {
 
     <h2 id="get-involved">Get Involved</h2>
 
-    <p>If you're interested in joining the ERSN Meshtastic Working Group:</p>
+    <p>If you're interested in joining the ERSN Mesh Comms Working Group:</p>
 
     <ul>
       <li>
