@@ -2,36 +2,89 @@
 import Layout from '@layouts/Layout.astro';
 import Content from '@components/Content.astro';
 const frontmatter = {
-  title: 'Meshtastic Working Group',
-  description: 'Information about the subgroup exploring the use of meshtastic within ERSN.',
+  title: 'Mesh Comms Working Group',
+  description: 'Information about the subgroup exploring off-grid mesh communications within ERSN.',
 };
 ---
 
 <Layout frontmatter={frontmatter}>
   <Content>
-    <h1>Meshtastic Working Group</h1>
+    <h1>Mesh Comms Working Group</h1>
 
-    <h2>What is Meshtastic?</h2>
     <p>
-      <a href="https://meshtastic.org/">Meshtastic</a> is an open-source project that turns inexpensive
-      LoRa radios into a powerful, off-grid mesh communication system. With a Meshtastic device, you can
-      send short text messages and GPS locations to others without the need for cellular or internet access—perfect
-      for emergencies, hiking trips, or rural communities.
+      The ERSN Mesh Comms Working Group explores off-grid text and data communications that can
+      supplement our GMRS voice net. We're not tied to a single product—our focus is on whatever
+      LoRa mesh technology gives the most reliable coverage across our terrain. Today that means
+      <a href="https://meshcore.io/">MeshCore</a>.
     </p>
+
+    <hr />
+
+    <h2 id="meshcore">Current Network: MeshCore</h2>
+
     <p>
-      Meshtastic devices form a mesh network, meaning your messages can hop between radios to reach
-      their destination, even if you're not directly within range. This makes it ideal for
-      decentralized communication in areas with limited infrastructure.
+      ERSN has migrated its repeaters and personal nodes over to
+      <a href="https://meshcore.io/">MeshCore</a>, and we're now participating as part of the
+      <strong>SIERRA MeshCORE Network</strong>. MeshCore is an alternative LoRa mesh project whose
+      routing method has proven significantly more reliable for our terrain.
+    </p>
+
+    <p>
+      Since making the switch we've seen good connectivity between <strong>Dorrington</strong>,
+      <strong>Murphys</strong>, and <strong>Columbia</strong>, and on out to the Central Valley and
+      beyond. We've even relayed traffic from <strong>San Francisco to Murphys over LoRa</strong>—a
+      reach that Meshtastic never managed to achieve in our network.
+    </p>
+
+    <p>
+      On the network you'll see our repeaters prefixed with <strong><code>SIERRA</code></strong>. We
+      currently have repeaters at:
+    </p>
+
+    <ul>
+      <li>Arnold Summit</li>
+      <li>Forest Meadows</li>
+      <li>Lilac Park</li>
+      <li>Dorrington</li>
+      <li>Pinebrook</li>
+    </ul>
+
+    <p>
+      One current downside is that <strong>Pinebrook and the Moran Road corridor are cut off</strong
+      >
+      from the rest of the mesh, so the Pinebrook repeater isn't yet linking back to the wider network.
+      We're actively looking for additional repeater locations to close that gap and extend coverage.
+      If you have a good high site, we'd love to hear from you.
+    </p>
+
+    <p>
+      You can see war-driving results for the current mesh on the
+      <a href="https://coa.meshmapper.net/">MeshMapper coverage map</a>.
+    </p>
+
+    <h3>Channels to Check</h3>
+
+    <ul>
+      <li><strong>Public</strong>: the default starting point for anyone on the network</li>
+      <li>
+        <strong><code>#motherlode</code></strong> and <strong><code>#sierras</code></strong>:
+        hashtag channels worth following for regional traffic
+      </li>
+    </ul>
+
+    <p>
+      If you're interested in helping expand the mesh—or in participating in the private
+      <strong>SIERRA</strong> channel—please <a href="mailto:ersnnets@gmail.com">contact us</a>.
     </p>
 
     <hr />
 
     <h2>Goals of the Working Group</h2>
 
-    <p>The ERSN Meshtastic Working Group exists to:</p>
+    <p>The ERSN Mesh Comms Working Group exists to:</p>
 
     <ul>
-      <li><strong>Evaluate Meshtastic as a supplement to our GMRS radio net</strong></li>
+      <li><strong>Evaluate mesh comms as a supplement to our GMRS radio net</strong></li>
       <li><strong>Explore deployment of a regional mesh network</strong></li>
       <li><strong>Coordinate channel use and best practices</strong></li>
       <li><strong>Test bridging strategies for linking isolated clusters</strong></li>
@@ -46,6 +99,8 @@ const frontmatter = {
     <div class="toc">
       <h3>Contents</h3>
       <ul>
+        <li><a href="#meshcore">Current Network: MeshCore</a></li>
+        <li><a href="#meshtastic">Meshtastic (Legacy)</a></li>
         <li><a href="#getting-started">Getting Started with Meshtastic</a></li>
         <li><a href="#range">Range and Coverage</a></li>
         <li><a href="#mqtt">MQTT Bridging</a></li>
@@ -55,7 +110,31 @@ const frontmatter = {
 
     <hr />
 
-    <h2 id="getting-started">Getting Started with Meshtastic</h2>
+    <h2 id="meshtastic">Meshtastic (Legacy)</h2>
+
+    <p>
+      <strong
+        >ERSN's Meshtastic nodes are currently not operational—the network has moved to MeshCore
+        (see above).</strong
+      >
+      The material below is retained as background for those still running Meshtastic devices, and for
+      anyone interested in the history of the working group.
+    </p>
+
+    <h3>What is Meshtastic?</h3>
+    <p>
+      <a href="https://meshtastic.org/">Meshtastic</a> is an open-source project that turns inexpensive
+      LoRa radios into a powerful, off-grid mesh communication system. With a Meshtastic device, you can
+      send short text messages and GPS locations to others without the need for cellular or internet access—perfect
+      for emergencies, hiking trips, or rural communities.
+    </p>
+    <p>
+      Meshtastic devices form a mesh network, meaning your messages can hop between radios to reach
+      their destination, even if you're not directly within range. This makes it ideal for
+      decentralized communication in areas with limited infrastructure.
+    </p>
+
+    <h3 id="getting-started">Getting Started with Meshtastic</h3>
 
     <p>New to Meshtastic? Here's how to begin:</p>
 
@@ -437,7 +516,7 @@ const frontmatter = {
 
     <h2 id="get-involved">Get Involved</h2>
 
-    <p>If you're interested in joining the ERSN Meshtastic Working Group:</p>
+    <p>If you're interested in joining the ERSN Mesh Comms Working Group:</p>
 
     <ul>
       <li>
