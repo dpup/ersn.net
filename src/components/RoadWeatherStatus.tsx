@@ -58,76 +58,91 @@ interface ChainControlInfo {
   description?: string;
 }
 
-// API Response Interfaces
+// API Response Interfaces — S.I.E.R.R.A. Grid /v1 (snake_case fields).
+// Roads keep their inline `alerts`; weather conditions no longer carry alerts —
+// weather alerts are events, queried from /v1/events?layer=weather_alert.
+interface RoadAlertApi {
+  id?: string;
+  type?: string;
+  severity?: string;
+  classification?: string;
+  title?: string;
+  description?: string;
+  condensed_summary?: string;
+  location?: { latitude?: number; longitude?: number } | string;
+  location_description?: string;
+  incident_type?: string;
+  impact?: string;
+  start_time?: string;
+  expected_end?: string;
+  distance_to_route_meters?: number;
+  metadata?: Record<string, unknown>;
+}
+
 interface RoadApiResponse {
   roads: {
     id: string;
     name: string;
     section: string;
     status: string;
-    statusExplanation?: string;
-    durationMinutes: number;
-    distanceKm: number;
-    congestionLevel: string;
-    delayMinutes: number;
-    chainControl: string;
-    chainControlInfo?: ChainControlInfo;
-    alerts: {
-      id: string;
-      severity: string;
-      title: string;
-      description: string;
-      condensedSummary?: string;
-      classification?: string;
-      location?: string;
-      locationDescription?: string;
-      incidentType?: string;
-      type?: string;
-      impact?: string;
-      startTime?: string;
-      expectedEnd?: string;
-      metadata?: Record<string, unknown>;
-    }[];
+    status_explanation?: string;
+    duration_minutes: number;
+    distance_km: number;
+    congestion_level: string;
+    delay_minutes?: number;
+    chain_control: string;
+    chain_control_info?: ChainControlInfo;
+    // Omitted entirely when empty — the Grid's protojson drops empty arrays.
+    alerts?: RoadAlertApi[];
   }[];
-  lastUpdated: string;
+  last_updated: string;
 }
 
 interface WeatherApiResponse {
-  weatherData: {
-    locationId: string;
-    locationName: string;
-    weatherMain: string;
-    weatherDescription: string;
-    weatherIcon: string;
-    temperatureCelsius: number;
-    feelsLikeCelsius: number;
-    humidityPercent: number;
-    windSpeedKmh: number;
-    windDirectionDegrees: number;
-    visibilityKm: number;
-    alerts: {
-      id?: string;
-      severity?: string;
-      title?: string;
-      description?: string;
-      event?: string; // NWS event type e.g. "Winter Storm Warning", "Flood Watch"
-      senderName?: string; // e.g. "NWS Sacramento CA"
-      headline?: string; // Brief summary (125 chars max)
-      summary?: string; // Concise overview of hazards and actions
-      details?: string; // Formatted markdown with sections
-      condensedSummary?: string;
-      classification?: string;
-      impact?: string;
-      locationDescription?: string;
-      startTime?: string;
-      startTimestamp?: number; // Unix timestamp
-      endTimestamp?: number; // Unix timestamp
-      type?: string;
-      tags?: string[]; // e.g. ["Flood"], ["Wind", "Snow/Ice"]
-      metadata?: Record<string, unknown>;
-    }[];
+  weather_data: {
+    location_id: string;
+    location_name: string;
+    weather_main: string;
+    weather_description: string;
+    weather_icon: string;
+    temperature_celsius: number;
+    feels_like_celsius: number;
+    humidity_percent: number;
+    wind_speed_kmh: number;
+    wind_direction_degrees: number;
+    visibility_km: number;
   }[];
-  lastUpdated: string;
+  last_updated: string;
+}
+
+// Weather alerts are Grid events (GET /v1/events?layer=weather_alert). The common
+// event envelope is enough to render an alert card; the typed weather_alert block
+// carries the NWS specifics.
+interface GridEvent {
+  id?: string;
+  layer?: string;
+  category?: string;
+  severity?: string;
+  status?: string;
+  headline?: string;
+  summary?: string;
+  description?: string;
+  area_label?: string;
+  effective?: string;
+  expires?: string;
+  observed_at?: string;
+  weather_alert?: {
+    nws_severity?: string;
+    certainty?: string;
+    urgency?: string;
+    instruction?: string;
+    area_desc?: string;
+    zones?: string[];
+  };
+}
+
+interface GridEventList {
+  events?: GridEvent[];
 }
 
 // Display Interfaces
@@ -272,6 +287,89 @@ const formatHumanTime = (timestamp: string | undefined): string => {
   }
 };
 
+// S.I.E.R.R.A. Grid data feeds.
+const GRID_API_BASE = 'https://data.sierragridteam.org/v1';
+const GRID_AREA = 'ebbetts-pass';
+
+// Map the Grid's unified 5-level severity scale (EXTREME/SEVERE/MODERATE/MINOR/INFO)
+// down to the widget's 3-level display scale. Legacy road-alert severities
+// (CRITICAL/WARNING/INFO) pass through unchanged.
+const mapGridSeverity = (severity: string | undefined): Alert['severity'] => {
+  switch ((severity || '').toUpperCase()) {
+    case 'EXTREME':
+    case 'SEVERE':
+    case 'CRITICAL':
+      return 'CRITICAL';
+    case 'MODERATE':
+    case 'WARNING':
+      return 'WARNING';
+    default:
+      return 'INFO';
+  }
+};
+
+// A road's inline alert → display Alert.
+const transformRoadAlert = (alert: RoadAlertApi): Alert => {
+  let locationText: string | undefined;
+  if (typeof alert.location === 'string') {
+    locationText = alert.location;
+  } else if (alert.location && typeof alert.location === 'object') {
+    const { latitude, longitude } = alert.location;
+    if (typeof latitude === 'number' && typeof longitude === 'number') {
+      locationText = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+    }
+  }
+
+  const classification = alert.classification?.toUpperCase();
+  const metadata = alert.metadata;
+
+  return {
+    id: alert.id,
+    type: 'road',
+    severity: mapGridSeverity(alert.severity),
+    classification:
+      classification &&
+      ['ON_ROUTE', 'NEARBY', 'DISTANT', 'ALERT_CLASSIFICATION_UNSPECIFIED'].includes(classification)
+        ? (classification as Alert['classification'])
+        : undefined,
+    title: alert.title || alert.description || 'Alert',
+    description:
+      alert.description || alert.condensed_summary || alert.title || 'No description available',
+    condensedSummary: alert.condensed_summary,
+    location: locationText || alert.location_description,
+    locationDescription: alert.location_description,
+    incidentType: alert.incident_type || (metadata?.incident_type as string | undefined),
+    impact: alert.impact,
+    startTime: alert.start_time,
+    expectedEnd: alert.expected_end || (metadata?.expected_end as string | undefined),
+    distanceToRouteMeters: alert.distance_to_route_meters,
+    metadata,
+  };
+};
+
+// A weather_alert Grid event → display Alert.
+const transformWeatherEvent = (event: GridEvent): Alert => {
+  const wx = event.weather_alert;
+  return {
+    id: event.id,
+    type: 'weather',
+    severity: mapGridSeverity(event.severity),
+    // `category` is the NWS event type (e.g. "Extreme Heat Warning").
+    title: event.category || event.headline || 'Weather Alert',
+    description: event.summary || event.description || event.headline || 'No description available',
+    headline: event.headline,
+    summary: event.summary,
+    // The verbatim upstream text (WHAT/WHERE/WHEN sections) is the detail view.
+    details: event.description,
+    condensedSummary: event.headline,
+    location: event.area_label || wx?.area_desc,
+    locationDescription: wx?.area_desc,
+    startTime: event.effective,
+    expectedEnd: event.expires,
+    metadata: wx as Record<string, unknown> | undefined,
+  };
+};
+
 export default function RoadWeatherStatus() {
   const [data, setData] = useState<ApiData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -284,192 +382,59 @@ export default function RoadWeatherStatus() {
     try {
       setError(null);
 
-      const [roadsResponse, weatherResponse] = await Promise.all([
-        fetch('https://info.ersn.net/api/v1/roads', {
+      const [roadsResponse, weatherResponse, weatherAlertsResponse] = await Promise.all([
+        fetch(`${GRID_API_BASE}/roads?place=${GRID_AREA}`, {
           method: 'GET',
           mode: 'cors',
         }),
-        fetch('https://info.ersn.net/api/v1/weather', {
+        fetch(`${GRID_API_BASE}/weather`, {
+          method: 'GET',
+          mode: 'cors',
+        }),
+        fetch(`${GRID_API_BASE}/events?place=${GRID_AREA}&layer=weather_alert`, {
           method: 'GET',
           mode: 'cors',
         }),
       ]);
 
-      if (!roadsResponse.ok || !weatherResponse.ok) {
+      if (!roadsResponse.ok || !weatherResponse.ok || !weatherAlertsResponse.ok) {
         const errorDetails = {
           roads: `${roadsResponse.status} ${roadsResponse.statusText}`,
           weather: `${weatherResponse.status} ${weatherResponse.statusText}`,
+          weatherAlerts: `${weatherAlertsResponse.status} ${weatherAlertsResponse.statusText}`,
         };
         throw new Error(`API Error: ${JSON.stringify(errorDetails)}`);
       }
 
       const roads: RoadApiResponse = await roadsResponse.json();
       const weather: WeatherApiResponse = await weatherResponse.json();
+      const weatherAlertEvents: GridEventList = await weatherAlertsResponse.json();
 
-      console.log('Raw API data:');
-      console.log('Roads response:', roads);
-      console.log('Weather response:', weather);
-
-      // Helper function to infer severity from NWS event types
-      const inferSeverityFromEvent = (event: string | undefined): Alert['severity'] | null => {
-        if (!event) return null;
-        const eventLower = event.toLowerCase();
-
-        // Critical: Emergencies and extreme events
-        if (
-          eventLower.includes('emergency') ||
-          eventLower.includes('extreme') ||
-          eventLower.includes('tornado warning') ||
-          eventLower.includes('flash flood warning') ||
-          eventLower.includes('blizzard warning')
-        ) {
-          return 'CRITICAL';
-        }
-
-        // Warning: NWS "Warning" level events indicate imminent danger
-        if (eventLower.includes('warning')) {
-          return 'WARNING';
-        }
-
-        // Watch: NWS "Watch" level events indicate potential danger
-        if (eventLower.includes('watch')) {
-          return 'WARNING'; // Treat watches as warnings for visibility
-        }
-
-        // Advisory: Less severe but notable
-        if (eventLower.includes('advisory') || eventLower.includes('statement')) {
-          return 'INFO';
-        }
-
-        return null;
-      };
-
-      // Helper function to transform alerts
-      const transformAlert = (alert: unknown, type: 'road' | 'weather'): Alert => {
-        const alertObj = alert as Record<string, unknown>;
-
-        // Handle location field - could be string or object with lat/lng
-        let locationText: string | undefined;
-        if (typeof alertObj.location === 'string') {
-          locationText = alertObj.location;
-        } else if (alertObj.location && typeof alertObj.location === 'object') {
-          const loc = alertObj.location as Record<string, unknown>;
-          if (loc.name && typeof loc.name === 'string') {
-            locationText = loc.name;
-          } else if (typeof loc.latitude === 'number' && typeof loc.longitude === 'number') {
-            locationText = `${loc.latitude.toFixed(4)}, ${loc.longitude.toFixed(4)}`;
-          }
-        }
-
-        // Get event type for NWS alerts (weather)
-        const eventType = alertObj.event as string | undefined;
-
-        // Get severity from multiple possible fields
-        const rawSeverity =
-          (alertObj.severity as string) ||
-          (alertObj.priority as string) ||
-          (alertObj.urgency as string) ||
-          (alertObj.level as string);
-
-        // Normalize severity values to match API spec
-        let normalizedSeverity: Alert['severity'] = 'INFO';
-
-        // First try to infer from event type (for NWS weather alerts)
-        const eventSeverity = inferSeverityFromEvent(eventType);
-        if (eventSeverity) {
-          normalizedSeverity = eventSeverity;
-        } else if (rawSeverity) {
-          const severityUpper = rawSeverity.toUpperCase();
-          if (
-            ['CRITICAL', 'WARNING', 'INFO', 'ALERT_SEVERITY_UNSPECIFIED'].includes(severityUpper)
-          ) {
-            normalizedSeverity = severityUpper as Alert['severity'];
-          } else {
-            // Fallback mapping for non-standard values
-            const severityLower = rawSeverity.toLowerCase();
-            if (
-              severityLower.includes('critical') ||
-              severityLower.includes('severe') ||
-              severityLower.includes('emergency')
-            ) {
-              normalizedSeverity = 'CRITICAL';
-            } else if (
-              severityLower.includes('warning') ||
-              severityLower.includes('major') ||
-              severityLower.includes('high') ||
-              severityLower.includes('important')
-            ) {
-              normalizedSeverity = 'WARNING';
-            } else if (
-              severityLower.includes('info') ||
-              severityLower.includes('advisory') ||
-              severityLower.includes('minor')
-            ) {
-              normalizedSeverity = 'INFO';
-            }
-          }
-        }
-
-        // Get classification
-        const rawClassification = (alertObj.classification as string) || undefined;
-        let classification: Alert['classification'];
-        if (rawClassification) {
-          const classificationUpper = rawClassification.toUpperCase();
-          if (
-            ['ON_ROUTE', 'NEARBY', 'DISTANT', 'ALERT_CLASSIFICATION_UNSPECIFIED'].includes(
-              classificationUpper,
-            )
-          ) {
-            classification = classificationUpper as Alert['classification'];
-          }
-        }
-
-        return {
-          id: (alertObj.id as string) || (alertObj.alertId as string) || undefined,
-          type,
-          severity: normalizedSeverity,
-          classification,
-          title:
-            (alertObj.title as string) ||
-            (alertObj.event as string) ||
-            (alertObj.description as string) ||
-            'Alert',
-          // For weather alerts, prefer summary over raw description
-          description:
-            (alertObj.summary as string) ||
-            (alertObj.description as string) ||
-            (alertObj.title as string) ||
-            (alertObj.event as string) ||
-            'No description available',
-          headline: (alertObj.headline as string) || undefined,
-          summary: (alertObj.summary as string) || undefined,
-          details: (alertObj.details as string) || undefined,
-          condensedSummary:
-            (alertObj.condensedSummary as string) || (alertObj.headline as string) || undefined,
-          location: locationText,
-          locationDescription: (alertObj.locationDescription as string) || undefined,
-          incidentType: (alertObj.incidentType as string) || (alertObj.type as string) || undefined,
-          impact: (alertObj.impact as string) || undefined,
-          startTime: (alertObj.startTime as string) || undefined,
-          expectedEnd: (alertObj.expectedEnd as string) || (alertObj.end as string) || undefined,
-          distanceToRouteMeters: (alertObj.distanceToRouteMeters as number) || undefined,
-          metadata: (alertObj.metadata as Record<string, unknown>) || undefined,
-        };
-      };
-
-      // Collect all alerts from both sources
+      // Collect all alerts across sources for the aggregated "Active Alerts" list.
       const allAlerts: Alert[] = [];
+
+      // Weather alerts are area-wide events; one alert can cover several zones, so
+      // dedupe by title. The deduped set is shown against every weather location.
+      const seenWeatherTitles = new Set<string>();
+      const weatherAlerts: Alert[] = (weatherAlertEvents.events || [])
+        .map(transformWeatherEvent)
+        .filter((alert) => {
+          if (seenWeatherTitles.has(alert.title)) return false;
+          seenWeatherTitles.add(alert.title);
+          return true;
+        });
+      allAlerts.push(...weatherAlerts);
 
       // Transform API data to our format
       const transformedData: ApiData = {
-        roads: roads.roads.map((road) => {
+        roads: (roads.roads || []).map((road) => {
           // Parse the section to extract from/to (e.g., "Angels Camp to Murphys")
           const sectionParts = road.section.split(' to ');
           const from = sectionParts[0] || road.name;
           const to = sectionParts[1] || 'Destination';
 
-          // Transform road alerts
-          const roadAlerts = road.alerts.map((alert) => transformAlert(alert, 'road'));
+          // Transform road alerts (the Grid omits `alerts` entirely when empty)
+          const roadAlerts = (road.alerts || []).map(transformRoadAlert);
           allAlerts.push(...roadAlerts);
 
           // Map status to our expected values (factor in alerts)
@@ -478,12 +443,12 @@ export default function RoadWeatherStatus() {
             status = 'closed';
           } else if (roadAlerts.some((alert) => alert.severity === 'CRITICAL')) {
             status = 'restrictions';
-          } else if (road.delayMinutes > 0) {
+          } else if ((road.delay_minutes ?? 0) > 0) {
             status = 'delays';
-          } else if (road.chainControl && road.chainControl.toLowerCase() !== 'none') {
+          } else if (road.chain_control && road.chain_control.toLowerCase() !== 'none') {
             status = 'restrictions';
           } else if (
-            road.congestionLevel?.toLowerCase() === 'clear' &&
+            road.congestion_level?.toLowerCase() === 'clear' &&
             road.status?.toLowerCase() === 'open'
           ) {
             status = 'clear';
@@ -493,45 +458,40 @@ export default function RoadWeatherStatus() {
             from,
             to,
             status,
-            delayMinutes: road.delayMinutes,
+            delayMinutes: road.delay_minutes,
             description:
-              road.chainControl && road.chainControl.toLowerCase() !== 'none'
-                ? `Chain control: ${road.chainControl}`
+              road.chain_control && road.chain_control.toLowerCase() !== 'none'
+                ? `Chain control: ${road.chain_control}`
                 : undefined,
             alertCount: roadAlerts.length,
             alerts: roadAlerts,
             // Additional metadata
-            congestionLevel: road.congestionLevel,
-            durationMinutes: road.durationMinutes,
-            distanceKm: road.distanceKm,
-            chainControl: road.chainControl,
-            chainControlInfo: road.chainControlInfo,
+            congestionLevel: road.congestion_level,
+            durationMinutes: road.duration_minutes,
+            distanceKm: road.distance_km,
+            chainControl: road.chain_control,
+            chainControlInfo: road.chain_control_info,
             rawStatus: road.status,
-            statusExplanation: road.statusExplanation,
+            statusExplanation: road.status_explanation,
           };
         }),
-        weather: weather.weatherData.map((w) => {
-          // Transform weather alerts and add to global collection
-          const weatherAlerts = w.alerts.map((alert) => transformAlert(alert, 'weather'));
-          allAlerts.push(...weatherAlerts);
-
-          return {
-            name: w.locationName,
-            temperature: Math.round((w.temperatureCelsius * 9) / 5 + 32), // Convert to Fahrenheit
-            condition: w.weatherDescription,
-            icon: w.weatherIcon,
-            // Extended weather data
-            locationId: w.locationId,
-            temperatureCelsius: w.temperatureCelsius,
-            feelsLikeCelsius: w.feelsLikeCelsius,
-            humidityPercent: w.humidityPercent,
-            windSpeedKmh: w.windSpeedKmh,
-            windDirectionDegrees: w.windDirectionDegrees,
-            visibilityKm: w.visibilityKm,
-            weatherMain: w.weatherMain,
-            alerts: weatherAlerts,
-          };
-        }),
+        weather: (weather.weather_data || []).map((w) => ({
+          name: w.location_name,
+          temperature: Math.round(((w.temperature_celsius ?? 0) * 9) / 5 + 32), // Convert to Fahrenheit
+          condition: w.weather_description,
+          icon: w.weather_icon,
+          // Extended weather data
+          locationId: w.location_id,
+          temperatureCelsius: w.temperature_celsius,
+          feelsLikeCelsius: w.feels_like_celsius,
+          humidityPercent: w.humidity_percent,
+          windSpeedKmh: w.wind_speed_kmh,
+          windDirectionDegrees: w.wind_direction_degrees,
+          visibilityKm: w.visibility_km,
+          weatherMain: w.weather_main,
+          // Weather alerts are area-wide on the Grid — surface them on each location.
+          alerts: weatherAlerts,
+        })),
         alerts: allAlerts
           // Deduplicate by title (same alert may cover multiple locations)
           .filter((alert, index, self) => index === self.findIndex((a) => a.title === alert.title))
@@ -545,10 +505,9 @@ export default function RoadWeatherStatus() {
             };
             return severityOrder[a.severity] - severityOrder[b.severity];
           }),
-        lastUpdated: roads.lastUpdated || weather.lastUpdated || new Date().toISOString(),
+        lastUpdated: roads.last_updated || weather.last_updated || new Date().toISOString(),
       };
 
-      console.log('Transformed data:', transformedData);
       setData(transformedData);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load data';
@@ -601,8 +560,6 @@ export default function RoadWeatherStatus() {
   }
 
   if (!data) return null;
-
-  console.log('Rendering with data:', data);
 
   // Show all alerts - trust the API to send only relevant ones
   const allAlerts = data.alerts;
@@ -793,6 +750,17 @@ export default function RoadWeatherStatus() {
             <br />
             <strong>Last Updated:</strong> {formatHumanTime(data.lastUpdated)} •{' '}
             <strong>Update Frequency:</strong> Every 15 minutes
+          </p>
+          <p className="mt-2 text-center text-[11px] text-stone-400">
+            Powered by{' '}
+            <a
+              href="https://data.sierragridteam.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline decoration-dotted underline-offset-2 hover:text-stone-600"
+            >
+              S.I.E.R.R.A. Grid
+            </a>
           </p>
         </div>
       </div>
