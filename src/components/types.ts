@@ -21,38 +21,6 @@ export interface Alert {
   metadata?: Record<string, unknown>;
 }
 
-export interface ChainControlInfo {
-  level:
-    | 'CHAIN_CONTROL_LEVEL_UNSPECIFIED'
-    | 'CHAIN_CONTROL_LEVEL_NONE'
-    | 'CHAIN_CONTROL_LEVEL_R1'
-    | 'CHAIN_CONTROL_LEVEL_R2'
-    | 'CHAIN_CONTROL_LEVEL_R3';
-  locationName?: string;
-  latitude?: number;
-  longitude?: number;
-  effectiveTime?: string;
-  direction?: string;
-  description?: string;
-}
-
-export interface RoadSegment {
-  from: string;
-  to: string;
-  status: 'clear' | 'delays' | 'restrictions' | 'closed';
-  delayMinutes?: number;
-  description?: string;
-  alertCount: number;
-  alerts: Alert[];
-  congestionLevel?: string;
-  durationMinutes?: number;
-  distanceKm?: number;
-  chainControl?: string;
-  chainControlInfo?: ChainControlInfo;
-  rawStatus?: string;
-  statusExplanation?: string;
-}
-
 export interface WeatherLocation {
   name: string;
   temperature: number;

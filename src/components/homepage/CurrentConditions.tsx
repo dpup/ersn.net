@@ -13,53 +13,41 @@ import {
 } from 'lucide-react';
 
 // S.I.E.R.R.A. Grid data feeds.
-const GRID_API_BASE = 'https://data.sierragridteam.org/v1';
+const GRID_API_BASE = 'https://data.sierragridteam.org/api/v1';
 const GRID_AREA = 'ebbetts-pass';
 
-interface RoadApiResponse {
-  roads: {
-    id: string;
-    name: string;
-    section: string;
-    status: string;
-    delay_minutes?: number;
-    chain_control: string;
-    // Omitted entirely when empty — the Grid's protojson drops empty arrays.
-    alerts?: Array<{
-      id?: string;
-      severity?: string;
-      title?: string;
-      description?: string;
-      classification?: string;
-    }>;
+// Weather is served by /conditions (camelCase fields), with fire-weather state
+// folded into the same payload.
+interface ConditionsResponse {
+  weather?: {
+    locationId?: string;
+    locationName?: string;
+    weatherDescription?: string;
+    weatherIcon?: string;
+    temperatureCelsius?: number;
   }[];
-  last_updated: string;
+  fireWeather?: {
+    state?: string; // normal | elevated | red-flag
+    headline?: string;
+  };
+  lastUpdated?: string;
 }
 
-interface WeatherApiResponse {
-  weather_data: {
-    location_id: string;
-    location_name: string;
-    weather_description: string;
-    weather_icon: string;
-    temperature_celsius: number;
-  }[];
-  last_updated: string;
-}
-
-// Weather alerts are Grid events (GET /v1/events?layer=weather_alert), no longer
-// bundled with the weather conditions feed.
-interface WeatherAlertEvent {
+// Road incidents and weather alerts are both events on the unified event feed
+// (GET /api/v1/events?layer=…), sharing the common event envelope.
+interface GridEvent {
   id?: string;
-  category?: string; // NWS event type e.g. "Extreme Heat Warning"
+  category?: string; // NWS event type / road incident type
   severity?: string;
   headline?: string;
   summary?: string;
   description?: string;
+  areaLabel?: string;
 }
 
-interface WeatherAlertEventList {
-  events?: WeatherAlertEvent[];
+interface GridEventList {
+  events?: GridEvent[];
+  nextPageToken?: string;
 }
 
 interface RepeaterInfo {
@@ -106,7 +94,6 @@ const getWeatherIcon = (iconCode: string): ReactElement => {
 };
 
 // Map the Grid's unified 5-level severity scale down to the widget's 3 levels.
-// Legacy road-alert severities (CRITICAL/WARNING/INFO) pass through unchanged.
 const mapGridSeverity = (severity: string | undefined): Alert['severity'] => {
   switch ((severity || '').toUpperCase()) {
     case 'EXTREME':
@@ -121,63 +108,77 @@ const mapGridSeverity = (severity: string | undefined): Alert['severity'] => {
   }
 };
 
-// Helper to collect alerts from API data (deduplicated by title)
+// Humanize a road incident's type/location for the compact list.
+const incidentLabel = (event: GridEvent): string =>
+  event.areaLabel || event.headline || event.summary || 'Road incident';
+
+// Collect alerts from the event feeds (deduplicated by title). Road incidents
+// and weather alerts are both events now; fire-weather comes from /conditions.
 const collectAlerts = (
-  roadData: RoadApiResponse | null,
-  weatherAlertEvents: WeatherAlertEvent[] | null,
+  roadIncidents: GridEvent[],
+  weatherAlertEvents: GridEvent[],
+  fireWeather: ConditionsResponse['fireWeather'],
 ): Alert[] => {
   const alerts: Alert[] = [];
   const seenTitles = new Set<string>();
 
-  // Collect road alerts (the Grid omits `alerts` entirely when empty)
-  roadData?.roads?.forEach((road) => {
-    (road.alerts || []).forEach((alert) => {
-      const title = alert.title || alert.description;
-      if (title && !seenTitles.has(title)) {
-        seenTitles.add(title);
-        alerts.push({
-          id: alert.id,
-          severity: mapGridSeverity(alert.severity),
-          title,
-          description: alert.description,
-          type: 'road',
-        });
-      }
+  const pushAlert = (alert: Alert) => {
+    if (!alert.title || seenTitles.has(alert.title)) return;
+    seenTitles.add(alert.title);
+    alerts.push(alert);
+  };
+
+  // Fire-weather advisory (only when not normal).
+  const fwState = (fireWeather?.state || '').toLowerCase();
+  if (fwState && fwState !== 'normal') {
+    pushAlert({
+      id: 'fire-weather',
+      severity: fwState === 'red-flag' ? 'CRITICAL' : 'WARNING',
+      title: fwState === 'red-flag' ? 'Red Flag Warning' : 'Elevated Fire Weather',
+      description: fireWeather?.headline,
+      type: 'weather',
+    });
+  }
+
+  // Road incidents.
+  roadIncidents.forEach((event) => {
+    pushAlert({
+      id: event.id,
+      severity: mapGridSeverity(event.severity),
+      title: event.headline || incidentLabel(event),
+      description: event.summary || event.description,
+      type: 'road',
     });
   });
 
-  // Collect weather alerts (deduplicate by title - same alert may cover multiple zones)
-  weatherAlertEvents?.forEach((event) => {
-    const title = event.category || event.headline || event.description || '';
-    if (title && !seenTitles.has(title)) {
-      seenTitles.add(title);
-      alerts.push({
-        id: event.id,
-        severity: mapGridSeverity(event.severity),
-        title,
-        description: event.summary || event.description,
-        type: 'weather',
-      });
-    }
+  // Weather alerts (same alert may cover multiple zones — dedupe by title).
+  weatherAlertEvents.forEach((event) => {
+    pushAlert({
+      id: event.id,
+      severity: mapGridSeverity(event.severity),
+      title: event.category || event.headline || event.description || '',
+      description: event.summary || event.description,
+      type: 'weather',
+    });
   });
 
   return alerts;
 };
 
 export default function CurrentConditions() {
-  const [roadData, setRoadData] = useState<RoadApiResponse | null>(null);
-  const [weatherData, setWeatherData] = useState<WeatherApiResponse | null>(null);
-  const [weatherAlertEvents, setWeatherAlertEvents] = useState<WeatherAlertEvent[]>([]);
+  const [weatherData, setWeatherData] = useState<ConditionsResponse | null>(null);
+  const [roadIncidents, setRoadIncidents] = useState<GridEvent[]>([]);
+  const [weatherAlertEvents, setWeatherAlertEvents] = useState<GridEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
     try {
-      const [roadsResponse, weatherResponse, weatherAlertsResponse] = await Promise.all([
-        fetch(`${GRID_API_BASE}/roads?place=${GRID_AREA}`, {
+      const [conditionsResponse, roadIncidentsResponse, weatherAlertsResponse] = await Promise.all([
+        fetch(`${GRID_API_BASE}/conditions?place=${GRID_AREA}`, {
           method: 'GET',
           mode: 'cors',
         }),
-        fetch(`${GRID_API_BASE}/weather`, {
+        fetch(`${GRID_API_BASE}/events?place=${GRID_AREA}&layer=road_incident`, {
           method: 'GET',
           mode: 'cors',
         }),
@@ -187,16 +188,16 @@ export default function CurrentConditions() {
         }),
       ]);
 
-      if (!roadsResponse.ok || !weatherResponse.ok || !weatherAlertsResponse.ok) {
+      if (!conditionsResponse.ok || !roadIncidentsResponse.ok || !weatherAlertsResponse.ok) {
         throw new Error('Failed to fetch data');
       }
 
-      const roads: RoadApiResponse = await roadsResponse.json();
-      const weather: WeatherApiResponse = await weatherResponse.json();
-      const weatherAlerts: WeatherAlertEventList = await weatherAlertsResponse.json();
+      const conditions: ConditionsResponse = await conditionsResponse.json();
+      const roads: GridEventList = await roadIncidentsResponse.json();
+      const weatherAlerts: GridEventList = await weatherAlertsResponse.json();
 
-      setRoadData(roads);
-      setWeatherData(weather);
+      setWeatherData(conditions);
+      setRoadIncidents(roads.events || []);
       setWeatherAlertEvents(weatherAlerts.events || []);
     } catch (err) {
       console.error('API Error:', err);
@@ -210,24 +211,6 @@ export default function CurrentConditions() {
     const interval = setInterval(fetchData, 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, [fetchData]);
-
-  const getRoadStatusText = (road: any) => {
-    if (road.status?.toLowerCase() === 'closed') return 'Closed';
-    if (road.delay_minutes > 0) return `${road.delay_minutes}min delays`;
-    if (road.chain_control && road.chain_control.toLowerCase() !== 'none') return 'Chain controls';
-    return 'Clear';
-  };
-
-  const getRoadStatusColor = (road: any) => {
-    if (road.status?.toLowerCase() === 'closed') return 'text-red-700';
-    if (road.delay_minutes > 15) return 'text-red-700';
-    if (
-      road.delay_minutes > 0 ||
-      (road.chain_control && road.chain_control.toLowerCase() !== 'none')
-    )
-      return 'text-yellow-700';
-    return 'text-green-700';
-  };
 
   if (loading) {
     return (
@@ -246,7 +229,7 @@ export default function CurrentConditions() {
     );
   }
 
-  const alerts = collectAlerts(roadData, weatherAlertEvents);
+  const alerts = collectAlerts(roadIncidents, weatherAlertEvents, weatherData?.fireWeather);
   const hasCritical = alerts.some((a) => a.severity === 'CRITICAL');
   const hasAlerts = alerts.length > 0;
 
@@ -292,45 +275,35 @@ export default function CurrentConditions() {
           <div>
             <h4 className="font-medium text-stone-700 mb-1">Road conditions</h4>
             <div className="space-y-1 ml-2">
-              {(() => {
-                if (!roadData?.roads) {
-                  return (
-                    <div className="flex justify-between items-center">
-                      <span className="text-stone-600">Status:</span>
-                      <span className="font-medium text-stone-500">No data</span>
-                    </div>
-                  );
-                }
-
-                const roadsWithIssues = roadData.roads.filter(
-                  (road) =>
-                    road.status?.toLowerCase() === 'closed' ||
-                    (road.delay_minutes ?? 0) > 0 ||
-                    (road.chain_control && road.chain_control.toLowerCase() !== 'none'),
-                );
-
-                if (roadsWithIssues.length === 0) {
-                  return (
-                    <div className="flex justify-between items-center">
-                      <span className="text-stone-600">All routes:</span>
-                      <span className="font-medium text-green-700">Clear</span>
-                    </div>
-                  );
-                }
-
-                return roadsWithIssues.map((road) => {
-                  const sectionParts = road.section.split(' to ');
-                  const routeName = sectionParts.length > 1 ? road.section : road.name;
-                  return (
-                    <div key={road.id} className="flex justify-between items-center">
-                      <span className="text-stone-600 truncate">{routeName}:</span>
-                      <span className={`font-medium ${getRoadStatusColor(road)}`}>
-                        {getRoadStatusText(road)}
-                      </span>
-                    </div>
-                  );
-                });
-              })()}
+              {roadIncidents.length === 0 ? (
+                <div className="flex justify-between items-center">
+                  <span className="text-stone-600">All routes:</span>
+                  <span className="font-medium text-green-700">Clear</span>
+                </div>
+              ) : (
+                roadIncidents.slice(0, 4).map((event, index) => (
+                  <div
+                    key={event.id || `incident-${index}`}
+                    className="flex justify-between items-center gap-2"
+                  >
+                    <span className="text-stone-600 truncate">{incidentLabel(event)}:</span>
+                    <span
+                      className={`font-medium flex-shrink-0 ${
+                        mapGridSeverity(event.severity) === 'CRITICAL'
+                          ? 'text-red-700'
+                          : 'text-yellow-700'
+                      }`}
+                    >
+                      {(event.category || 'Incident').replace(/^\w/, (c) => c.toUpperCase())}
+                    </span>
+                  </div>
+                ))
+              )}
+              {roadIncidents.length > 4 && (
+                <div className="text-xs text-stone-500">
+                  +{roadIncidents.length - 4} more incident{roadIncidents.length - 4 > 1 ? 's' : ''}
+                </div>
+              )}
             </div>
           </div>
 
@@ -338,13 +311,13 @@ export default function CurrentConditions() {
           <div>
             <h4 className="font-medium text-stone-700 mb-1">Weather</h4>
             <div className="space-y-1 ml-2">
-              {weatherData?.weather_data?.map((location) => (
-                <div key={location.location_id} className="flex justify-between items-center">
-                  <span className="text-stone-600 truncate">{location.location_name}:</span>
+              {weatherData?.weather?.map((location) => (
+                <div key={location.locationId} className="flex justify-between items-center">
+                  <span className="text-stone-600 truncate">{location.locationName}:</span>
                   <div className="flex items-center space-x-1 flex-shrink-0">
-                    {getWeatherIcon(location.weather_icon)}
+                    {getWeatherIcon(location.weatherIcon || '')}
                     <span className="font-medium text-stone-700">
-                      {Math.round(((location.temperature_celsius ?? 0) * 9) / 5 + 32)}°F
+                      {Math.round(((location.temperatureCelsius ?? 0) * 9) / 5 + 32)}°F
                     </span>
                   </div>
                 </div>
