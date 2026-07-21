@@ -33,6 +33,31 @@ interface ConditionsResponse {
   lastUpdated?: string;
 }
 
+// Road state (open/restricted/closed, travel time, delay) is the road_segment
+// map-layer projection; chain control is the chain_control projection — both
+// GeoJSON FeatureCollections.
+interface RoadSegmentProps {
+  id?: string;
+  headline?: string;
+  status?: string; // OPEN | RESTRICTED | CLOSED
+  areaLabel?: string;
+  road?: { roadId?: string; delayMinutes?: number };
+}
+
+interface ChainControlProps {
+  id?: string;
+  headline?: string;
+  status?: string;
+  category?: string;
+  level?: string;
+  road?: { roadId?: string };
+  chainControl?: { level?: string };
+}
+
+interface GeoJsonFeatureCollection<P> {
+  features?: { properties?: P }[];
+}
+
 // Road incidents and weather alerts are both events on the unified event feed
 // (GET /api/v1/events?layer=…), sharing the common event envelope.
 interface GridEvent {
@@ -48,6 +73,14 @@ interface GridEvent {
 interface GridEventList {
   events?: GridEvent[];
   nextPageToken?: string;
+}
+
+// A road segment normalized for the compact widget.
+interface RoadSeg {
+  label: string;
+  rawStatus: string;
+  delayMinutes: number;
+  chain: string; // 'none' | 'R1' | 'R2' | 'R3'
 }
 
 interface RepeaterInfo {
@@ -108,12 +141,76 @@ const mapGridSeverity = (severity: string | undefined): Alert['severity'] => {
   }
 };
 
-// Humanize a road incident's type/location for the compact list.
-const incidentLabel = (event: GridEvent): string =>
-  event.areaLabel || event.headline || event.summary || 'Road incident';
+// Detect an R1/R2/R3 chain level from whichever free-text field carries it.
+const detectChainShort = (...values: (string | undefined)[]): string => {
+  const s = values.filter(Boolean).join(' ').toUpperCase();
+  if (/\bR3\b/.test(s)) return 'R3';
+  if (/\bR2\b/.test(s)) return 'R2';
+  if (/\bR1\b/.test(s)) return 'R1';
+  return 'none';
+};
 
-// Collect alerts from the event feeds (deduplicated by title). Road incidents
-// and weather alerts are both events now; fire-weather comes from /conditions.
+// Build roadId → chain level from the chain_control layer.
+const buildChainMap = (
+  fc: GeoJsonFeatureCollection<ChainControlProps> | undefined,
+): Record<string, string> => {
+  const map: Record<string, string> = {};
+  for (const feature of fc?.features || []) {
+    const p = feature.properties;
+    if (!p) continue;
+    const roadId = p.road?.roadId || (p.id || '').replace(/^[^:]+:/, '');
+    const chain = detectChainShort(
+      p.chainControl?.level,
+      p.level,
+      p.category,
+      p.status,
+      p.headline,
+    );
+    if (roadId && chain !== 'none') map[roadId] = chain;
+  }
+  return map;
+};
+
+// Normalize road_segment features into compact rows.
+const buildRoadSegments = (
+  fc: GeoJsonFeatureCollection<RoadSegmentProps> | undefined,
+  chainMap: Record<string, string>,
+): RoadSeg[] =>
+  (fc?.features || []).map((feature) => {
+    const p = feature.properties || {};
+    const roadId = p.road?.roadId || (p.id || '').replace(/^[^:]+:/, '');
+    return {
+      label: p.areaLabel || p.headline || 'Route',
+      rawStatus: (p.status || '').toLowerCase(),
+      delayMinutes: p.road?.delayMinutes ?? 0,
+      chain: (roadId && chainMap[roadId]) || 'none',
+    };
+  });
+
+const getRoadStatusText = (road: RoadSeg): string => {
+  if (road.rawStatus === 'closed') return 'Closed';
+  if (road.delayMinutes > 0) return `${road.delayMinutes}min delays`;
+  if (road.chain !== 'none') return 'Chain controls';
+  if (road.rawStatus === 'restricted') return 'Restrictions';
+  return 'Clear';
+};
+
+const getRoadStatusColor = (road: RoadSeg): string => {
+  if (road.rawStatus === 'closed') return 'text-red-700';
+  if (road.delayMinutes > 15) return 'text-red-700';
+  if (road.delayMinutes > 0 || road.chain !== 'none' || road.rawStatus === 'restricted') {
+    return 'text-yellow-700';
+  }
+  return 'text-green-700';
+};
+
+const hasRoadIssue = (road: RoadSeg): boolean =>
+  road.rawStatus === 'closed' ||
+  road.rawStatus === 'restricted' ||
+  road.delayMinutes > 0 ||
+  road.chain !== 'none';
+
+// Collect alerts from the event feeds + fire weather (deduplicated by title).
 const collectAlerts = (
   roadIncidents: GridEvent[],
   weatherAlertEvents: GridEvent[],
@@ -145,7 +242,7 @@ const collectAlerts = (
     pushAlert({
       id: event.id,
       severity: mapGridSeverity(event.severity),
-      title: event.headline || incidentLabel(event),
+      title: event.headline || event.areaLabel || event.summary || 'Road incident',
       description: event.summary || event.description,
       type: 'road',
     });
@@ -167,14 +264,26 @@ const collectAlerts = (
 
 export default function CurrentConditions() {
   const [weatherData, setWeatherData] = useState<ConditionsResponse | null>(null);
+  const [roadSegments, setRoadSegments] = useState<RoadSeg[] | null>(null);
   const [roadIncidents, setRoadIncidents] = useState<GridEvent[]>([]);
   const [weatherAlertEvents, setWeatherAlertEvents] = useState<GridEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
     try {
-      const [conditionsResponse, roadIncidentsResponse, weatherAlertsResponse] = await Promise.all([
-        fetch(`${GRID_API_BASE}/conditions?place=${GRID_AREA}`, {
+      const [
+        conditionsResponse,
+        roadSegmentsResponse,
+        chainControlResponse,
+        roadIncidentsResponse,
+        weatherAlertsResponse,
+      ] = await Promise.all([
+        fetch(`${GRID_API_BASE}/conditions?place=${GRID_AREA}`, { method: 'GET', mode: 'cors' }),
+        fetch(`${GRID_API_BASE}/places/${GRID_AREA}/map/road_segment.geojson`, {
+          method: 'GET',
+          mode: 'cors',
+        }),
+        fetch(`${GRID_API_BASE}/places/${GRID_AREA}/map/chain_control.geojson`, {
           method: 'GET',
           mode: 'cors',
         }),
@@ -188,15 +297,25 @@ export default function CurrentConditions() {
         }),
       ]);
 
-      if (!conditionsResponse.ok || !roadIncidentsResponse.ok || !weatherAlertsResponse.ok) {
+      if (
+        !conditionsResponse.ok ||
+        !roadSegmentsResponse.ok ||
+        !chainControlResponse.ok ||
+        !roadIncidentsResponse.ok ||
+        !weatherAlertsResponse.ok
+      ) {
         throw new Error('Failed to fetch data');
       }
 
       const conditions: ConditionsResponse = await conditionsResponse.json();
+      const segments: GeoJsonFeatureCollection<RoadSegmentProps> =
+        await roadSegmentsResponse.json();
+      const chains: GeoJsonFeatureCollection<ChainControlProps> = await chainControlResponse.json();
       const roads: GridEventList = await roadIncidentsResponse.json();
       const weatherAlerts: GridEventList = await weatherAlertsResponse.json();
 
       setWeatherData(conditions);
+      setRoadSegments(buildRoadSegments(segments, buildChainMap(chains)));
       setRoadIncidents(roads.events || []);
       setWeatherAlertEvents(weatherAlerts.events || []);
     } catch (err) {
@@ -275,35 +394,36 @@ export default function CurrentConditions() {
           <div>
             <h4 className="font-medium text-stone-700 mb-1">Road conditions</h4>
             <div className="space-y-1 ml-2">
-              {roadIncidents.length === 0 ? (
-                <div className="flex justify-between items-center">
-                  <span className="text-stone-600">All routes:</span>
-                  <span className="font-medium text-green-700">Clear</span>
-                </div>
-              ) : (
-                roadIncidents.slice(0, 4).map((event, index) => (
-                  <div
-                    key={event.id || `incident-${index}`}
-                    className="flex justify-between items-center gap-2"
-                  >
-                    <span className="text-stone-600 truncate">{incidentLabel(event)}:</span>
-                    <span
-                      className={`font-medium flex-shrink-0 ${
-                        mapGridSeverity(event.severity) === 'CRITICAL'
-                          ? 'text-red-700'
-                          : 'text-yellow-700'
-                      }`}
-                    >
-                      {(event.category || 'Incident').replace(/^\w/, (c) => c.toUpperCase())}
+              {(() => {
+                if (!roadSegments) {
+                  return (
+                    <div className="flex justify-between items-center">
+                      <span className="text-stone-600">Status:</span>
+                      <span className="font-medium text-stone-500">No data</span>
+                    </div>
+                  );
+                }
+
+                const roadsWithIssues = roadSegments.filter(hasRoadIssue);
+
+                if (roadsWithIssues.length === 0) {
+                  return (
+                    <div className="flex justify-between items-center">
+                      <span className="text-stone-600">All routes:</span>
+                      <span className="font-medium text-green-700">Clear</span>
+                    </div>
+                  );
+                }
+
+                return roadsWithIssues.map((road) => (
+                  <div key={road.label} className="flex justify-between items-center gap-2">
+                    <span className="text-stone-600 truncate">{road.label}:</span>
+                    <span className={`font-medium flex-shrink-0 ${getRoadStatusColor(road)}`}>
+                      {getRoadStatusText(road)}
                     </span>
                   </div>
-                ))
-              )}
-              {roadIncidents.length > 4 && (
-                <div className="text-xs text-stone-500">
-                  +{roadIncidents.length - 4} more incident{roadIncidents.length - 4 > 1 ? 's' : ''}
-                </div>
-              )}
+                ));
+              })()}
             </div>
           </div>
 
