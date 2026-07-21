@@ -10,17 +10,29 @@ import {
   Eye,
   AlertTriangle,
   CheckCircle,
+  Clock,
   MapPin,
   CircleAlert,
   OctagonX,
+  Link,
 } from 'lucide-react';
+import RouteDetailsDialog from './RouteDetailsDialog';
 import WeatherDetailsDialog from './WeatherDetailsDialog';
 import AlertDetailsDialog from './AlertDetailsDialog';
-import { type Alert, type WeatherLocation, formatHumanTime, formatEnumValue } from './types';
+import {
+  type Alert,
+  type RoadSegment,
+  type ChainControlInfo,
+  type WeatherLocation,
+  formatHumanTime,
+} from './types';
 
 // API Response Interfaces — S.I.E.R.R.A. Grid /api/v1 (camelCase fields).
-// Weather is served by /conditions; road incidents and weather alerts are both
-// events on the unified event feed (/events?layer=…).
+//   • Weather is served by /conditions.
+//   • Road *state* (open/restricted/closed, travel time, delay) is the
+//     road_segment map-layer projection; chain control is the chain_control
+//     projection — both GeoJSON FeatureCollections.
+//   • Road *incidents* and weather alerts are events on the unified event feed.
 interface WeatherConditionsApi {
   locationId?: string;
   locationName?: string;
@@ -47,8 +59,53 @@ interface ConditionsResponse {
   lastUpdated?: string;
 }
 
-// The common event envelope carries everything a card needs; the typed detail
-// blocks (roadIncident / weatherAlert) add the kind-specific fields.
+// road_segment.geojson feature properties.
+interface RoadSegmentProps {
+  id?: string;
+  headline?: string;
+  status?: string; // OPEN | RESTRICTED | CLOSED
+  areaLabel?: string;
+  description?: string;
+  severity?: string;
+  road?: {
+    roadId?: string;
+    congestion?: string;
+    delayMinutes?: number;
+    durationMinutes?: number;
+    distanceKm?: number;
+  };
+}
+
+// chain_control.geojson feature properties. The chain layer is empty outside
+// winter and its typed block is not in the OpenAPI spec, so we read the level
+// defensively from whichever field carries it.
+interface ChainControlProps {
+  id?: string;
+  headline?: string;
+  areaLabel?: string;
+  status?: string;
+  category?: string;
+  description?: string;
+  effective?: string;
+  level?: string;
+  road?: { roadId?: string };
+  chainControl?: {
+    level?: string;
+    direction?: string;
+    effectiveTime?: string;
+    locationName?: string;
+    latitude?: number;
+    longitude?: number;
+  };
+}
+
+interface GeoJsonFeatureCollection<P> {
+  type?: string;
+  features?: { type?: string; properties?: P }[];
+  metadata?: { generatedAt?: string; sourceStatus?: string };
+}
+
+// The common event envelope + typed detail blocks.
 interface GridEvent {
   id?: string;
   layer?: string;
@@ -60,6 +117,7 @@ interface GridEvent {
   description?: string;
   areaLabel?: string;
   canonicalUrl?: string;
+  placeIds?: string[];
   effective?: string;
   expires?: string;
   observedAt?: string;
@@ -85,7 +143,7 @@ interface GridEventList {
 }
 
 interface ApiData {
-  roadIncidents: Alert[];
+  roads: RoadSegment[];
   weather: WeatherLocation[];
   alerts: Alert[];
   lastUpdated: string;
@@ -136,17 +194,34 @@ const getWeatherIcon = (iconCode: string) => {
   return iconMap[iconCode] || <Cloud className="h-5 w-5 text-gray-500" />;
 };
 
-const getIncidentIcon = (alert: Alert) => {
-  const category = (alert.incidentType || '').toLowerCase();
-  const isClosure = category.includes('closure') || category.includes('closed');
+const getRoadStatusIcon = (status: string) => {
+  switch (status) {
+    case 'clear':
+      return <CheckCircle className="h-5 w-5 text-green-600" />;
+    case 'delays':
+      return <Clock className="h-5 w-5 text-yellow-600" />;
+    case 'restrictions':
+      return <CircleAlert className="h-5 w-5 text-yellow-600" />;
+    case 'closed':
+      return <OctagonX className="h-5 w-5 text-red-600" />;
+    default:
+      return <CheckCircle className="h-5 w-5 text-green-600" />;
+  }
+};
 
-  if (alert.severity === 'CRITICAL' || isClosure) {
-    return <OctagonX className="h-5 w-5 text-red-600" />;
+const getRoadStatusText = (segment: RoadSegment) => {
+  switch (segment.status) {
+    case 'clear':
+      return 'Clear';
+    case 'delays':
+      return segment.delayMinutes ? `${segment.delayMinutes} min delays` : 'Delays';
+    case 'restrictions':
+      return segment.delayMinutes ? `${segment.delayMinutes} min delays` : 'Restrictions';
+    case 'closed':
+      return 'Closed';
+    default:
+      return 'Unknown';
   }
-  if (alert.severity === 'WARNING') {
-    return <CircleAlert className="h-5 w-5 text-yellow-600" />;
-  }
-  return <AlertTriangle className="h-5 w-5 text-blue-600" />;
 };
 
 // S.I.E.R.R.A. Grid data feeds.
@@ -167,6 +242,15 @@ const mapGridSeverity = (severity: string | undefined): Alert['severity'] => {
     default:
       return 'INFO';
   }
+};
+
+// Detect an R1/R2/R3 chain level from whichever free-text field carries it.
+const detectChainLevel = (...values: (string | undefined)[]): ChainControlInfo['level'] => {
+  const s = values.filter(Boolean).join(' ').toUpperCase();
+  if (/\bR3\b/.test(s)) return 'CHAIN_CONTROL_LEVEL_R3';
+  if (/\bR2\b/.test(s)) return 'CHAIN_CONTROL_LEVEL_R2';
+  if (/\bR1\b/.test(s)) return 'CHAIN_CONTROL_LEVEL_R1';
+  return 'CHAIN_CONTROL_LEVEL_NONE';
 };
 
 // A road_incident Grid event → display Alert. The incident type is the envelope
@@ -238,10 +322,44 @@ const transformFireWeather = (fw: FireWeatherConditions | undefined): Alert | nu
   };
 };
 
+// Build a roadId → chain-control map from the chain_control layer.
+const buildChainControlMap = (
+  fc: GeoJsonFeatureCollection<ChainControlProps> | undefined,
+): Record<string, ChainControlInfo> => {
+  const map: Record<string, ChainControlInfo> = {};
+  for (const feature of fc?.features || []) {
+    const p = feature.properties;
+    if (!p) continue;
+    const roadId = p.road?.roadId || (p.id || '').replace(/^[^:]+:/, '');
+    if (!roadId) continue;
+    const level = detectChainLevel(
+      p.chainControl?.level,
+      p.level,
+      p.category,
+      p.status,
+      p.headline,
+    );
+    if (level === 'CHAIN_CONTROL_LEVEL_NONE' || level === 'CHAIN_CONTROL_LEVEL_UNSPECIFIED') {
+      continue;
+    }
+    map[roadId] = {
+      level,
+      locationName: p.chainControl?.locationName || p.areaLabel || p.headline,
+      latitude: p.chainControl?.latitude,
+      longitude: p.chainControl?.longitude,
+      direction: p.chainControl?.direction,
+      effectiveTime: p.chainControl?.effectiveTime || p.effective,
+      description: p.description,
+    };
+  }
+  return map;
+};
+
 export default function RoadWeatherStatus() {
   const [data, setData] = useState<ApiData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedRoute, setSelectedRoute] = useState<RoadSegment | null>(null);
   const [selectedWeather, setSelectedWeather] = useState<WeatherLocation | null>(null);
   const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
 
@@ -249,8 +367,19 @@ export default function RoadWeatherStatus() {
     try {
       setError(null);
 
-      const [conditionsResponse, roadIncidentsResponse, weatherAlertsResponse] = await Promise.all([
-        fetch(`${GRID_API_BASE}/conditions?place=${GRID_AREA}`, {
+      const [
+        conditionsResponse,
+        roadSegmentsResponse,
+        chainControlResponse,
+        roadIncidentsResponse,
+        weatherAlertsResponse,
+      ] = await Promise.all([
+        fetch(`${GRID_API_BASE}/conditions?place=${GRID_AREA}`, { method: 'GET', mode: 'cors' }),
+        fetch(`${GRID_API_BASE}/places/${GRID_AREA}/map/road_segment.geojson`, {
+          method: 'GET',
+          mode: 'cors',
+        }),
+        fetch(`${GRID_API_BASE}/places/${GRID_AREA}/map/chain_control.geojson`, {
           method: 'GET',
           mode: 'cors',
         }),
@@ -264,9 +393,17 @@ export default function RoadWeatherStatus() {
         }),
       ]);
 
-      if (!conditionsResponse.ok || !roadIncidentsResponse.ok || !weatherAlertsResponse.ok) {
+      if (
+        !conditionsResponse.ok ||
+        !roadSegmentsResponse.ok ||
+        !chainControlResponse.ok ||
+        !roadIncidentsResponse.ok ||
+        !weatherAlertsResponse.ok
+      ) {
         const errorDetails = {
           conditions: `${conditionsResponse.status} ${conditionsResponse.statusText}`,
+          roadSegments: `${roadSegmentsResponse.status} ${roadSegmentsResponse.statusText}`,
+          chainControl: `${chainControlResponse.status} ${chainControlResponse.statusText}`,
           roadIncidents: `${roadIncidentsResponse.status} ${roadIncidentsResponse.statusText}`,
           weatherAlerts: `${weatherAlertsResponse.status} ${weatherAlertsResponse.statusText}`,
         };
@@ -274,6 +411,10 @@ export default function RoadWeatherStatus() {
       }
 
       const conditions: ConditionsResponse = await conditionsResponse.json();
+      const roadSegments: GeoJsonFeatureCollection<RoadSegmentProps> =
+        await roadSegmentsResponse.json();
+      const chainControls: GeoJsonFeatureCollection<ChainControlProps> =
+        await chainControlResponse.json();
       const roadIncidentEvents: GridEventList = await roadIncidentsResponse.json();
       const weatherAlertEvents: GridEventList = await weatherAlertsResponse.json();
 
@@ -284,9 +425,14 @@ export default function RoadWeatherStatus() {
       const fireWeatherAlert = transformFireWeather(conditions.fireWeather);
       if (fireWeatherAlert) allAlerts.push(fireWeatherAlert);
 
-      // Road incidents are events on the road_incident layer.
-      const roadIncidents: Alert[] = (roadIncidentEvents.events || []).map(transformRoadIncident);
-      allAlerts.push(...roadIncidents);
+      // Road incidents are events on the road_incident layer. Keep the raw event
+      // alongside the transformed alert so we can attach incidents to the road
+      // segment they occur on (via the corridor:<roadId> place id).
+      const roadIncidents = (roadIncidentEvents.events || []).map((event) => ({
+        event,
+        alert: transformRoadIncident(event),
+      }));
+      allAlerts.push(...roadIncidents.map((r) => r.alert));
 
       // Weather alerts are area-wide events; one alert can cover several zones, so
       // dedupe by title. The deduped set is shown against every weather location.
@@ -300,8 +446,65 @@ export default function RoadWeatherStatus() {
         });
       allAlerts.push(...weatherAlerts);
 
+      const chainControlMap = buildChainControlMap(chainControls);
+
       const transformedData: ApiData = {
-        roadIncidents,
+        roads: (roadSegments.features || []).map((feature) => {
+          const p = feature.properties || {};
+          const roadId = p.road?.roadId || (p.id || '').replace(/^[^:]+:/, '');
+          const areaLabel = p.areaLabel || p.headline || '';
+
+          // Parse the areaLabel to extract from/to (e.g. "Angels Camp to Murphys")
+          const sectionParts = areaLabel.split(' to ');
+          const from = sectionParts[0] || p.headline || 'Route';
+          const to = sectionParts[1] || 'Destination';
+
+          const rawStatus = (p.status || '').toLowerCase();
+          const delayMinutes = p.road?.delayMinutes ?? 0;
+
+          // Incidents on this corridor become the segment's ON_ROUTE alerts.
+          const roadAlerts: Alert[] = roadIncidents
+            .filter((r) => (r.event.placeIds || []).includes(`corridor:${roadId}`))
+            .map((r) => ({ ...r.alert, classification: 'ON_ROUTE' as const }));
+
+          const chainControlInfo = roadId ? chainControlMap[roadId] : undefined;
+          const chainControlShort = chainControlInfo
+            ? chainControlInfo.level.replace('CHAIN_CONTROL_LEVEL_', '')
+            : 'none';
+          const hasChainControl = chainControlShort !== 'none';
+
+          // Map raw status + signals to our 4-level display status.
+          let status: 'clear' | 'delays' | 'restrictions' | 'closed' = 'clear';
+          if (rawStatus === 'closed') {
+            status = 'closed';
+          } else if (roadAlerts.some((alert) => alert.severity === 'CRITICAL')) {
+            status = 'restrictions';
+          } else if (rawStatus === 'restricted') {
+            status = 'restrictions';
+          } else if (delayMinutes > 0) {
+            status = 'delays';
+          } else if (hasChainControl) {
+            status = 'restrictions';
+          }
+
+          return {
+            from,
+            to,
+            status,
+            delayMinutes: p.road?.delayMinutes,
+            description: hasChainControl ? `Chain control: ${chainControlShort}` : undefined,
+            alertCount: roadAlerts.length,
+            alerts: roadAlerts,
+            // Additional metadata
+            congestionLevel: p.road?.congestion,
+            durationMinutes: p.road?.durationMinutes,
+            distanceKm: p.road?.distanceKm,
+            chainControl: chainControlShort,
+            chainControlInfo,
+            rawStatus: p.status,
+            statusExplanation: p.description,
+          };
+        }),
         weather: (conditions.weather || []).map((w) => ({
           name: w.locationName || w.locationId || 'Unknown',
           temperature: Math.round(((w.temperatureCelsius ?? 0) * 9) / 5 + 32), // Convert to Fahrenheit
@@ -332,7 +535,8 @@ export default function RoadWeatherStatus() {
             };
             return severityOrder[a.severity] - severityOrder[b.severity];
           }),
-        lastUpdated: conditions.lastUpdated || new Date().toISOString(),
+        lastUpdated:
+          conditions.lastUpdated || roadSegments.metadata?.generatedAt || new Date().toISOString(),
       };
 
       setData(transformedData);
@@ -470,43 +674,66 @@ export default function RoadWeatherStatus() {
             </div>
 
             <div className="space-y-1">
-              {data.roadIncidents.length === 0 ? (
-                <div className="flex items-center space-x-2 py-3 px-2">
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
-                  <span className="text-sm text-stone-600">No active road incidents reported.</span>
-                </div>
+              {data.roads.length === 0 ? (
+                <p className="text-stone-600 text-sm italic">No road data available</p>
               ) : (
-                data.roadIncidents.map((incident, index) => {
-                  const categoryLabel = formatEnumValue(incident.incidentType);
-                  const title = incident.location || incident.title;
-                  const showHeadline = incident.title && incident.title !== title;
+                data.roads.map((segment) => {
+                  const roadKey = `${segment.from}-${segment.to}`;
 
                   return (
-                    <div
-                      key={incident.id || `incident-${index}`}
-                      className="border-b border-stone-100 last:border-b-0"
-                    >
+                    <div key={roadKey} className="border-b border-stone-100 last:border-b-0">
                       <button
                         type="button"
-                        onClick={() => setSelectedAlert(incident)}
+                        onClick={() => setSelectedRoute(segment)}
                         className="w-full cursor-pointer flex items-center justify-between py-3 px-2 hover:bg-stone-50 transition-colors rounded-sm touch-manipulation"
                       >
                         <div className="flex items-center space-x-3 flex-1 min-w-0">
-                          {getIncidentIcon(incident)}
+                          {getRoadStatusIcon(segment.status)}
                           <div className="text-left flex-1 min-w-0">
-                            <div className="font-medium text-stone-800 truncate">{title}</div>
-                            {showHeadline && (
-                              <div className="text-xs text-stone-500 truncate">
-                                {incident.title}
-                              </div>
-                            )}
+                            <div className="flex items-center space-x-2">
+                              <span className="font-medium text-stone-800 truncate">
+                                {segment.from} → {segment.to}
+                              </span>
+                              {/* Chain Control Icon */}
+                              {segment.chainControlInfo &&
+                                segment.chainControlInfo.level !== 'CHAIN_CONTROL_LEVEL_NONE' &&
+                                segment.chainControlInfo.level !==
+                                  'CHAIN_CONTROL_LEVEL_UNSPECIFIED' && (
+                                  <div
+                                    className="flex items-center flex-shrink-0 text-blue-600"
+                                    title="Chain control in effect"
+                                  >
+                                    <Link className="h-4 w-4" />
+                                  </div>
+                                )}
+                              {segment.alertCount > 0 &&
+                                (() => {
+                                  const onRouteAlerts = segment.alerts.filter(
+                                    (alert) => alert.classification === 'ON_ROUTE',
+                                  );
+                                  const hasOnRoute = onRouteAlerts.length > 0;
+
+                                  return (
+                                    <div
+                                      className={`flex items-center space-x-1 flex-shrink-0 ${
+                                        hasOnRoute ? 'text-red-600' : 'text-yellow-600'
+                                      }`}
+                                    >
+                                      <AlertTriangle className="h-4 w-4" />
+                                      {hasOnRoute && (
+                                        <span className="text-xs font-medium bg-red-100 px-1.5 py-0.5 rounded">
+                                          {onRouteAlerts.length > 9 ? '9+' : onRouteAlerts.length}
+                                        </span>
+                                      )}
+                                    </div>
+                                  );
+                                })()}
+                            </div>
                           </div>
                         </div>
-                        {categoryLabel && (
-                          <div className="text-sm text-stone-600 flex-shrink-0 ml-2 capitalize">
-                            {categoryLabel}
-                          </div>
-                        )}
+                        <div className="text-sm text-stone-600 flex-shrink-0 ml-2">
+                          {getRoadStatusText(segment)}
+                        </div>
                       </button>
                     </div>
                   );
@@ -550,7 +777,7 @@ export default function RoadWeatherStatus() {
         </div>
         <div className="m-4 p-3 bg-stone-50 rounded border border-stone-200">
           <p className="text-xs text-stone-600 text-center">
-            <strong>Source:</strong> Caltrans / CHP • OpenWeather • NWS
+            <strong>Source:</strong> Google Routes • Caltrans / CHP • OpenWeather • NWS
             <br />
             <strong>Last Updated:</strong> {formatHumanTime(data.lastUpdated)} •{' '}
             <strong>Update Frequency:</strong> Every 15 minutes
@@ -568,6 +795,11 @@ export default function RoadWeatherStatus() {
           </p>
         </div>
       </div>
+
+      {/* Route Details Dialog */}
+      {selectedRoute && (
+        <RouteDetailsDialog selectedRoute={selectedRoute} onClose={() => setSelectedRoute(null)} />
+      )}
 
       {/* Weather Details Dialog */}
       {selectedWeather && (
