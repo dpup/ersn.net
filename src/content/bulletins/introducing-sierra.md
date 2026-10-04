@@ -1,6 +1,6 @@
 ---
 title: 'Introducing S.I.E.R.R.A., a new foothills emergency comms nonprofit'
-date: 2026-10-04T17:00:00Z
+date: 2026-09-27T17:00:00Z
 slug: 'introducing-sierra'
 summary: 'ERSN member Jay, who runs our Murphys net, has founded S.I.E.R.R.A., a volunteer nonprofit that grew out of ERSN and builds layered, off-grid emergency communications for the Calaveras and Tuolumne foothills.'
 ---
