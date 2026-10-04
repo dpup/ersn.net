@@ -9,9 +9,13 @@ Thank you to everyone who came out to our potluck at [Meadowmont Lodge](https://
 
 A special thanks to the lodge's owners for hosting us. If you have friends or family coming up to visit and your guest room is already spoken for, Meadowmont is a lovely place to put them up, just minutes from White Pines Lake and Big Trees.
 
+![ERSN members gathered around the fire pit on the covered patio at Meadowmont Lodge, surrounded by tall pines](@img/news/meadowmont-potluck-and-winter-goals/patio-gathering.jpg)
+
 ## Happy Birthday, Ken!
 
 And another happy birthday to Ken, the leader behind the curtain who makes all of this possible. Much of what keeps ERSN running happens out of sight, and a lot of it is Ken's work. Thank you, Ken!
+
+![Ken and ERSN co-founder Marlaine smiling beside his chocolate birthday cake under the string lights on the lodge patio](@img/news/meadowmont-potluck-and-winter-goals/ken-birthday.jpg)
 
 ## Our Current Goals
 

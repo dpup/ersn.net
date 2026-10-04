@@ -89,6 +89,23 @@ Use double line breaks between paragraphs.
 
 **File Naming**: Use kebab-case names like `practice-net-update.md`
 
+**Photos**:
+
+- **Location**: `src/assets/img/news/<slug>/`, one folder per post named after its slug, with
+  kebab-case file names (e.g. `patio-gathering.jpg`)
+- **Reference** from the markdown with the `@img/` alias:
+  `![Descriptive alt text](@img/news/<slug>/patio-gathering.jpg)`. Astro optimizes these at build
+  time (webp, width/height, lazy loading). Don't use `public/`, which serves files unoptimized.
+- **Prepare** each photo before committing: fix rotation, resize to 1600px wide, convert to sRGB,
+  and strip EXIF metadata (which can include GPS location):
+
+  ```bash
+  node -e "require('sharp')(process.argv[1]).rotate().resize({ width: 1600, withoutEnlargement: true }).toColourspace('srgb').jpeg({ quality: 82, mozjpeg: true }).toFile(process.argv[2])" input.jpg src/assets/img/news/<slug>/photo.jpg
+  ```
+
+- **Privacy**: The surname rule below applies to photos too. Blur surnames on legible name tags,
+  and use first names only in alt text.
+
 **Summary Requirements**:
 
 - **Plain text only**: No markdown formatting in summaries
