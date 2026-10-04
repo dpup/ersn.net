@@ -15,7 +15,7 @@ A special thanks to the lodge's owners for hosting us. If you have friends or fa
 
 And another happy birthday to Ken, the leader behind the curtain who makes all of this possible. Much of what keeps ERSN running happens out of sight, and a lot of it is Ken's work. Thank you, Ken!
 
-![Ken and a friend smiling beside his chocolate birthday cake under the string lights on the lodge patio](@img/news/meadowmont-potluck-and-winter-goals/ken-birthday.jpg)
+![Ken and ERSN co-founder Marlaine smiling beside his chocolate birthday cake under the string lights on the lodge patio](@img/news/meadowmont-potluck-and-winter-goals/ken-birthday.jpg)
 
 ## Our Current Goals
 
