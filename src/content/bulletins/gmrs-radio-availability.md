@@ -21,11 +21,17 @@ The two GMRS radios we ask new members to buy, the Baofeng GM-15 Pro and the Bao
 
 We don't have official replacement recommendations yet. **If you can wait until December, please wait.**
 
-If you need a radio sooner, these are GMRS-specific, repeater-capable handhelds with programmable channels, sold by established US dealers. We have not tested or programmed them ourselves yet, so setup may take more effort than with the radios we have been using.
+If you need a radio sooner, these are GMRS-specific, repeater-capable handhelds with programmable channels, sold by their makers or by established US dealers. We have not tested or programmed them ourselves yet, so setup may take more effort than with the radios we have been using.
 
 - **[Wouxun KG-805G](https://www.buytwowayradios.com/wouxun-kg-805g.html):** About $80 from Buy Two Way Radios. Simple, sturdy, and in stock when we checked.
 - **[Wouxun KG-935G Plus](https://www.buytwowayradios.com/wouxun-kg-935g-plus.html):** About $120 from Buy Two Way Radios. More features and better weather resistance. Backordered into early December when we checked.
 - **[BTECH GMRS-V2](https://baofengtech.com/product/gmrs-v2/):** About $65 direct from BTECH. The closest relative of the radios we have been using. Backordered into mid-December when we checked.
+
+If you are on a tighter budget, these lower-cost radios are also worth a look:
+
+- **[Radioddity GM-30 Plus](https://www.radioddity.com/products/radioddity-gm-30-plus):** About $37 direct from Radioddity. The least expensive option here.
+- **[AnyTone UVA1 GMRS](https://powerwerx.com/anytone-handheld-radios):** About $50 from Powerwerx. Make sure you order the GMRS version, because a nearly identical ham radio is sold under the same UVA1 name.
+- **[Retevis RA89G](https://www.retevis.com/products/ra89g-high-power-gmrs-handheld-ham-radio-with-bluetooth-app-programming):** About $60 to $70 direct from Retevis. Programs from a phone app. Reviewers report that it is not weather sealed.
 
 A few things to watch for while shopping:
 
